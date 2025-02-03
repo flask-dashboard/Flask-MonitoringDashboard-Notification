@@ -14,6 +14,7 @@ The dashboard with the results that are collected can be found at:
 
 import os
 
+import logging
 from flask import Blueprint
 
 from flask_monitoringdashboard.core.config import Config, TelemetryConfig
@@ -28,7 +29,6 @@ def loc():
 config = Config()
 telemetry_config = TelemetryConfig()
 blueprint = Blueprint('dashboard', __name__, template_folder=loc() + 'templates')
-
 
 def bind(app, schedule=True, include_dashboard=True):
     """Binding the app to this object should happen before importing the routing-
@@ -87,6 +87,14 @@ def bind(app, schedule=True, include_dashboard=True):
     from flask_monitoringdashboard.core.cache import flush_cache
 
     atexit.register(flush_cache)
+
+    class LoggerIntercept(logging.getLoggerClass()):
+        def filter(self, record):
+            if record.exc_info is not None:
+                print("åååhh neeej ikke igen")
+            return super().filter(record)
+
+    logging.setLoggerClass(LoggerIntercept)
 
     if not include_dashboard:
         @app.teardown_request

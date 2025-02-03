@@ -51,7 +51,7 @@ class User(Base):
     """False for guest permissions (only view access). True for admin permissions."""
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password, method='pbkdf2')
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
