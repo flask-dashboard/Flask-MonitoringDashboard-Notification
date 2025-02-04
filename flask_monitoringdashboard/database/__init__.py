@@ -247,8 +247,8 @@ class ExceptionInfo(Base):
     request_id = Column(Integer, ForeignKey(Request.id), primary_key=True)
     request = relationship(Request)
     
-    exception_type = Column(Integer, nullable=False)
-    exception_msg = Column(String(150), nullable=False)
+    exception_type = Column(String(1500), nullable=False)
+    exception_msg = Column(String(1500), nullable=False)
     
     stack_lines = relationship('ExceptionStackLine', backref='exception_info')
 

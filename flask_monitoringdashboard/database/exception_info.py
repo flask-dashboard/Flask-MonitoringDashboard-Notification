@@ -12,7 +12,7 @@ def get_exception_info(session, request_id: int):
     return session.query(ExceptionInfo).filter_by(request_id=request_id).first()
 
 
-def add_exception_info(session, request_id: int, exception_type: int, exception_msg: str):
+def add_exception_info(session, request_id: int, exception_type: str, exception_msg: str):
     """
     Add a new ExceptionInfo record.
     """
