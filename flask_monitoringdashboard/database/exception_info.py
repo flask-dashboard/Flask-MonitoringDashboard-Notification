@@ -25,7 +25,7 @@ def add_exception_info(session, request_id: int, exception_type: int, exception_
     session.commit()
     return exception_info
 
-def add_stack_line(session, request_id, position, code_line):
+def add_exception_stack_line(session, request_id, position, code_line):
     """
     Adds a StackLine to the database (and possibly a CodeLine)
     :param session: Session for the database
