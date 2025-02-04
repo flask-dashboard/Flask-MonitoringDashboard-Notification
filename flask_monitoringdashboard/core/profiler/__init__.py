@@ -16,7 +16,7 @@ def start_thread_last_requested(endpoint):
     BaseProfiler(endpoint).start()
 
 
-def start_performance_thread(endpoint, duration, status_code):
+def start_performance_thread(endpoint, duration, status_code, e_logger):
     """
     Starts a thread that updates performance, utilization and last_requested in the database.
     :param endpoint: Endpoint object
@@ -24,7 +24,7 @@ def start_performance_thread(endpoint, duration, status_code):
     :param status_code: HTTP status code of the request
     """
     group_by = get_group_by()
-    PerformanceProfiler(endpoint, get_ip(), duration, group_by, status_code).start()
+    PerformanceProfiler(endpoint, get_ip(), duration, group_by, e_logger, status_code).start()
 
 
 def start_profiler_thread(endpoint):

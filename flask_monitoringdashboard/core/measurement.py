@@ -2,8 +2,14 @@
     Contains all functions that are used to track the performance of the flask-application.
     See init_measurement() for more detailed info.
 """
+import sys
 import time
 from functools import wraps
+from typing import Any, cast, TYPE_CHECKING
+if TYPE_CHECKING:
+    from _typeshed import ExcInfo, OptExcInfo
+
+from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
 from werkzeug.exceptions import HTTPException
 
 from flask_monitoringdashboard import config
@@ -67,7 +73,7 @@ def is_valid_status_code(status_code):
     return type(status_code) == int and 100 <= status_code < 600
 
 
-def status_code_from_response(result):
+def status_code_from_response(result) -> int:
     """
     Extracts the status code from the result that was returned from the route handler.
 
@@ -110,9 +116,17 @@ def evaluate(route_handler, args, kwargs):
 
         return result, status_code, None
     except HTTPException as e:
-        return None, e.code, e
-    except Exception as e:
-        return None, 500, e
+        exc_info= sys.exc_info()
+        if exc_info[0] is not None:
+            return None, e.code, ExceptionLogger(exc_info)
+        else:
+            return None, e.code, None
+    except Exception as _:
+        exc_info = sys.exc_info()
+        if exc_info[0] is not None:
+            return None, 500, ExceptionLogger(exc_info)
+        else:
+            return None, 500, None
 
 
 def add_wrapper1(endpoint, fun):
@@ -120,13 +134,13 @@ def add_wrapper1(endpoint, fun):
     def wrapper(*args, **kwargs):
         start_time = time.time()
 
-        result, status_code, raised_exception = evaluate(fun, args, kwargs)
+        result, status_code, e_logger = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        start_performance_thread(endpoint, duration, status_code)
+        start_performance_thread(endpoint, duration, status_code, e_logger)
 
-        if raised_exception:
-            raise raised_exception
+        #if raised_exception:
+        #    raise raised_exception
 
         return result
 
@@ -140,13 +154,13 @@ def add_wrapper2(endpoint, fun):
         outlier = start_outlier_thread(endpoint)
         start_time = time.time()
 
-        result, status_code, raised_exception = evaluate(fun, args, kwargs)
+        result, status_code, e_logger = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
         outlier.stop(duration, status_code)
 
-        if raised_exception:
-            raise raised_exception
+        #if raised_exception:
+        #    raise raised_exception
 
         return result
 
@@ -160,13 +174,13 @@ def add_wrapper3(endpoint, fun):
         thread = start_profiler_and_outlier_thread(endpoint)
         start_time = time.time()
 
-        result, status_code, raised_exception = evaluate(fun, args, kwargs)
+        result, status_code, e_logger = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
         thread.stop(duration, status_code)
 
-        if raised_exception:
-            raise raised_exception
+        #if raised_exception:
+        #    raise raised_exception
 
         return result
 
