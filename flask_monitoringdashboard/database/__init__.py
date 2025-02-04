@@ -314,4 +314,4 @@ def row2dict(row):
 
 
 def get_tables():
-    return [Endpoint, Request, Outlier, StackLine, CodeLine, CustomGraph, CustomGraphData]
+    return [Endpoint, Request, Outlier, StackLine, CodeLine, CustomGraph, CustomGraphData, ExceptionInfo, ExceptionStackLine]
