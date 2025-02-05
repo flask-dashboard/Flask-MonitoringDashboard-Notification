@@ -84,9 +84,10 @@ def bind(app, schedule=True, include_dashboard=True):
 
     # intercepts exceptions for dashboard purposes
     def rec_strace(tb):
+        s = f"Endpoint: {tb.tb_frame.f_code.co_name} at line number: {tb.tb_lineno} in file: {tb.tb_frame.f_code.co_filename}\n"
         if tb.tb_next is None:
-            return f"Endpoint: {tb.tb_frame.f_code.co_name} at line number: {tb.tb_lineno} in file: {tb.tb_frame.f_code.co_filename}"
-        return rec_strace(tb.tb_next)
+            return s
+        return rec_strace(tb.tb_next)+s
 
     def exc_intercept():
         old_print_exception = traceback.print_exception

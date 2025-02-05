@@ -82,10 +82,22 @@ def endpoint5():
     time.sleep(0.2)
     return 'Ok'
 
+def a():
+    raise Exception("åhhh nej")
+
+def b():
+    return a()
+
+def c():
+    return b()
+
+def d():
+    return c
+
 @app.route('/throws')
 def throws():
     time.sleep(0.2)
-    raise Exception("åhhh nej")
+    d()()
     return 'Ok'
 
 

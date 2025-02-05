@@ -2,14 +2,14 @@
     Contains all functions that are used to track the performance of the flask-application.
     See init_measurement() for more detailed info.
 """
+import linecache
 import sys
 import time
 from functools import wraps
+import traceback
 from typing import Any, cast, TYPE_CHECKING
-if TYPE_CHECKING:
-    from _typeshed import ExcInfo, OptExcInfo
-
 from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
+from flask_monitoringdashboard.core.types import ExcInfo, OptExcInfo
 from werkzeug.exceptions import HTTPException
 
 from flask_monitoringdashboard import config
@@ -23,6 +23,9 @@ from flask_monitoringdashboard.core.rules import get_rules
 from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.endpoint import get_endpoint_by_name
 
+def print_fs(lst: list[traceback.FrameSummary]):
+    for fs in lst:
+        print(f"code: {linecache.getline(fs.filename, fs.lineno)}, name {fs.name}")
 
 def init_measurement():
     """
@@ -100,6 +103,13 @@ def status_code_from_response(result) -> int:
 
     return status_code
 
+def ptb(tb):
+    fsl : list[traceback.FrameSummary] = traceback.extract_tb(tb)
+    sl : list[traceback.FrameSummary] = traceback.extract_stack()
+    print("hitttttttttttttttttttttt")
+    print_fs(sl)
+    print("hitttttttttttttttttttttt")
+    print_fs(fsl)
 
 def evaluate(route_handler, args, kwargs):
     """
@@ -116,17 +126,11 @@ def evaluate(route_handler, args, kwargs):
 
         return result, status_code, None
     except HTTPException as e:
-        exc_info= sys.exc_info()
-        if exc_info[0] is not None:
-            return None, e.code, ExceptionLogger(exc_info)
-        else:
-            return None, e.code, None
+        exc_info : OptExcInfo = sys.exc_info()
+        return None, e.code, (ExceptionLogger(exc_info) if exc_info[0] is not None else None)
     except Exception as _:
         exc_info = sys.exc_info()
-        if exc_info[0] is not None:
-            return None, 500, ExceptionLogger(exc_info)
-        else:
-            return None, 500, None
+        return None, 500, (ExceptionLogger(exc_info) if exc_info[0] is not None else None)
 
 
 def add_wrapper1(endpoint, fun):
@@ -139,8 +143,8 @@ def add_wrapper1(endpoint, fun):
         duration = time.time() - start_time
         start_performance_thread(endpoint, duration, status_code, e_logger)
 
-        #if raised_exception:
-        #    raise raised_exception
+        if e_logger:
+            raise e_logger.value
 
         return result
 
@@ -159,8 +163,8 @@ def add_wrapper2(endpoint, fun):
         duration = time.time() - start_time
         outlier.stop(duration, status_code)
 
-        #if raised_exception:
-        #    raise raised_exception
+        if e_logger:
+            raise e_logger.value
 
         return result
 
