@@ -1,0 +1,17 @@
+from flask_monitoringdashboard.database.exception_info import get_exceptions_with_timestamps
+
+def get_exceptions_with_timestamp(session):
+    """
+    :param session: session for the database
+    :param endpoints: a list of endpoints, encoded by their name
+    :return: for every endpoint in endpoints, a list with the performance
+    """
+    
+    return [
+        {
+            'type': exception.exception_type, 
+            'message': exception.exception_msg, 
+            'timestamp': exception.time_requested 
+        }
+        for exception in get_exceptions_with_timestamps(session)
+    ]

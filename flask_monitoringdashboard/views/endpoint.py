@@ -22,8 +22,21 @@ from flask_monitoringdashboard.database.endpoint import (
     get_endpoints,
     get_endpoints_hits,
 )
+from flask_monitoringdashboard.controllers.exceptions import get_exceptions_with_timestamp
 
-
+@blueprint.route('/api/exception_info')
+@secure
+def get_exception_info():
+    """
+    Get information about all the exceptions that have occured for all endpoint
+    :return: A JSON-list with a JSON-object per endpoint
+    """
+    post_to_back_if_telemetry_enabled(**{'name': 'exception_info'}) # Ved ikke 100% hvorfor, tror det er business behov, ikke et funktionelt behov som sådan
+    with session_scope() as session:
+        exceptions = get_exceptions_with_timestamp(session)
+        
+        return jsonify(exceptions)
+    
 @blueprint.route('/api/overview', methods=['GET', 'POST'])
 @secure
 def get_overview():

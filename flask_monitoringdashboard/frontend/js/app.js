@@ -23,6 +23,7 @@ import moment from 'moment';
 window.moment = moment;
 
 import { OverviewController } from "./controllers/OverviewController";
+import { ExceptionController } from "./controllers/exceptionInfo";
 import { HourlyLoadController } from "./controllers/hourlyLoad";
 import { MultiVersionController } from "./controllers/multiVersion";
 import { DailyUtilizationController } from "./controllers/dailyUtilization";
@@ -95,6 +96,12 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
             templateUrl: 'static/pages/overview.html',
             controller: ['$scope', '$http', '$location', 'menuService', 'endpointService', OverviewController]
         })
+        // Natalie -->
+        .when('/new_dashboard', {
+            templateUrl: 'static/pages/new_dashboard.html',
+            controller: ['$scope', '$http', 'menuService', 'endpointService', ExceptionController]
+        })
+        // <--
         .when('/hourly_load', {
             templateUrl: 'static/pages/plotly_graph.html',
             controller: ['$scope', '$http', 'menuService', 'plotlyService', 'infoService',

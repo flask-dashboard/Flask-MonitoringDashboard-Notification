@@ -12,7 +12,7 @@ export default function ($http, endpointService) {
             $('#collapseCustomGraphs').collapse('hide');
         }
 
-        var dashboardPages = ['overview', 'hourly_load', 'multi_version', 'daily_load', 'api_performance', 'reporting'];
+        var dashboardPages = ['overview', 'new_dashboard', 'hourly_load', 'multi_version', 'daily_load', 'api_performance', 'reporting'];
 
         if (dashboardPages.includes(page)) {
             $('#collapseDashboard').collapse('show');
