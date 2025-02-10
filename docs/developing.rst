@@ -26,6 +26,17 @@ responsible for setting up the project, and installing the following pre-commit 
 - Auto increase the Python version. This can either be a major, minor, or patch version increase. For more info, see
   the Versions-section below.
 
+Build the FMD locally
+------------------------
+To build the FMD locally you can utilize the following command, remember to do this in the virtual environment created in the above step.
+
+This should also be done from the root directory.
+
+.. code-block:: bash
+  
+  pip install -e .
+
+
 Architecture
 --------------
 
