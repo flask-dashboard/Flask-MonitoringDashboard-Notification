@@ -4,9 +4,9 @@ import threading
 import time
 import traceback
 from collections import defaultdict
-
 from flask_monitoringdashboard import config
 from flask_monitoringdashboard.core.cache import update_duration_cache
+from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
 from flask_monitoringdashboard.core.logger import log
 from flask_monitoringdashboard.core.profiler.util import order_histogram
 from flask_monitoringdashboard.core.profiler.util.path_hash import PathHash
@@ -38,6 +38,7 @@ class StacktraceProfiler(threading.Thread):
         self._total = 0
         self._outlier_profiler = outlier_profiler
         self._status_code = 404
+        self.e_logger : ExceptionLogger | None = None
 
     def run(self):
         """
@@ -79,12 +80,13 @@ class StacktraceProfiler(threading.Thread):
 
         self._on_thread_stopped()
 
-    def stop(self, duration, status_code):
+    def stop(self, duration, status_code, e_logger : ExceptionLogger | None):
         self._duration = duration * 1000
         self._status_code = status_code
         if self._outlier_profiler:
             self._outlier_profiler.stop_by_profiler()
         self._keeprunning = False
+        self.e_logger = e_logger
 
     def _on_thread_stopped(self):
         update_duration_cache(endpoint_name=self._endpoint.name, duration=self._duration)
@@ -99,6 +101,8 @@ class StacktraceProfiler(threading.Thread):
             )
             self._lines_body = order_histogram(self._histogram.items())
             self.insert_lines_db(session, request_id)
+            if self.e_logger is not None:
+                self.e_logger.log(request_id, session)
             if self._outlier_profiler:
                 self._outlier_profiler.add_outlier(session, request_id)
 

@@ -7,9 +7,7 @@ import sys
 import time
 from functools import wraps
 import traceback
-from typing import Any, cast, TYPE_CHECKING
 from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
-from flask_monitoringdashboard.core.types import ExcInfo, OptExcInfo
 from werkzeug.exceptions import HTTPException
 
 from flask_monitoringdashboard import config
@@ -106,9 +104,7 @@ def status_code_from_response(result) -> int:
 def ptb(tb):
     fsl : list[traceback.FrameSummary] = traceback.extract_tb(tb)
     sl : list[traceback.FrameSummary] = traceback.extract_stack()
-    print("hitttttttttttttttttttttt")
     print_fs(sl)
-    print("hitttttttttttttttttttttt")
     print_fs(fsl)
 
 def evaluate(route_handler, args, kwargs):
@@ -126,11 +122,12 @@ def evaluate(route_handler, args, kwargs):
 
         return result, status_code, None
     except HTTPException as e:
-        exc_info : OptExcInfo = sys.exc_info()
+        exc_info = sys.exc_info()
         return None, e.code, (ExceptionLogger(exc_info) if exc_info[0] is not None else None)
-    except Exception as _:
+    except (Exception, BaseException) as _:
         exc_info = sys.exc_info()
         return None, 500, (ExceptionLogger(exc_info) if exc_info[0] is not None else None)
+
 
 
 def add_wrapper1(endpoint, fun):
@@ -161,7 +158,7 @@ def add_wrapper2(endpoint, fun):
         result, status_code, e_logger = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        outlier.stop(duration, status_code)
+        outlier.stop(duration, status_code, e_logger)
 
         if e_logger:
             raise e_logger.value
@@ -181,7 +178,7 @@ def add_wrapper3(endpoint, fun):
         result, status_code, e_logger = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        thread.stop(duration, status_code)
+        thread.stop(duration, status_code, e_logger)
 
         #if raised_exception:
         #    raise raised_exception

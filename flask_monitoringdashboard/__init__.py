@@ -83,22 +83,6 @@ def bind(app, schedule=True, include_dashboard=True):
     # register the blueprint to the app
     app.register_blueprint(blueprint, url_prefix='/' + config.link)
 
-    # intercepts exceptions for dashboard purposes
-    def rec_strace(tb):
-        s = f"Endpoint: {tb.tb_frame.f_code.co_name} at line number: {tb.tb_lineno} in file: {tb.tb_frame.f_code.co_filename}\n"
-        if tb.tb_next is None:
-            return s
-        return rec_strace(tb.tb_next)+s
-
-    def exc_intercept():
-        old_print_exception = traceback.print_exception
-        def exc_log(etype, value, tb, limit=None, file=None):
-            print("åååhh neeej ikke igen")
-            print(rec_strace(tb))
-            old_print_exception(etype, value, tb, limit, file)
-        traceback.print_exception = exc_log
-    exc_intercept()
-
     # flush cache to db before shutdown
     import atexit
     from flask_monitoringdashboard.core.cache import flush_cache

@@ -18,12 +18,12 @@ class PerformanceProfiler(BaseProfiler):
         self._endpoint = endpoint
         self._group_by = group_by
         self._status_code = status_code
-        self.e_logger = e_logger
+        self.e_logger : ExceptionLogger | None = e_logger
 
     def run(self):
         update_duration_cache(endpoint_name=self._endpoint.name, duration=self._duration)
         with session_scope() as session:
-            rid = add_request(
+            request_id = add_request(
                 session,
                 duration=self._duration,
                 endpoint_id=self._endpoint.id,
@@ -32,4 +32,4 @@ class PerformanceProfiler(BaseProfiler):
                 status_code=self._status_code,
             )
             if self.e_logger is not None:
-                self.e_logger.log(rid, session)
+                self.e_logger.log(request_id, session)
