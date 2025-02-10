@@ -2,7 +2,7 @@
 Contains all functions that access an ExceptionInfo object.
 """
 
-from flask_monitoringdashboard.database import CodeLine, ExceptionInfo, ExceptionStackLine
+from flask_monitoringdashboard.database import CodeLine, ExceptionInfo, ExceptionStackLine, Request
 from flask_monitoringdashboard.database.code_line import get_code_line
 
 def get_exception_info(session, request_id: int):
@@ -48,3 +48,12 @@ def add_exception_stack_line(session, request_id, position, code_line: CodeLine)
             code_id=db_code_line.id,
         )
     )
+
+def get_exceptions_with_timestamps(session):
+    results = session.query(
+        ExceptionInfo.exception_type,
+        ExceptionInfo.exception_msg,
+        Request.time_requested
+    ).join(Request, ExceptionInfo.request_id == Request.id).all()
+    
+    return results
