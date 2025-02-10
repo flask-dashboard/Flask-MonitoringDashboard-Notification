@@ -82,6 +82,25 @@ def endpoint5():
     time.sleep(0.2)
     return 'Ok'
 
+def a():
+    raise Exception("åhhh nej")
+
+def b():
+    return a()
+
+def c():
+    return b()
+
+def d():
+    return c
+
+@app.route('/throws')
+def throws():
+    time.sleep(0.2)
+    d()()
+    return 'Ok'
+
+
 
 def my_func():
     # here should be something actually useful
@@ -90,4 +109,4 @@ def my_func():
 
 if __name__ == "__main__":
     dashboard.bind(app)
-    app.run()
+    app.run(port=4200)

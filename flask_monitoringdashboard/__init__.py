@@ -14,6 +14,7 @@ The dashboard with the results that are collected can be found at:
 
 import os
 
+import traceback
 from flask import Blueprint
 
 from flask_monitoringdashboard.core.config import Config, TelemetryConfig
@@ -28,7 +29,6 @@ def loc():
 config = Config()
 telemetry_config = TelemetryConfig()
 blueprint = Blueprint('dashboard', __name__, template_folder=loc() + 'templates')
-
 
 def bind(app, schedule=True, include_dashboard=True):
     """Binding the app to this object should happen before importing the routing-
@@ -81,6 +81,22 @@ def bind(app, schedule=True, include_dashboard=True):
 
     # register the blueprint to the app
     app.register_blueprint(blueprint, url_prefix='/' + config.link)
+
+    # intercepts exceptions for dashboard purposes
+    def rec_strace(tb):
+        s = f"Endpoint: {tb.tb_frame.f_code.co_name} at line number: {tb.tb_lineno} in file: {tb.tb_frame.f_code.co_filename}\n"
+        if tb.tb_next is None:
+            return s
+        return rec_strace(tb.tb_next)+s
+
+    def exc_intercept():
+        old_print_exception = traceback.print_exception
+        def exc_log(etype, value, tb, limit=None, file=None):
+            print("åååhh neeej ikke igen")
+            print(rec_strace(tb))
+            old_print_exception(etype, value, tb, limit, file)
+        traceback.print_exception = exc_log
+    exc_intercept()
 
     # flush cache to db before shutdown
     import atexit

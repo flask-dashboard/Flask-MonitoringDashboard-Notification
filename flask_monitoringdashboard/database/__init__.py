@@ -51,7 +51,7 @@ class User(Base):
     """False for guest permissions (only view access). True for admin permissions."""
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        self.password_hash = generate_password_hash(password, method='pbkdf2')
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -238,6 +238,36 @@ class CustomGraphData(Base):
     value = Column(Float)
     """Actual value that is measured."""
 
+    
+class ExceptionInfo(Base):
+    """Table for storing exception id together with request id."""
+
+    __tablename__ = '{}ExceptionInfo'.format(config.table_prefix)
+    
+    request_id = Column(Integer, ForeignKey(Request.id), primary_key=True)
+    request = relationship(Request)
+    
+    exception_type = Column(String(1500), nullable=False)
+    exception_msg = Column(String(1500), nullable=False)
+    
+    stack_lines = relationship('ExceptionStackLine', backref='exception_info')
+
+    
+class ExceptionStackLine(Base):
+    """Table for storing exception id together with request id."""
+
+    __tablename__ = '{}ExceptionStackLine'.format(config.table_prefix)
+    
+    request_id = Column(Integer, ForeignKey(ExceptionInfo.request_id), primary_key=True)
+    """Request that belongs to this exc_stack_line."""
+    
+    code_id = Column(Integer, ForeignKey(CodeLine.id))
+    code = relationship(CodeLine)
+    """Corresponding codeline."""
+    
+    position = Column(Integer, primary_key=True)
+    """Position in the flattened stack tree."""
+
 
 # define the database
 engine = create_engine(config.database_name)
@@ -284,4 +314,4 @@ def row2dict(row):
 
 
 def get_tables():
-    return [Endpoint, Request, Outlier, StackLine, CodeLine, CustomGraph, CustomGraphData]
+    return [Endpoint, Request, Outlier, StackLine, CodeLine, CustomGraph, CustomGraphData, ExceptionInfo, ExceptionStackLine]
