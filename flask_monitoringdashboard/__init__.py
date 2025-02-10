@@ -58,7 +58,8 @@ def bind(app, schedule=True, include_dashboard=True):
             auth,
             reporting,
             telemetry,
-            pruning
+            pruning,
+            exception
         )
         import flask_monitoringdashboard.views
 

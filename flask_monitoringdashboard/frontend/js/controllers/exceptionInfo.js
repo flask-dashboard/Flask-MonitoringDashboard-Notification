@@ -15,11 +15,8 @@ export function ExceptionController ($scope, $http, menuService, endpointService
     /* 
         API og frontend virker til at køre på samme port så vidt jeg har forstået, og API routing specificeres i view layer
 
-        API specificeres lige nu i views/endpoint.py som bruger metoder fra database/ core/ og controllers/
-        vi bør rykke API ud i en views/excpetion.py i stedet, men da jeg selv forsøgte dette kunne http://127.0.0.1:4200/dashboard/api/exception_info ikke findes
-
         filer der muliggør API lige nu (fra bunden og op):
-            database/exception_info -> controllers/exceptions -> views/endpoint.py --api--> frontend/js/controllers/exceptionInfo.js
+            database/exception_info -> controllers/exceptions -> views/excpetion.py --api--> frontend/js/controllers/exceptionInfo.js
        
     */
     $http.get('api/exception_info').then(function (response) {
