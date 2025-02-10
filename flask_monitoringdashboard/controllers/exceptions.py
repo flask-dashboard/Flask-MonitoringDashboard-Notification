@@ -11,7 +11,8 @@ def get_exceptions_with_timestamp(session):
         {
             'type': exception.exception_type, 
             'message': exception.exception_msg, 
-            'timestamp': exception.time_requested 
+            'timestamp': exception.time_requested, 
+            'endpoint': exception.name
         }
         for exception in get_exceptions_with_timestamps(session)
     ]
