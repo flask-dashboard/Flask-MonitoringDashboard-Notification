@@ -4,7 +4,8 @@ import hashlib
 
 from types import TracebackType
 from flask_monitoringdashboard.database import CodeLine
-from flask_monitoringdashboard.database.exception_info import add_exception_stack_line, add_exception_info, add_full_stack_trace, get_stack_trace_by_hash
+from flask_monitoringdashboard.database.exception_info import add_exception_stack_line, add_exception_info
+from flask_monitoringdashboard.database.full_stack_trace import add_full_stack_trace, get_stack_trace_by_hash
 
 def create_codeline(fs: traceback.FrameSummary):
     c_line = CodeLine()

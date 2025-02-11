@@ -2,7 +2,7 @@
 Contains all functions that access an ExceptionInfo object.
 """
 
-from flask_monitoringdashboard.database import CodeLine, ExceptionInfo, ExceptionStackLine, Request, Endpoint, FullStackTrace
+from flask_monitoringdashboard.database import CodeLine, ExceptionInfo, ExceptionStackLine, Request, Endpoint
 from flask_monitoringdashboard.database.code_line import get_code_line
 
 def get_exception_info(session, request_id: int):
@@ -10,31 +10,7 @@ def get_exception_info(session, request_id: int):
     Retrieve an ExceptionInfo record by request_id.
     """
     return session.query(ExceptionInfo).filter_by(request_id=request_id).first()
-
-def get_stack_trace_by_hash(session, full_stack_trace):
-    """
-    Get FullStackTrace record by its stack_trace_hash.
-    """
-    result = (
-        session.query(FullStackTrace)
-        .filter_by(stack_trace_hash=full_stack_trace)
-        .first()
-    )
-    return result
-
-def add_full_stack_trace(session, full_stack_trace: str):
-    """
-    Add a new FullStackTrace record.
-    """
-    result = FullStackTrace(
-        stack_trace_hash = full_stack_trace
-    )
-    session.add(result)
-    session.flush()
-
-    return result.id
     
-
 def add_exception_info(session, request_id: int, trace_id: int, exception_type: str, exception_msg: str):
     """
     Add a new ExceptionInfo record.
