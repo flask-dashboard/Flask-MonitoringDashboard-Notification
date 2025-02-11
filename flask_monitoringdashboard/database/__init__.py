@@ -238,6 +238,13 @@ class CustomGraphData(Base):
     value = Column(Float)
     """Actual value that is measured."""
 
+class FullStackTrace(Base):
+    __tablename__ = '{}FullStackTrace'.format(config.table_prefix)
+    
+    id = Column(Integer, primary_key=True)
+    stack_trace_hash = Column(String(64), nullable=False, unique=True)
+    
+    stack_lines = relationship('ExceptionStackLine', backref='exception_info')
     
 class ExceptionInfo(Base):
     """Table for storing exception id together with request id."""
@@ -249,8 +256,7 @@ class ExceptionInfo(Base):
     
     exception_type = Column(String(1500), nullable=False)
     exception_msg = Column(String(1500), nullable=False)
-    
-    stack_lines = relationship('ExceptionStackLine', backref='exception_info')
+    full_stack_trace_id = Column(Integer, ForeignKey(FullStackTrace.id), nullable=False)
 
     
 class ExceptionStackLine(Base):
@@ -258,7 +264,7 @@ class ExceptionStackLine(Base):
 
     __tablename__ = '{}ExceptionStackLine'.format(config.table_prefix)
     
-    request_id = Column(Integer, ForeignKey(ExceptionInfo.request_id), primary_key=True)
+    stack_trace_id = Column(Integer, ForeignKey(FullStackTrace.id), primary_key=True)
     """Request that belongs to this exc_stack_line."""
     
     code_id = Column(Integer, ForeignKey(CodeLine.id))
