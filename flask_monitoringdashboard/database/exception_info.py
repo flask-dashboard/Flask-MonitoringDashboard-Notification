@@ -1,7 +1,7 @@
 """
 Contains all functions that access an ExceptionInfo object.
 """
-from sqlalchemy import desc
+from sqlalchemy import func, desc
 from flask_monitoringdashboard.database import ExceptionInfo, Request, Endpoint
 
 def get_exception_info(session, request_id: int):
@@ -24,6 +24,22 @@ def add_exception_info(session, request_id: int, trace_id: int, exception_type: 
     session.commit()
     return exception_info
 
+def count_grouped_exceptions(session, *where):
+    """
+    Count the total number of exceptions grouped by endpoint and full stack trace.
+    :param session: session for the database
+    :param where: filter conditions
+    :return: Integer (total number of grouped exceptions)
+    """
+    return (
+        session.query(ExceptionInfo.request_id)
+        .join(Request, ExceptionInfo.request_id == Request.id)
+        .join(Endpoint, Request.endpoint_id == Endpoint.id)
+        .filter(*where)
+        .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
+        .count()
+    )
+
 def get_exceptions_with_timestamps(session, offset, per_page):
     """
     Gets the requests of an endpoint sorted by request time, together with the stack lines.
@@ -31,18 +47,27 @@ def get_exceptions_with_timestamps(session, offset, per_page):
     :param endpoint_id: filter profiled requests on this endpoint
     :param offset: number of items to skip
     :param per_page: number of items to return
-    :return: A list with tuples. Each tuple consists first of a Request-object, and the second part
-    of the tuple is a list of StackLine-objects.
+    :return: A list of tuples. Each tuple contains:
+             - exception_type (str)
+             - exception_msg (str)
+             - endpoint name (str)
+             - latest_timestamp (datetime)
+             - first_timestamp (datetime)
+             - count (int) representing the number of occurrences.
     """
     result = (
         session.query(
             ExceptionInfo.exception_type,
             ExceptionInfo.exception_msg,
-            Request.time_requested,
-            Endpoint.name
+            Endpoint.name,
+            func.max(Request.time_requested).label('latest_timestamp'),
+            func.min(Request.time_requested).label('first_timestamp'),
+            func.count(ExceptionInfo.request_id).label('count')
         )
-        .join(Request, ExceptionInfo.request_id == Request.id).join(Endpoint, Request.endpoint_id == Endpoint.id)
-        .order_by(desc(Request.time_requested))
+        .join(Request, ExceptionInfo.request_id == Request.id)
+        .join(Endpoint, Request.endpoint_id == Endpoint.id)
+        .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
+        .order_by(desc('latest_timestamp'))
         .offset(offset)
         .limit(per_page)
         .all()
