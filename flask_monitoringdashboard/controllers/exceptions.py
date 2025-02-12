@@ -1,6 +1,6 @@
 from flask_monitoringdashboard.database.exception_info import get_exceptions_with_timestamps
 
-def get_exceptions_with_timestamp(session):
+def get_exceptions_with_timestamp(session, offset, per_page):
     """
     :param session: session for the database
     :param endpoints: a list of endpoints, encoded by their name
@@ -14,5 +14,5 @@ def get_exceptions_with_timestamp(session):
             'timestamp': exception.time_requested, 
             'endpoint': exception.name
         }
-        for exception in get_exceptions_with_timestamps(session)
+        for exception in get_exceptions_with_timestamps(session, offset, per_page)
     ]

@@ -1,6 +1,6 @@
 from sqlalchemy import func, distinct
 
-from flask_monitoringdashboard.database import Request, StackLine
+from flask_monitoringdashboard.database import Request, StackLine, ExceptionInfo
 
 
 def count_rows(session, column, *criterion):
@@ -55,3 +55,11 @@ def count_profiled_requests(session, endpoint_id):
         .join(Request.stack_lines)
         .scalar()
     )
+
+def count_total_exceptions(session, *where):
+    """
+    Return the number of total exceptions
+    :param session: session for the database
+    :param where: additional arguments
+    """
+    return count_rows(session, ExceptionInfo.request_id, *where)

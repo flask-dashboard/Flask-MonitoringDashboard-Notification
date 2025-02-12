@@ -99,7 +99,7 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
         // Natalie -->
         .when('/new_dashboard', {
             templateUrl: 'static/pages/new_dashboard.html',
-            controller: ['$scope', '$http', 'menuService', 'endpointService', ExceptionController]
+            controller: ['$scope', '$http', 'menuService', 'paginationService',  'endpointService', ExceptionController]
         })
         // <--
         .when('/hourly_load', {
