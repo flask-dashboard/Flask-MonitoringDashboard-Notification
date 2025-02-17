@@ -66,6 +66,10 @@
                 <a href="endpoint/{{ menu.endpoint.info.id }}/grouped-profiler">
                     Grouped Profiler</a>
             </li>
+            <li ng-class="{'active': menu.page=='endpoint_exception'}">
+                <a href="endpoint/{{ menu.endpoint.info.id }}/exceptions">
+                    Exceptions</a>
+            </li>
             <li ng-class="{'active': menu.page=='endpoint_outlier'}">
                 <a href="endpoint/{{ menu.endpoint.info.id }}/outliers">
                     Outliers</a>
