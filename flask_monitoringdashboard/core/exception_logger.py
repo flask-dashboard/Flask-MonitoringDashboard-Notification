@@ -3,7 +3,7 @@ import linecache
 import hashlib
 
 from types import TracebackType
-from flask_monitoringdashboard import config
+#from flask_monitoringdashboard import config
 from flask_monitoringdashboard.database import CodeLine
 from flask_monitoringdashboard.database.exception_info import add_exception_info
 from flask_monitoringdashboard.database.full_stack_trace import add_full_stack_trace, get_stack_trace_by_hash
@@ -11,7 +11,8 @@ from flask_monitoringdashboard.database.exception_stack_line import add_exceptio
 
 def create_codeline(fs: traceback.FrameSummary):
     c_line = CodeLine()
-    c_line.filename = fs.filename.replace(config.app.root_path, '.')
+    #c_line.filename = fs.filename.replace(config.app.root_path, '.')
+    c_line.filename = fs.filename
     c_line.line_number = fs.lineno
     c_line.function_name = fs.name
     c_line.code = linecache.getline(fs.filename, fs.lineno).strip()
