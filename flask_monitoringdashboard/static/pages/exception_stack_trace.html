@@ -17,17 +17,13 @@
                 <thead>
                 <tr>
                     <th style="width: 30%">File name</th>
-                    <th style="width: 30%">Line number</th>
                     <th style="width: 30%">Code-line</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr ng-repeat="row in request.full_stacktrace">
                     <td style="padding-left: 10px;">
-                        {{ row.filename }}
-                    </td>
-                    <td style="padding-left: 10px;">
-                        {{ row.line_number }}
+                        {{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }}
                     </td>
                     <td style="padding-left: 10px;">
                         {{ row.code }}
