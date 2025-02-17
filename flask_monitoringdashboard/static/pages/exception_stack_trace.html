@@ -6,11 +6,11 @@
             <div class="card-header">
                 <div class="row align-items-end">
                     <div class="col-sm"><h6>{{ request.type }}</h6></div>
-                    <div class="col-sm"><h6>Latest occurence: {{ request.latest_timestamp | dateDifference }}</h6></div>
+                    <div class="col-sm"><h6>Number of occurences: {{ request.count }}</h6></div>
                 </div>
                 <div class="row align-items-end">
                     <div class="col-sm"><h6>{{ request.message }}</h6></div>
-                    <div class="col-sm"><h6>First occurence: {{ request.first_timestamp | dateDifference }}</h6></div>
+                    <div class="col-sm"><h6>Latest: {{ request.latest_timestamp | dateDifference }} | First: {{ request.first_timestamp | dateDifference }}</h6></div>
                 </div>
             </div>
             <table class="table table-bordered table-hover" width="100%" style="margin: 0;" cellspacing="0">
