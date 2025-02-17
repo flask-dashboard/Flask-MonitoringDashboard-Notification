@@ -22,7 +22,7 @@ export default function ($http, endpointService) {
 
         var endpointPages = [
             'endpoint_hourly', 'endpoint_user_version', 'endpoint_ip', 'endpoint_version', 'endpoint_user',
-            'endpoint_profiler', 'endpoint_grouped_profiler', 'endpoint_outlier', 'status_code_distribution'
+            'endpoint_profiler', 'endpoint_grouped_profiler', 'endpoint_exception', 'endpoint_outlier', 'status_code_distribution'
         ];
 
         if (endpointPages.includes(page)) {
