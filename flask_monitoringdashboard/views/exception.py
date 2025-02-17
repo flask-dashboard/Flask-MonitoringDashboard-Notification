@@ -7,7 +7,7 @@ from flask_monitoringdashboard.controllers.exceptions import get_exceptions_with
 from flask_monitoringdashboard.core.telemetry import post_to_back_if_telemetry_enabled
 from flask_monitoringdashboard.database import session_scope
 
-from flask_monitoringdashboard.database.exception_info import count_grouped_exceptions
+from flask_monitoringdashboard.database.exception_info import count_grouped_exceptions, count_endpoint_grouped_exceptions
 
 
 @blueprint.route('/api/exception_info/<offset>/<per_page>')
@@ -29,6 +29,13 @@ def num_exceptions():
     post_to_back_if_telemetry_enabled(**{'name': f'num_exceptions'})
     with session_scope() as session:
         return jsonify(count_grouped_exceptions(session))
+    
+@blueprint.route('/api/num_exceptions/<int:endpoint_id>')
+@secure
+def num_endpoint_exceptions(endpoint_id):
+    post_to_back_if_telemetry_enabled(**{'name': f'num_endpoint_exceptions'})
+    with session_scope() as session:
+        return jsonify(count_endpoint_grouped_exceptions(session, endpoint_id))
 
 @blueprint.route('/api/detailed_exception_info/<int:endpoint_id>/<offset>/<per_page>')
 @secure

@@ -5,7 +5,7 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
     $scope.table = [];
 
     paginationService.init('exceptions');
-    $http.get('api/num_exceptions').then(function (response) {
+    $http.get('api/num_exceptions/'+ endpointService.info.id).then(function (response) {
         paginationService.setTotal(response.data);
     });
 

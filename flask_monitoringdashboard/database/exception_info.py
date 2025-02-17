@@ -36,6 +36,21 @@ def count_grouped_exceptions(session):
         .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
         .count()
     )
+    
+def count_endpoint_grouped_exceptions(session, endpoint_id):
+    """
+    Count the number of different exceptions grouped by endpoint and full stack trace.
+    :param session: session for the database
+    :return: Integer (total number of grouped exceptions)
+    """
+    return (
+        session.query(ExceptionInfo.request_id)
+        .join(Request, ExceptionInfo.request_id == Request.id)
+        .join(Endpoint, Request.endpoint_id == Endpoint.id)
+        .filter(Endpoint.id == endpoint_id)
+        .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
+        .count()
+    )
 
 def get_exceptions_with_timestamps(session, offset, per_page):
     """
