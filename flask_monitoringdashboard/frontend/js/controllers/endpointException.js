@@ -10,10 +10,8 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
     });
 
     paginationService.onReload = function () {
-        // formService.isLoading = true; ?
         $http.get('api/exception_info/' + paginationService.getLeft() + '/' + paginationService.perPage).then(function (response) {
             $scope.table = response.data;
-            // formService.isLoading = false; ?
         });
     };
 };
