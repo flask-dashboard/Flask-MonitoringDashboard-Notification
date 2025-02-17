@@ -24,18 +24,16 @@ def add_exception_info(session, request_id: int, trace_id: int, exception_type: 
     session.commit()
     return exception_info
 
-def count_grouped_exceptions(session, *where):
+def count_grouped_exceptions(session):
     """
-    Count the total number of exceptions grouped by endpoint and full stack trace.
+    Count the number of different exceptions grouped by endpoint and full stack trace.
     :param session: session for the database
-    :param where: filter conditions
     :return: Integer (total number of grouped exceptions)
     """
     return (
         session.query(ExceptionInfo.request_id)
         .join(Request, ExceptionInfo.request_id == Request.id)
         .join(Endpoint, Request.endpoint_id == Endpoint.id)
-        .filter(*where)
         .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
         .count()
     )

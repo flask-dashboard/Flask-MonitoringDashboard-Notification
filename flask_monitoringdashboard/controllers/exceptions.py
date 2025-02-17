@@ -6,8 +6,6 @@ def get_exceptions_with_timestamp(session, offset, per_page):
     :param endpoints: a list of endpoints, encoded by their name
     :return: for every endpoint in endpoints, a list with the performance
     """
-    exceptions = get_exceptions_with_timestamps(session, offset, per_page)
-    print(exceptions)
     
     return [
         {
