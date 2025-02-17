@@ -10,7 +10,7 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
     });
 
     paginationService.onReload = function () {
-        $http.get('api/exception_info/' + paginationService.getLeft() + '/' + paginationService.perPage).then(function (response) {
+        $http.get('api/detailed_exception_info/' + endpointService.info.id + '/' + paginationService.getLeft() + '/' + paginationService.perPage).then(function (response) {
             $scope.table = response.data;
         });
     };
