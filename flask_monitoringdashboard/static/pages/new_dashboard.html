@@ -16,7 +16,7 @@
             <tr ng-repeat="row in table track by $index">
                 <td>{{ row.latest_timestamp | dateDifference }}</td>
                 <td>{{ row.first_timestamp | dateDifference }}</td>
-                <td>{{ row.endpoint }}</td>
+                <td><a href="endpoint/{{ row.endpoint_id }}/exceptions">{{ row.endpoint }}</a></td>
                 <td>{{ row.type }}</td>
                 <td>{{ row.message }}</td>
                 <td>{{ row.count }}</td>

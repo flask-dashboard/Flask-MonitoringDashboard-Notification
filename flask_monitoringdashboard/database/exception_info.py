@@ -63,6 +63,7 @@ def get_exceptions_with_timestamps(session, offset, per_page):
              - exception_type (str)
              - exception_msg (str)
              - endpoint name (str)
+             - endpoint id (int)
              - latest_timestamp (datetime)
              - first_timestamp (datetime)
              - count (int) representing the number of occurrences.
@@ -72,6 +73,7 @@ def get_exceptions_with_timestamps(session, offset, per_page):
             ExceptionInfo.exception_type,
             ExceptionInfo.exception_msg,
             Endpoint.name,
+            Endpoint.id,
             func.max(Request.time_requested).label('latest_timestamp'),
             func.min(Request.time_requested).label('first_timestamp'),
             func.count(ExceptionInfo.request_id).label('count')
