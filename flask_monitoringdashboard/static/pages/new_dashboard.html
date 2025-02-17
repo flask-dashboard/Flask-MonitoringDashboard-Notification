@@ -4,18 +4,22 @@
         <table class="table">
             <thead>
             <tr>
-                <th>Time</th>
+                <th>Last seen</th>
+                <th>First occurence</th>
                 <th>Endpoint</th>
                 <th>Type</th>
                 <th>Message</th>
+                <th>Count</th>
             </tr>
             </thead>
             <tbody>
             <tr ng-repeat="row in table track by $index">
-                <td>{{ row.timestamp | dateLayout }}</td>
+                <td>{{ row.latest_timestamp | dateDifference }}</td>
+                <td>{{ row.first_timestamp | dateDifference }}</td>
                 <td>{{ row.endpoint }}</td>
                 <td>{{ row.type }}</td>
                 <td>{{ row.message }}</td>
+                <td>{{ row.count }}</td>
             </tr>
             </tbody>
         </table>
