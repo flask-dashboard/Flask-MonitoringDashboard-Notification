@@ -27,11 +27,11 @@ def get_detailed_exception_info(session, offset, per_page, endpoint_id):
             'message': exception.exception_msg, 
             'full_stacktrace': [ 
                 {
-                    'code': exnsline.code.code,
-                    'filename': exnsline.code.filename,
-                    'line_number': exnsline.code.line_number
+                    'code': exceptionStackLine.code.code,
+                    'filename': exceptionStackLine.code.filename,
+                    'line_number': exceptionStackLine.code.line_number
                 }
-                for exnsline in get_code_from_stacktrace_id(session, exception.full_stack_trace_id)],
+                for exceptionStackLine in get_code_from_stacktrace_id(session, exception.full_stack_trace_id)],
             'latest_timestamp': exception.latest_timestamp,
             'first_timestamp': exception.first_timestamp,
             'count': exception.count

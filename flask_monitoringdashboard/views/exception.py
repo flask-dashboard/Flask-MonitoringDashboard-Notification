@@ -30,7 +30,7 @@ def num_exceptions():
     with session_scope() as session:
         return jsonify(count_grouped_exceptions(session))
 
-@blueprint.route('/api/detailed_exception_info/<endpoint_id>/<offset>/<per_page>')
+@blueprint.route('/api/detailed_exception_info/<int:endpoint_id>/<offset>/<per_page>')
 @secure
 def get_detailed_exception_info_endpoint(endpoint_id, offset, per_page):
     """
