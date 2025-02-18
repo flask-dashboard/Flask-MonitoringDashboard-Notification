@@ -1,6 +1,7 @@
 export function EndpointExceptionController ($scope, $http, menuService, paginationService, endpointService) {
     endpointService.reset();
     menuService.reset('endpoint_exception');
+    $scope.id2Function = {};
 
     $scope.table = [];
 
@@ -14,4 +15,13 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
             $scope.table = response.data;
         });
     };
+
+    $scope.getFunctionById = function (function_id) {
+        if ($scope.id2Function[function_id] === undefined){
+            $http.get(`api/function_definition/${function_id}`)
+                .then((response) => {
+                    $scope.id2Function[function_id] = response.data;
+                })
+        }
+    }
 };

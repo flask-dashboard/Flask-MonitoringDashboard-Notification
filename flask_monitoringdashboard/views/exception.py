@@ -3,7 +3,7 @@ from flask import jsonify
 from flask_monitoringdashboard import blueprint
 from flask_monitoringdashboard.core.auth import secure
 
-from flask_monitoringdashboard.controllers.exceptions import get_exceptions_with_timestamp, get_detailed_exception_info
+from flask_monitoringdashboard.controllers.exceptions import get_exception_function_definition, get_exceptions_with_timestamp, get_detailed_exception_info
 from flask_monitoringdashboard.core.telemetry import post_to_back_if_telemetry_enabled
 from flask_monitoringdashboard.database import session_scope
 
@@ -49,5 +49,11 @@ def get_detailed_exception_info_endpoint(endpoint_id, offset, per_page):
         exceptions = get_detailed_exception_info(session, offset, per_page, endpoint_id)
         
         return jsonify(exceptions)
- 
 
+@blueprint.route('/api/function_definition/<int:function_id>')
+@secure
+def get_function_definition_for_exception(function_id):
+    post_to_back_if_telemetry_enabled(**{'name': 'detailed_exception_info'})
+    with session_scope() as session:
+        definition = get_exception_function_definition(session, function_id)
+        return jsonify(definition)

@@ -40,3 +40,4 @@ def get_stacklines_from_stacktrace_id(session, stack_trace_id):
         .all()
     )
     return result
+
