@@ -5,6 +5,10 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
 
     $scope.table = [];
 
+    endpointService.onNameChanged = function (name) {
+        $scope.title = 'Exceptions for ' + name;
+    };
+
     paginationService.init('exceptions');
     $http.get('api/num_exceptions/'+ endpointService.info.id).then(function (response) {
         paginationService.setTotal(response.data);
