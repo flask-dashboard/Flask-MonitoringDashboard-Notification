@@ -25,9 +25,9 @@ def add_exception_info(session, request_id: int, trace_id: int, exception_type: 
 
 def count_grouped_exceptions(session):
     """
-    Count the number of different exceptions grouped by endpoint and full stack trace.
+    Count the number of different kinds of exceptions grouped by endpoint and full stack trace.
     :param session: session for the database
-    :return: Integer (total number of grouped exceptions)
+    :return: Integer (total number of groups of exceptions)
     """
     return (
         session.query(ExceptionInfo.request_id)
@@ -39,27 +39,27 @@ def count_grouped_exceptions(session):
     
 def count_endpoint_grouped_exceptions(session, endpoint_id):
     """
-    Count the number of different exceptions grouped by endpoint and full stack trace.
+    Count the number of different kinds of exceptions on an endpoint grouped by full stack trace.
     :param session: session for the database
-    :return: Integer (total number of grouped exceptions)
+    :param endpoint_id: filter exceptions on this endpoint id
+    :return: Integer (total number of groups of exceptions)
     """
     return (
         session.query(ExceptionInfo.request_id)
         .join(Request, ExceptionInfo.request_id == Request.id)
         .join(Endpoint, Request.endpoint_id == Endpoint.id)
         .filter(Endpoint.id == endpoint_id)
-        .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
+        .group_by(ExceptionInfo.full_stack_trace_id)
         .count()
     )
 
 def get_exceptions_with_timestamps(session, offset, per_page):
     """
-    Gets the requests of an endpoint sorted by request time, together with the stack lines.
+    Gets the information about exceptions grouped by endpoint and full stack trace and sorted by latest request time.
     :param session: session for the database
-    :param endpoint_id: filter profiled requests on this endpoint
     :param offset: number of items to skip
     :param per_page: number of items to return
-    :return: A list of tuples. Each tuple contains:
+    :return: A list of dicts. Each dict contains:
              - exception_type (str)
              - exception_msg (str)
              - endpoint name (str)
@@ -91,15 +91,15 @@ def get_exceptions_with_timestamps(session, offset, per_page):
 
 def get_exceptions_with_timestamps_and_stacktrace_id(session, offset, per_page, endpoint_id):
     """
-    Gets the requests of an endpoint sorted by request time, together with the stack lines.
+    Gets the information about exceptions on an endpoint grouped by full stack trace and sorted by latest request time.
     :param session: session for the database
-    :param endpoint_id: filter profiled requests on this endpoint
     :param offset: number of items to skip
     :param per_page: number of items to return
-    :return: A list of tuples. Each tuple contains:
+    :param endpoint_id: filter exceptions on this endpoint id
+    :return: A list of dicts. Each dict contains:
              - exception_type (str)
              - exception_msg (str)
-             - endpoint name (str)
+             - full_stack_trace_id (int) for the exceptions
              - latest_timestamp (datetime)
              - first_timestamp (datetime)
              - count (int) representing the number of occurrences.

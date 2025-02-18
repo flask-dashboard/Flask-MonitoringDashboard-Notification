@@ -24,9 +24,12 @@ def add_full_stack_trace(session, full_stack_trace: str):
     return result.id
 
 
-def get_code_from_stacktrace_id(session, stack_trace_id):
+def get_stacklines_from_stacktrace_id(session, stack_trace_id):
     """
-    Gets all the code lines referred to by a stacktrace.
+    Gets all the stack lines referred to by a stacktrace.
+    :param session: session for the database
+    :param stack_trace_id: Filter ExceptionStackLines on this stack trace id
+    :return: A list of ExceptionStackLine objects of a specific stack trace
     """
     result = (
         session.query(

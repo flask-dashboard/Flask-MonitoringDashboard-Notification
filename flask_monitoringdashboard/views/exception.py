@@ -15,7 +15,7 @@ from flask_monitoringdashboard.database.exception_info import count_grouped_exce
 def get_exception_info(offset, per_page):
     """
     Get information about all the exceptions that have occured for all endpoint
-    :return: A JSON-list with a JSON-object per endpoint
+    :return: A JSON-list with a JSON-object per exception-group (grouped by endpoint and stack trace)
     """
     post_to_back_if_telemetry_enabled(**{'name': 'exception_info'}) # Ved ikke 100% hvorfor, tror det er business behov, ikke et funktionelt behov som sådan
     with session_scope() as session:

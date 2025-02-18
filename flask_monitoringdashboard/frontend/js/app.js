@@ -97,12 +97,10 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
             templateUrl: 'static/pages/overview.html',
             controller: ['$scope', '$http', '$location', 'menuService', 'endpointService', OverviewController]
         })
-        // Natalie -->
-        .when('/new_dashboard', {
-            templateUrl: 'static/pages/new_dashboard.html',
-            controller: ['$scope', '$http', 'menuService', 'paginationService',  'endpointService', ExceptionController]
+        .when('/exception_overview', {
+            templateUrl: 'static/pages/exception_overview.html',
+            controller: ['$scope', '$http', 'menuService', 'paginationService', 'endpointService', ExceptionController]
         })
-        // <--
         .when('/hourly_load', {
             templateUrl: 'static/pages/plotly_graph.html',
             controller: ['$scope', '$http', 'menuService', 'plotlyService', 'infoService',
@@ -165,7 +163,7 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
         })
         .when('/endpoint/:endpointId/exceptions', {
             templateUrl: 'static/pages/exception_stack_trace.html',
-            controller: ['$scope', '$http', 'menuService', 
+            controller: ['$scope', '$http', 'menuService',
                 'paginationService', 'endpointService', EndpointExceptionController]
         })
         .when('/endpoint/:endpointId/outliers', {
