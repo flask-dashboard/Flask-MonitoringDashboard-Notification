@@ -13,6 +13,7 @@ def get_exceptions_with_timestamp(session, offset, per_page):
             'type': exception.exception_type, 
             'message': exception.exception_msg, 
             'endpoint': exception.name,
+            'endpoint_id': exception.id,
             'latest_timestamp': exception.latest_timestamp,
             'first_timestamp': exception.first_timestamp,
             'count': exception.count
@@ -29,7 +30,8 @@ def get_detailed_exception_info(session, offset, per_page, endpoint_id):
                 {
                     'code': exceptionStackLine.code.code,
                     'filename': exceptionStackLine.code.filename,
-                    'line_number': exceptionStackLine.code.line_number
+                    'line_number': exceptionStackLine.code.line_number,
+                    'function_name': exceptionStackLine.code.function_name
                 }
                 for exceptionStackLine in get_code_from_stacktrace_id(session, exception.full_stack_trace_id)],
             'latest_timestamp': exception.latest_timestamp,
