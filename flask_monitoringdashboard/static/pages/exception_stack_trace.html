@@ -29,19 +29,16 @@
                             <details ng-click="getFunctionById(row.function_id)">
                                 <summary>{{ row.code }}</summary>
                                 <table>
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 30%">line</th>
-                                            <th style="width: 30%">code</th>
-                                        </tr>
-                                    </thead>
                                     <tbody>
-                                    <tr ng-repeat="line in id2Function[row.function_id]">
-                                        <td style="white-space: pre;">
-                                            <span style="color: grey;"> {{ line.line_number }} </span>   {{ line.code }}
+                                    <tr 
+                                        ng-repeat="line in id2Function[row.function_id]"
+                                        ng-class="{'bg-warning':line.is_exception_line}"
+                                    >
+                                        <td>
+                                            <span style="color: grey;"> {{ line.line_number }} </span> 
                                         </td>
                                         <td>
-                                            <p>some</p>
+                                            <span style="white-space: pre;"> {{ line.code }} </span>
                                         </td>
                                     </tr>
                                 </tbody>
