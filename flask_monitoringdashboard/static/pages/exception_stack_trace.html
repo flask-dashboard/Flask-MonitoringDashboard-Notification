@@ -34,11 +34,11 @@
                                         ng-repeat="line in id2Function[row.function_id]"
                                         ng-class="{'bg-warning':line.is_exception_line}"
                                     >
-                                        <td>
+                                        <td style="align-content: flex-start;">
                                             <span style="color: grey;"> {{ line.line_number }} </span> 
                                         </td>
                                         <td>
-                                            <span style="white-space: pre;"> {{ line.code }} </span>
+                                            <span style="white-space: pre-wrap; word-break: break-word;"> {{ line.code }} </span>
                                         </td>
                                     </tr>
                                 </tbody>
