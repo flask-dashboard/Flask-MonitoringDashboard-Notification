@@ -23,7 +23,7 @@
                                     <tbody>
                                     <tr 
                                         ng-repeat="line in id2Function[row.function_id]"
-                                        ng-class="{'bg-warning':line.is_exception_line}"
+                                        ng-class="{'bg-danger-subtle':line.is_exception_line}"
                                     >
                                         <td style="align-content: flex-start;">
                                             <span style="color: grey;"> {{ line.line_number }} </span> 
