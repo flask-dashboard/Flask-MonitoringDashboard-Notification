@@ -1,4 +1,5 @@
 from flask_monitoringdashboard.database import CodeLine, ExceptionStackLine, FullStackTrace, code_line
+from sqlalchemy import desc
 
 def get_stack_trace_by_hash(session, full_stack_trace):
     """
@@ -36,7 +37,7 @@ def get_stacklines_from_stacktrace_id(session, stack_trace_id):
             ExceptionStackLine
         )
         .filter(ExceptionStackLine.stack_trace_id == stack_trace_id)
-        .order_by(ExceptionStackLine.position)
+        .order_by(desc(ExceptionStackLine.position))
         .all()
     )
     return result
