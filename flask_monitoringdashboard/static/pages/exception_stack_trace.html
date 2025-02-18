@@ -14,20 +14,11 @@
                 </div>
             </div>
             <table class="table table-bordered table-hover" width="100%" style="margin: 0;" cellspacing="0">
-                <thead>
-                <tr>
-                    <th style="width: 30%">File name</th>
-                    <th style="width: 30%">Code-line</th>
-                </tr>
-                </thead>
                 <tbody>
                     <tr ng-repeat="row in request.full_stacktrace">
                         <td style="padding-left: 10px;">
-                            {{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }}
-                        </td>
-                        <td style="padding-left: 10px;">
                             <details ng-click="getFunctionById(row.function_id)">
-                                <summary>{{ row.code }}</summary>
+                            <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }} </summary>
                                 <table>
                                     <tbody>
                                     <tr 
