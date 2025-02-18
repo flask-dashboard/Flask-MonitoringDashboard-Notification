@@ -21,14 +21,34 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="row in request.full_stacktrace">
-                    <td style="padding-left: 10px;">
-                        {{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }}
-                    </td>
-                    <td style="padding-left: 10px;">
-                        {{ row.code }}
-                    </td>
-                </tr>
+                    <tr ng-repeat="row in request.full_stacktrace">
+                        <td style="padding-left: 10px;">
+                            {{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }}
+                        </td>
+                        <td style="padding-left: 10px;">
+                            <details ng-click="getFunctionById(row.function_id)">
+                                <summary>{{ row.code }}</summary>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 30%">line</th>
+                                            <th style="width: 30%">code</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="line in id2Function[row.function_id]">
+                                        <td style="white-space: pre;">
+                                            <span style="color: grey;"> {{ line.line_number }} </span>   {{ line.code }}
+                                        </td>
+                                        <td>
+                                            <p>some</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                </table>
+                            </details>
+                        </td>
+                    </tr>    
                 </tbody>
             </table>
         </div>
