@@ -1,4 +1,4 @@
-from flask_monitoringdashboard.database import CodeLine, ExceptionStackLine, FunctionDefinition
+from flask_monitoringdashboard.database import ExceptionStackLine, FunctionDefinition
 
 
 def add_function_definition(session, f_def: FunctionDefinition):
@@ -21,10 +21,10 @@ def get_function_definition_from_id(session, function_id):
             .filter(FunctionDefinition.id == function_id)
             .first())
 
-def get_function_startlineno_and_relativelineno_from_function_id(session, function_id):
+def get_function_startlineno_and_relativelineno_from_function_id(session, function_id, stack_trace_id):
     result : ExceptionStackLine | None = (session.query(ExceptionStackLine)
-                    .join(FunctionDefinition, FunctionDefinition.id == ExceptionStackLine.function_id)
-                    .filter(FunctionDefinition.id == function_id)
+                    .filter(ExceptionStackLine.function_id == function_id)
+                    .filter(ExceptionStackLine.stack_trace_id == stack_trace_id)
                     .first())
     if result is not None:
         return result.code.line_number, result.relative_line_number

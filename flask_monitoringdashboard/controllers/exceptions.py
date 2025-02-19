@@ -55,6 +55,7 @@ def get_detailed_exception_info(session, offset, per_page, endpoint_id):
         {
             'type': exception.exception_type, 
             'message': exception.exception_msg, 
+            'stack_trace_id': exception.full_stack_trace_id,
             'full_stacktrace': [ 
                 {
                     'code': exceptionStackLine.code.code,
@@ -70,15 +71,13 @@ def get_detailed_exception_info(session, offset, per_page, endpoint_id):
         }
         for exception in get_exceptions_with_timestamps_and_stacktrace_id(session, offset, per_page, endpoint_id)]
 
-def get_exception_function_definition(session, function_id):
+def get_exception_function_definition(session, function_id, stack_trace_id):
     result : FunctionDefinition | None = get_function_definition_from_id(session, function_id)
-    file_lineno, relative_lineno = get_function_startlineno_and_relativelineno_from_function_id(session, function_id)
+    file_lineno, relative_lineno = get_function_startlineno_and_relativelineno_from_function_id(session, function_id, stack_trace_id)
     if result is None or file_lineno is None or relative_lineno is None: return []
     startlineno = file_lineno - relative_lineno
-    return [ 
-        {
-            'line_number': startlineno+idx,
-            'code': line,
-            'is_exception_line': (startlineno+idx)==file_lineno
+    return {
+            'start_line_number': startlineno,
+            'code': result.function_definition,
+            'exception_line_number': relative_lineno
         }
-        for idx, line in enumerate(result.function_definition.splitlines())]
