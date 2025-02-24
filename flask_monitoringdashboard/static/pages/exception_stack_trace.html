@@ -19,7 +19,7 @@
                         <td style="padding-left: 10px;">
                             <details ng-click="getFunctionById(row.function_id, request.stack_trace_id)">
                             <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }} </summary>
-                            <div ng-if="id2Function[[row.function_id, request.stack_trace_id]]" ng-init="func = id2Function[[row.function_id, request.stack_trace_id]]">
+                            <div ng-if="id2Function[getUniqueKey(row.function_id, request.stack_trace_id)]" ng-init="func = id2Function[getUniqueKey(row.function_id, request.stack_trace_id)]">
                                 <pre 
                                     class="line-numbers" 
                                     style="white-space: pre"
@@ -27,7 +27,7 @@
                                     data-line-offset="{{func.start_line_number}}"
                                     data-start="{{func.start_line_number}}"
                                 >
-                                    <code class="language-python">{{ func.code }}</code>
+                                    <code class="language-python" ng-attr-id="{{ getUniqueKey(row.function_id, request.stack_trace_id) }}">{{ func.code }}</code>
                                 </pre>
                             </div>
                             </details>
