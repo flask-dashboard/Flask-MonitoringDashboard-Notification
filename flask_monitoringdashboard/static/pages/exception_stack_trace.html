@@ -22,33 +22,16 @@
                                 <div ng-if="id2Function[[row.function_id, request.stack_trace_id]]">
                                     <pre 
                                         class="line-numbers" 
-                                        style="white-space: pre-wrap;"
+                                        style="white-space: pre"
                                         data-line="{{id2Function[[row.function_id, request.stack_trace_id]].exception_line_number+id2Function[[row.function_id, request.stack_trace_id]].start_line_number}}"
                                         data-line-offset="{{id2Function[[row.function_id, request.stack_trace_id]].start_line_number}}"
                                         data-start="{{id2Function[[row.function_id, request.stack_trace_id]].start_line_number}}"
                                     >
-                                    <code class="language-python">
-                                        {{ id2Function[[row.function_id, request.stack_trace_id]].code }}
-                                    </code>
-                                </pre>
+                                        <code class="language-python">
+                                            {{ id2Function[[row.function_id, request.stack_trace_id]].code }}
+                                        </code>
+                                    </pre>
                                 </div>
-                                <!--
-                                <table>
-                                    <tbody>
-                                    <tr 
-                                        ng-repeat="line in id2Function[row.function_id]"
-                                        ng-class="{'bg-danger-subtle':line.is_exception_line}"
-                                    >
-                                        <td style="align-content: flex-start;">
-                                            <span style="color: grey;"> {{ line.line_number }} </span> 
-                                        </td>
-                                        <td>
-                                            <span style="white-space: pre-wrap; word-break: break-word;"> {{ line.code }} </span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                </table>
-                                -->
                             </details>
                         </td>
                     </tr>    
