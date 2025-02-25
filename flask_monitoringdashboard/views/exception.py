@@ -53,6 +53,13 @@ def get_detailed_exception_info_endpoint(endpoint_id, offset, per_page):
 @blueprint.route('/api/function_definition/<int:function_id>/<int:stack_trace_id>')
 @secure
 def get_function_definition_for_exception(function_id, stack_trace_id):
+    """
+    Get the function definition and exception line number for a specific function involved in an exception.
+    :return: A JSON object containing:
+            - 'start_line_number' (int): The starting line number of the function in the source file.
+            - 'code' (str): The function's source code.
+            - 'exception_line_number' (int): The relative line number of the exception within the function.
+    """
     post_to_back_if_telemetry_enabled(**{'name': 'detailed_exception_info'})
     with session_scope() as session:
         definition = get_exception_function_definition(session, function_id, stack_trace_id)

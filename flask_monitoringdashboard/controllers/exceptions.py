@@ -42,11 +42,13 @@ def get_detailed_exception_info(session, offset, per_page, endpoint_id):
     :return: A list of dicts. Each dict contains:
              - type (str) of the exception
              - message (str) of the exception
+             - stack_trace_id (int)
              - full_stacktrace (lst of dicts) Each dict contains:
                 - code (str)
                 - filename (str)
                 - line_number (int)
                 - function_name (str)
+                - function_id (int)
              - latest_timestamp (datetime)
              - first_timestamp (datetime)
              - count (int) representing the number of occurrences.
@@ -72,6 +74,16 @@ def get_detailed_exception_info(session, offset, per_page, endpoint_id):
         for exception in get_exceptions_with_timestamps_and_stacktrace_id(session, offset, per_page, endpoint_id)]
 
 def get_exception_function_definition(session, function_id, stack_trace_id):
+    """
+    Retrieves the source code of the function where an exception occurred, the starting line number of the function in the source file, and the relative line number of the exception.
+    :param session: session for the database
+    :param function_id: the id of the function
+    :param stack_trace_id: the id of the stack trace
+    :return: a dict containing:
+             - start_line_number (int)
+             - code (str)
+             - exception_line_number (int)
+    """
     result : FunctionDefinition | None = get_function_definition_from_id(session, function_id)
     file_lineno, relative_lineno = get_function_startlineno_and_relativelineno_from_function_id(session, function_id, stack_trace_id)
     if result is None or file_lineno is None or relative_lineno is None: return []

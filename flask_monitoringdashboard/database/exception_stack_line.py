@@ -8,6 +8,8 @@ def add_exception_stack_line(session, request_id, position, code_line: CodeLine,
     :param request_id: id of the request
     :param position: position of the ExceptionStackLine
     :param code_line: quadruple that consists of: (filename, line_number, function_name, code)
+    :param function_id: id of the function
+    :param relative_lineno: the line number of the exception relative to the function
     """
     fn = code_line.filename
     ln = code_line.line_number
