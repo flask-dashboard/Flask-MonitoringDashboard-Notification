@@ -1,7 +1,7 @@
 export function EndpointExceptionController ($scope, $http, menuService, paginationService, endpointService) {
     Prism.plugins.NormalizeWhitespace.setDefaults({
         'remove-trailing': false,
-        'remove-indent': false,  /* Keep original indentation */
+        'remove-indent': false,  
         'left-trim': true,
         'right-trim': true
     });

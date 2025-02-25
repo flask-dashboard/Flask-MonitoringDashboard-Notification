@@ -23,7 +23,7 @@ def get_function_definition_from_id(session, function_id):
             .filter(FunctionDefinition.id == function_id)
             .first())
 
-def get_function_startlineno_and_relativelineno_from_function_id(session, function_id, stack_trace_id):
+def get_function_startlineno_and_relativelineno_from_function_definition_id(session, function_defintion_id, stack_trace_id):
     """
     Retrieves the starting line number of a function and the relative line number of an exception 
     from the ExceptionStackLine table.
@@ -37,7 +37,7 @@ def get_function_startlineno_and_relativelineno_from_function_id(session, functi
             Returns (None, None) if no matching data is found.
     """
     result : ExceptionStackLine | None = (session.query(ExceptionStackLine)
-                    .filter(ExceptionStackLine.function_id == function_id)
+                    .filter(ExceptionStackLine.function_definition_id == function_defintion_id)
                     .filter(ExceptionStackLine.stack_trace_id == stack_trace_id)
                     .first())
     if result is not None:

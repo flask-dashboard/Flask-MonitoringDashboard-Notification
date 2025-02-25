@@ -1,13 +1,8 @@
-from enum import nonmember
 import inspect
-import os
 import traceback
-import linecache
 import hashlib
-import json
 
 from types import FrameType, TracebackType
-#from flask_monitoringdashboard import config
 from flask_monitoringdashboard.database import CodeLine, FunctionDefinition
 from flask_monitoringdashboard.database.exception_info import add_exception_info
 from flask_monitoringdashboard.database.full_stack_trace import add_full_stack_trace, get_stack_trace_by_hash
@@ -16,8 +11,8 @@ from flask_monitoringdashboard.database.function_definition import add_function_
 
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
     f_def = FunctionDefinition()
-    f_def.function_definition = inspect.getsource(frame.f_code)
-    f_def.function_hash = hashlib.sha256(f_def.function_definition.encode('utf-8')).hexdigest()
+    f_def.code = inspect.getsource(frame.f_code)
+    f_def.function_hash = hashlib.sha256(f_def.code.encode('utf-8')).hexdigest()
     return f_def
 
 def create_codeline_from_frame(frame: FrameType):
@@ -25,8 +20,9 @@ def create_codeline_from_frame(frame: FrameType):
     c_line.filename = frame.f_code.co_filename
     c_line.line_number = frame.f_lineno
     c_line.function_name = frame.f_code.co_name
-    if os.path.exists(c_line.filename):
-        c_line.code = linecache.getline(c_line.filename, c_line.line_number).strip()
+    code_context = inspect.getframeinfo(frame).code_context
+    if code_context is not None and len(code_context) > 0:
+        c_line.code = code_context[0]
     return c_line
 
 def hash_stack_trace(self):

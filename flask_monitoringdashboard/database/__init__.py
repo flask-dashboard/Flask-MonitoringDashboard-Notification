@@ -265,11 +265,11 @@ class FunctionDefinition(Base):
 
     id = Column(Integer, primary_key=True)
 
-    function_definition = Column(TEXT, nullable=True)
-    """An entire function definition"""
+    code = Column(TEXT, nullable=True)
+    """The entire function"""
 
     function_hash = Column(String(64), nullable=True)
-    """The hash of the function definition"""
+    """The hash of the function"""
 
     
 class ExceptionStackLine(Base):
@@ -287,8 +287,8 @@ class ExceptionStackLine(Base):
     position = Column(Integer, primary_key=True)
     """Position in the flattened stack tree."""
 
-    function_id = Column(Integer, ForeignKey(FunctionDefinition.id))
-    function = relationship(FunctionDefinition)
+    function_definition_id = Column(Integer, ForeignKey(FunctionDefinition.id))
+    function_definition = relationship(FunctionDefinition)
     """The related function"""
 
     relative_line_number = Column(Integer)
