@@ -30,17 +30,18 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
         return `code_${function_id}_${stack_trace_id}`;
     }
 
-    $scope.getFunctionById = async function (function_id, stack_trace_id) {
+    $scope.getFunctionById = function (function_id, stack_trace_id) {
         let key = $scope.getUniqueKey(function_id, stack_trace_id);
         
         if ($scope.id2Function[key] === undefined){
-            await $http.get(`api/function_definition/${function_id}/${stack_trace_id}`)
+            $http.get(`api/function_definition/${function_id}/${stack_trace_id}`)
                 .then((response) => {
-                        $scope.id2Function[key] = response.data;
+                    $scope.id2Function[key] = response.data;
+                    $scope.$applyAsync(() => {
+                        let element = document.getElementById(key);
+                        Prism.highlightElement(element);
+                    });
                 });
-
         }
-        const element = document.getElementById(key);
-        Prism.highlightElement(element);
     }
 };
