@@ -2,21 +2,21 @@
 Contains all functions that access an ExceptionInfo object.
 """
 from sqlalchemy import func, desc
-from flask_monitoringdashboard.database import ExceptionInfo, Request, Endpoint
+from flask_monitoringdashboard.database import ExceptionInfo, Request, Endpoint, ExceptionMessage, ExceptionType
 def get_exception_info(session, request_id: int):
     """
     Retrieve an ExceptionInfo record by request_id.
     """
     return session.query(ExceptionInfo).filter_by(request_id=request_id).first()
     
-def add_exception_info(session, request_id: int, trace_id: int, exception_type: str, exception_msg: str):
+def add_exception_info(session, request_id: int, trace_id: int, exception_type_id: str, exception_msg_id: str):
     """
     Add a new ExceptionInfo record.
     """
     exception_info = ExceptionInfo(
         request_id=request_id,
-        exception_type=exception_type,
-        exception_msg=exception_msg,
+        exception_type_id=exception_type_id,
+        exception_msg_id=exception_msg_id,
         full_stack_trace_id=trace_id
     )
     session.add(exception_info)
@@ -31,12 +31,12 @@ def count_grouped_exceptions(session):
     """
     return (
         session.query(ExceptionInfo.request_id)
-        .join(Request, ExceptionInfo.request_id == Request.id)
-        .join(Endpoint, Request.endpoint_id == Endpoint.id)
+        .join(Request, ExceptionInfo.request)                  # Join Request via relationship
+        .join(Endpoint, Request.endpoint)                      # Join Endpoint via Request's relationship
         .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
         .count()
     )
-    
+
 def count_endpoint_grouped_exceptions(session, endpoint_id):
     """
     Count the number of different kinds of exceptions on an endpoint grouped by full stack trace.
@@ -46,8 +46,8 @@ def count_endpoint_grouped_exceptions(session, endpoint_id):
     """
     return (
         session.query(ExceptionInfo.request_id)
-        .join(Request, ExceptionInfo.request_id == Request.id)
-        .join(Endpoint, Request.endpoint_id == Endpoint.id)
+        .join(Request, ExceptionInfo.request)                  # Join Request via relationship
+        .join(Endpoint, Request.endpoint)                      # Join Endpoint via Request's relationship
         .filter(Endpoint.id == endpoint_id)
         .group_by(ExceptionInfo.full_stack_trace_id)
         .count()
@@ -70,16 +70,18 @@ def get_exceptions_with_timestamps(session, offset, per_page):
     """
     result = (
         session.query(
-            ExceptionInfo.exception_type,
-            ExceptionInfo.exception_msg,
+            ExceptionType.type,
+            ExceptionMessage.message,
             Endpoint.name,
             Endpoint.id,
             func.max(Request.time_requested).label('latest_timestamp'),
             func.min(Request.time_requested).label('first_timestamp'),
             func.count(ExceptionInfo.request_id).label('count')
         )
-        .join(Request, ExceptionInfo.request_id == Request.id)
-        .join(Endpoint, Request.endpoint_id == Endpoint.id)
+        .join(Request, ExceptionInfo.request)                  # Join Request via relationship
+        .join(Endpoint, Request.endpoint)                      # Join Endpoint via Request's relationship
+        .join(ExceptionType, ExceptionInfo.exception_type)     # Join ExceptionType via relationship
+        .join(ExceptionMessage, ExceptionInfo.exception_msg)   # Join ExceptionMessage via relationship
         .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
         .order_by(desc('latest_timestamp'))
         .offset(offset)
@@ -105,17 +107,19 @@ def get_exceptions_with_timestamps_and_stacktrace_id(session, offset, per_page, 
              - count (int) representing the number of occurrences.
     """
     result = (
-        session.query(
-            ExceptionInfo.exception_type,
-            ExceptionInfo.exception_msg,
+    session.query(
+            ExceptionType.type,
+            ExceptionMessage.message,
             ExceptionInfo.full_stack_trace_id,
             func.max(Request.time_requested).label('latest_timestamp'),
             func.min(Request.time_requested).label('first_timestamp'),
             func.count(ExceptionInfo.request_id).label('count')
         )
-        .join(Request, ExceptionInfo.request_id == Request.id)
-        .join(Endpoint, Request.endpoint_id == Endpoint.id)
-        .where(Endpoint.id == endpoint_id)
+        .join(Request, ExceptionInfo.request)                  # Join Request via relationship
+        .join(Endpoint, Request.endpoint)                      # Join Endpoint via Request's relationship
+        .join(ExceptionType, ExceptionInfo.exception_type)     # Join ExceptionType via relationship
+        .join(ExceptionMessage, ExceptionInfo.exception_msg)   # Join ExceptionMessage via relationship
+        .filter(Endpoint.id == endpoint_id)
         .group_by(ExceptionInfo.full_stack_trace_id)
         .order_by(desc('latest_timestamp'))
         .offset(offset)
