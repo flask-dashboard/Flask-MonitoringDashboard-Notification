@@ -265,7 +265,7 @@ class FunctionDefinition(Base):
 
     id = Column(Integer, primary_key=True)
 
-    code = Column(TEXT, nullable=True)
+    function_code = Column(TEXT, nullable=True)
     """The entire function"""
 
     function_hash = Column(String(64), nullable=True)
@@ -277,7 +277,7 @@ class ExceptionStackLine(Base):
 
     __tablename__ = '{}ExceptionStackLine'.format(config.table_prefix)
     
-    stack_trace_id = Column(Integer, ForeignKey(FullStackTrace.id), primary_key=True)
+    full_stack_trace_id = Column(Integer, ForeignKey(FullStackTrace.id), primary_key=True)
     """Request that belongs to this exc_stack_line."""
     
     code_id = Column(Integer, ForeignKey(CodeLine.id))

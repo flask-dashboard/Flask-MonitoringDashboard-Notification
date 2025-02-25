@@ -50,9 +50,9 @@ def get_detailed_exception_info_endpoint(endpoint_id, offset, per_page):
         
         return jsonify(exceptions)
 
-@blueprint.route('/api/function_definition/<int:function_id>/<int:stack_trace_id>')
+@blueprint.route('/api/function_definition/<int:function_id>/<int:full_stack_trace_id>')
 @secure
-def get_function_definition_for_exception(function_id, stack_trace_id):
+def get_function_definition_for_exception(function_id, full_stack_trace_id):
     """
     Get the function definition and exception line number for a specific function involved in an exception.
     :return: A JSON object containing:
@@ -62,5 +62,5 @@ def get_function_definition_for_exception(function_id, stack_trace_id):
     """
     post_to_back_if_telemetry_enabled(**{'name': 'detailed_exception_info'})
     with session_scope() as session:
-        definition = get_exception_function_definition(session, function_id, stack_trace_id)
+        definition = get_exception_function_definition(session, function_id, full_stack_trace_id)
         return jsonify(definition)

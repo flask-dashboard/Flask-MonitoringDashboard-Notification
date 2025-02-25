@@ -18,7 +18,7 @@ def add_exception_stack_line(session, request_id, position, code_line: CodeLine,
     db_code_line = get_code_line(session, fn, ln, name, code)
     session.add(
         ExceptionStackLine(
-            stack_trace_id=request_id,
+            full_stack_trace_id=request_id,
             position=position,
             code_id=db_code_line.id,
             function_definition_id=function_defintion_id,

@@ -11,8 +11,8 @@ from flask_monitoringdashboard.database.function_definition import add_function_
 
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
     f_def = FunctionDefinition()
-    f_def.code = inspect.getsource(frame.f_code)
-    f_def.function_hash = hashlib.sha256(f_def.code.encode('utf-8')).hexdigest()
+    f_def.function_code = inspect.getsource(frame.f_code)
+    f_def.function_hash = hashlib.sha256(f_def.function_code.encode('utf-8')).hexdigest()
     return f_def
 
 def create_codeline_from_frame(frame: FrameType):
