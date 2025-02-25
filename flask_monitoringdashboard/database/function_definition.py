@@ -29,7 +29,7 @@ def get_function_startlineno_and_relativelineno_from_function_definition_id(sess
     from the ExceptionStackLine table.
 
     :param session: session for the database
-    :param function_id: id of the function
+    :param function_definition_id: id of the function
     :param stack_trace_id: id of the stack trace
     :return: A tuple containing:
             - (int) The absolute starting line number of the function in the source file.

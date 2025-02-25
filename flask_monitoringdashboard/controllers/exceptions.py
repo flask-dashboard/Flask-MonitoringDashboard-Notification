@@ -42,13 +42,13 @@ def get_detailed_exception_info(session, offset, per_page, endpoint_id):
     :return: A list of dicts. Each dict contains:
              - type (str) of the exception
              - message (str) of the exception
-             - stack_trace_id (int)
+             - full_stack_trace_id (int)
              - full_stacktrace (lst of dicts) Each dict contains:
                 - code (str)
                 - filename (str)
                 - line_number (int)
                 - function_name (str)
-                - function_id (int)
+                - function_definition_id (int)
              - latest_timestamp (datetime)
              - first_timestamp (datetime)
              - count (int) representing the number of occurrences.
