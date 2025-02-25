@@ -1,5 +1,5 @@
 <div class="card mb-3">
-    <div class="card-header"><h4>Exceptions for this endpoint</h4></div>
+    <div class="card-header"><h4>{{ title }}</h4></div>
     <div class="card-body">
         <pagination></pagination>
         <div class="card" ng-repeat="request in table" style="margin-bottom: 10px;">
@@ -14,21 +14,25 @@
                 </div>
             </div>
             <table class="table table-bordered table-hover" width="100%" style="margin: 0;" cellspacing="0">
-                <thead>
-                <tr>
-                    <th style="width: 30%">File name</th>
-                    <th style="width: 30%">Code-line</th>
-                </tr>
-                </thead>
                 <tbody>
-                <tr ng-repeat="row in request.full_stacktrace">
-                    <td style="padding-left: 10px;">
-                        {{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }}
-                    </td>
-                    <td style="padding-left: 10px;">
-                        {{ row.code }}
-                    </td>
-                </tr>
+                    <tr ng-repeat="row in request.full_stacktrace" ng-init="key = getUniqueKey(row.function_definition_id, request.full_stack_trace_id)">
+                        <td style="padding-left: 10px;">
+                            <details ng-click="getFunctionById(row.function_definition_id, request.full_stack_trace_id)">
+                            <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }} </summary>
+                            <div ng-if="func = id2Function[key]">
+                                <pre 
+                                    class="line-numbers" 
+                                    style="white-space: pre"
+                                    data-line="{{func.exception_line_number+func.start_line_number}}"
+                                    data-line-offset="{{func.start_line_number}}"
+                                    data-start="{{func.start_line_number}}"
+                                >
+                                    <code class="language-python" ng-attr-id="{{ key }}">{{ func.code }}</code>
+                                </pre>
+                            </div>
+                            </details>
+                        </td>
+                    </tr>    
                 </tbody>
             </table>
         </div>

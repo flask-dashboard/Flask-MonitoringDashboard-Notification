@@ -1,27 +1,33 @@
+import inspect
 import traceback
-import linecache
 import hashlib
 
-from types import TracebackType
-#from flask_monitoringdashboard import config
-from flask_monitoringdashboard.database import CodeLine
+from types import FrameType, TracebackType
+from flask_monitoringdashboard.database import CodeLine, FunctionDefinition
 from flask_monitoringdashboard.database.exception_info import add_exception_info
 from flask_monitoringdashboard.database.full_stack_trace import add_full_stack_trace, get_stack_trace_by_hash
 from flask_monitoringdashboard.database.exception_stack_line import add_exception_stack_line
+from flask_monitoringdashboard.database.function_definition import add_function_definition
 
-def create_codeline(fs: traceback.FrameSummary):
+def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
+    f_def = FunctionDefinition()
+    f_def.code = inspect.getsource(frame.f_code)
+    f_def.function_hash = hashlib.sha256(f_def.code.encode('utf-8')).hexdigest()
+    return f_def
+
+def create_codeline_from_frame(frame: FrameType):
     c_line = CodeLine()
-    #c_line.filename = fs.filename.replace(config.app.root_path, '.')
-    c_line.filename = fs.filename
-    c_line.line_number = fs.lineno
-    c_line.function_name = fs.name
-    c_line.code = linecache.getline(fs.filename, fs.lineno).strip()
+    c_line.filename = frame.f_code.co_filename
+    c_line.line_number = frame.f_lineno
+    c_line.function_name = frame.f_code.co_name
+    code_context = inspect.getframeinfo(frame).code_context
+    if code_context is not None and len(code_context) > 0:
+        c_line.code = code_context[0]
     return c_line
 
 def hash_stack_trace(self):
     stack_trace_string = ''.join(traceback.format_exception(self.type, self.value, self.tb))
     stack_trace_hash = hashlib.sha256(stack_trace_string.encode('utf-8')).hexdigest()
-    
     return stack_trace_hash
 
 class ExceptionLogger():
@@ -38,12 +44,17 @@ class ExceptionLogger():
             trace_id = existing_trace.id
         else:
             trace_id = add_full_stack_trace(session, hashed_trace)
-            print(f"hit request_id: {request_id}")
-            for idx, fs in enumerate(traceback.extract_tb(self.tb)[1:]):
-                c_line = create_codeline(fs)
-                add_exception_stack_line(session, trace_id, idx, c_line)
+            
+            self.tb.tb_frame
+            tb = self.tb.tb_next
+            idx = 0
+            while tb:
+                f_def = get_function_definition_from_frame(tb.tb_frame)
+                function_id = add_function_definition(session, f_def)
+                c_line = create_codeline_from_frame(tb.tb_frame)
+                add_exception_stack_line(session, trace_id, idx, c_line, function_id, tb.tb_frame.f_lineno-tb.tb_frame.f_code.co_firstlineno)
+                tb = tb.tb_next
+                idx += 1
         
-        add_exception_info(session, request_id, trace_id, str(self.type.__name__), str(self.value))
-
-        
+        add_exception_info(session, request_id, trace_id, self.type.__name__, str(self.value))
 

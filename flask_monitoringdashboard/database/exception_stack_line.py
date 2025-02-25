@@ -1,13 +1,15 @@
 from flask_monitoringdashboard.database import CodeLine, ExceptionStackLine
 from flask_monitoringdashboard.database.code_line import get_code_line
 
-def add_exception_stack_line(session, request_id, position, code_line: CodeLine):
+def add_exception_stack_line(session, request_id, position, code_line: CodeLine, function_defintion_id, relative_lineno):
     """
     Adds a ExceptionStackLine to the database (and possibly a CodeLine)
     :param session: Session for the database
     :param request_id: id of the request
     :param position: position of the ExceptionStackLine
     :param code_line: quadruple that consists of: (filename, line_number, function_name, code)
+    :param function_definition_id: id of the function
+    :param relative_lineno: the line number of the exception relative to the function
     """
     fn = code_line.filename
     ln = code_line.line_number
@@ -19,5 +21,9 @@ def add_exception_stack_line(session, request_id, position, code_line: CodeLine)
             stack_trace_id=request_id,
             position=position,
             code_id=db_code_line.id,
+            function_definition_id=function_defintion_id,
+            relative_line_number=relative_lineno
         )
     )
+
+

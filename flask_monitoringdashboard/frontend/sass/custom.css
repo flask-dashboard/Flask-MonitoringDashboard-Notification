@@ -562,3 +562,11 @@ textarea#customReason:focus {
         max-width: 1600px !important;
     }
 }
+
+pre[data-line] .line-highlight {
+    background: rgba(255, 215, 0, 0.3) !important; /* Light gold highlight */
+}
+
+pre[class*="language-"] {
+    background: transparent !important; /* White background */
+}

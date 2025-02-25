@@ -258,6 +258,19 @@ class ExceptionInfo(Base):
     exception_msg = Column(String(1500), nullable=False)
     full_stack_trace_id = Column(Integer, ForeignKey(FullStackTrace.id), nullable=False)
 
+class FunctionDefinition(Base):
+    """Table for storing entire functions for better logging"""
+
+    __tablename__ = f"{config.table_prefix}FunctionDefinition"
+
+    id = Column(Integer, primary_key=True)
+
+    code = Column(TEXT, nullable=True)
+    """The entire function"""
+
+    function_hash = Column(String(64), nullable=True)
+    """The hash of the function"""
+
     
 class ExceptionStackLine(Base):
     """Table for storing exception id together with request id."""
@@ -274,6 +287,12 @@ class ExceptionStackLine(Base):
     position = Column(Integer, primary_key=True)
     """Position in the flattened stack tree."""
 
+    function_definition_id = Column(Integer, ForeignKey(FunctionDefinition.id))
+    function_definition = relationship(FunctionDefinition)
+    """The related function"""
+
+    relative_line_number = Column(Integer)
+    """The relative line to the function where the error ocurred"""
 
 # define the database
 engine = create_engine(config.database_name)
