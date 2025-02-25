@@ -32,7 +32,9 @@ def delete_unreferenced_entries(session):
 
     # Find and delete FullStackTraces (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos
     full_stack_traces_to_delete = session.query(FullStackTrace).filter(
-        ~session.query(ExceptionInfo).filter(ExceptionInfo.full_stack_trace_id == FullStackTrace.id).exists()
+        ~session.query(ExceptionInfo)
+        .filter(ExceptionInfo.full_stack_trace_id == FullStackTrace.id)
+        .exists()
     ).all()
 
     for full_stack_trace in full_stack_traces_to_delete:
@@ -41,7 +43,9 @@ def delete_unreferenced_entries(session):
         
     # Find and delete FunctionDefenitions that are not referenced by any ExceptionStackLines
     function_definitions_to_delete = session.query(FunctionDefinition).filter(
-        ~session.query(ExceptionStackLine).filter(ExceptionStackLine.function_definition_id == FunctionDefinition.id).exists()
+        ~session.query(ExceptionStackLine)
+        .filter(ExceptionStackLine.function_definition_id == FunctionDefinition.id)
+        .exists()
     ).all()
     
     for function_definition in function_definitions_to_delete:
