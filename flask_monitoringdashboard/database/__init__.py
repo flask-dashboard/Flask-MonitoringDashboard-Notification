@@ -265,7 +265,7 @@ class FunctionDefinition(Base):
 
     id = Column(Integer, primary_key=True)
 
-    code = Column(TEXT, nullable=True)
+    function_code = Column(TEXT, nullable=True)
     """The entire function"""
 
     function_hash = Column(String(64), nullable=True)

@@ -89,6 +89,6 @@ def get_exception_function_definition(session, function_id, stack_trace_id):
     startlineno = file_lineno - relative_lineno
     return {
             'start_line_number': startlineno,
-            'code': result.code,
+            'function_code': result.function_code,
             'exception_line_number': relative_lineno
         }

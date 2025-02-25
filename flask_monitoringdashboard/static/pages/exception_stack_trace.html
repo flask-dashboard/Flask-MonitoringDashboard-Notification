@@ -19,15 +19,15 @@
                         <td style="padding-left: 10px;">
                             <details ng-click="getFunctionById(row.function_definition_id, request.full_stack_trace_id)">
                             <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }} </summary>
-                            <div ng-if="func = id2Function[key]">
+                            <div ng-if="f_def = id2Function[key]">
                                 <pre 
                                     class="line-numbers" 
                                     style="white-space: pre"
-                                    data-line="{{func.exception_line_number+func.start_line_number}}"
-                                    data-line-offset="{{func.start_line_number}}"
-                                    data-start="{{func.start_line_number}}"
+                                    data-line="{{f_def.exception_line_number+f_def.start_line_number}}"
+                                    data-line-offset="{{f_def.start_line_number}}"
+                                    data-start="{{f_def.start_line_number}}"
                                 >
-                                    <code class="language-python" ng-attr-id="{{ key }}">{{ func.code }}</code>
+                                    <code class="language-python" ng-attr-id="{{ key }}">{{ f_def.function_code }}</code>
                                 </pre>
                             </div>
                             </details>
