@@ -1,7 +1,10 @@
 from flask_monitoringdashboard.database import ExceptionType
 
 def add_exception_type(session, type):
-        exception_type = session.query(ExceptionType).filter_by(type=type).first()
+        type = type[:256] # To avoid error if larger than allowed in db
+        exception_type = (session.query(ExceptionType)
+                          .filter_by(type=type)
+                          .first())
         
         if exception_type is None:
             exception_type = ExceptionType(type=type)

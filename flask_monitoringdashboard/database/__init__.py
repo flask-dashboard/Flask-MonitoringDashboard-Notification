@@ -254,7 +254,7 @@ class ExceptionType(Base):
     __tablename__ = '{}ExceptionType'.format(config.table_prefix)
     
     id = Column(Integer, primary_key=True)
-    type = Column(String(1500), nullable=False)
+    type = Column(String(256), nullable=False)
     
 class ExceptionMessage(Base):
     """Table for storing Exception messages"""
