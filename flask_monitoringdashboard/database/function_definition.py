@@ -40,6 +40,7 @@ def get_function_startlineno_and_relativelineno_from_function_definition_id(sess
                     .filter(ExceptionStackLine.function_definition_id == function_defintion_id)
                     .filter(ExceptionStackLine.full_stack_trace_id == full_stack_trace_id)
                     .first())
+    
     if result is not None:
         return result.code.line_number, result.relative_line_number
     else:

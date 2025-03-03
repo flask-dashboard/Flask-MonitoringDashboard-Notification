@@ -239,12 +239,30 @@ class CustomGraphData(Base):
     """Actual value that is measured."""
 
 class FullStackTrace(Base):
+    """Table for storing a hash of a stack trace, to avoid 'duplicate' ExceptionStackLines."""
+    
     __tablename__ = '{}FullStackTrace'.format(config.table_prefix)
     
     id = Column(Integer, primary_key=True)
     stack_trace_hash = Column(String(64), nullable=False, unique=True)
     
     stack_lines = relationship('ExceptionStackLine', backref='exception_info')
+
+class ExceptionType(Base):
+    """Table for storing Exception types"""
+    
+    __tablename__ = '{}ExceptionType'.format(config.table_prefix)
+    
+    id = Column(Integer, primary_key=True)
+    type = Column(String(256), nullable=False)
+    
+class ExceptionMessage(Base):
+    """Table for storing Exception messages"""
+    
+    __tablename__ = '{}ExceptionMessage'.format(config.table_prefix)
+    
+    id = Column(Integer, primary_key=True)
+    message = Column(TEXT, nullable=False)
     
 class ExceptionInfo(Base):
     """Table for storing exception id together with request id."""
@@ -254,8 +272,12 @@ class ExceptionInfo(Base):
     request_id = Column(Integer, ForeignKey(Request.id), primary_key=True)
     request = relationship(Request)
     
-    exception_type = Column(String(1500), nullable=False)
-    exception_msg = Column(String(1500), nullable=False)
+    exception_type_id = Column(Integer, ForeignKey(ExceptionType.id), nullable=False)
+    exception_type = relationship(ExceptionType)
+    
+    exception_msg_id = Column(Integer, ForeignKey(ExceptionMessage.id), nullable=False)
+    exception_msg = relationship(ExceptionMessage)
+    
     full_stack_trace_id = Column(Integer, ForeignKey(FullStackTrace.id), nullable=False)
 
 class FunctionDefinition(Base):

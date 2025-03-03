@@ -8,6 +8,8 @@ from flask_monitoringdashboard.database.exception_info import add_exception_info
 from flask_monitoringdashboard.database.full_stack_trace import add_full_stack_trace, get_stack_trace_by_hash
 from flask_monitoringdashboard.database.exception_stack_line import add_exception_stack_line
 from flask_monitoringdashboard.database.function_definition import add_function_definition
+from flask_monitoringdashboard.database.exception_message import add_exception_message
+from flask_monitoringdashboard.database.exception_type import add_exception_type
 
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
     f_def = FunctionDefinition()
@@ -56,5 +58,6 @@ class ExceptionLogger():
                 tb = tb.tb_next
                 idx += 1
         
-        add_exception_info(session, request_id, trace_id, self.type.__name__, str(self.value))
-
+        exc_msg_id = add_exception_message(session, str(self.value))
+        exc_type_id = add_exception_type(session, self.type.__name__)
+        add_exception_info(session, request_id, trace_id, exc_type_id, exc_msg_id)

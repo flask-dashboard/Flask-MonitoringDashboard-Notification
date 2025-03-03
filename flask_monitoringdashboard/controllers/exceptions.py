@@ -21,8 +21,8 @@ def get_exceptions_with_timestamp(session, offset, per_page):
     
     return [
         {
-            'type': exception.exception_type, 
-            'message': exception.exception_msg, 
+            'type': exception.type, 
+            'message': exception.message, 
             'endpoint': exception.name,
             'endpoint_id': exception.id,
             'latest_timestamp': exception.latest_timestamp,
@@ -55,8 +55,8 @@ def get_detailed_exception_info(session, offset, per_page, endpoint_id):
     """
     return [
         {
-            'type': exception.exception_type, 
-            'message': exception.exception_msg, 
+            'type': exception.type, 
+            'message': exception.message, 
             'full_stack_trace_id': exception.full_stack_trace_id,
             'full_stacktrace': [ 
                 {
