@@ -33,4 +33,4 @@ class PerformanceProfiler(BaseProfiler):
                 status_code=self._status_code,
             )
             if self.e_logger is not None:
-                self.e_logger.log(request_id, session)
+                self.e_logger.save_to_db(request_id, session)

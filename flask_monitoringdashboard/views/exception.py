@@ -3,7 +3,7 @@ from flask import jsonify
 from flask_monitoringdashboard import blueprint
 from flask_monitoringdashboard.core.auth import secure
 
-from flask_monitoringdashboard.controllers.exceptions import delete_exceptions_via_full_stack_trace_id, get_exception_function_definition, get_exceptions_with_timestamp, get_detailed_exception_info
+from flask_monitoringdashboard.controllers.exceptions import delete_exceptions_via_full_stack_trace_id, get_exception_function_definition, get_exception_groups, get_exception_groups_with_details_for_endpoint
 from flask_monitoringdashboard.core.telemetry import post_to_back_if_telemetry_enabled
 from flask_monitoringdashboard.database import session_scope
 
@@ -19,7 +19,7 @@ def get_exception_info(offset: int, per_page: int):
     """
     post_to_back_if_telemetry_enabled(**{'name': 'exception_info'})
     with session_scope() as session:
-        exceptions = get_exceptions_with_timestamp(session, offset, per_page)
+        exceptions = get_exception_groups(session, offset, per_page)
         
         return jsonify(exceptions)
     
@@ -46,7 +46,7 @@ def get_detailed_exception_info_endpoint(endpoint_id: int, offset: int, per_page
     """
     post_to_back_if_telemetry_enabled(**{'name': 'detailed_exception_info'})
     with session_scope() as session:
-        exceptions = get_detailed_exception_info(session, offset, per_page, endpoint_id)
+        exceptions = get_exception_groups_with_details_for_endpoint(session, offset, per_page, endpoint_id)
         
         return jsonify(exceptions)
 

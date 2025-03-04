@@ -40,20 +40,31 @@ class ExceptionLogger():
         self.value : BaseException = exc_info[1]
         self.tb : TracebackType = exc_info[2]
 
-    def log(self, request_id: int, session: Session):
+    def save_to_db(self, request_id: int, session: Session):
+        """
+        Save exception info to DB
+        """
         hashed_trace = hash_stack_trace(self)
         existing_trace = get_stack_trace_by_hash(session, hashed_trace)
-        trace_id: int = 0
         
         if existing_trace:
             trace_id = int(existing_trace.id)
         else:
             trace_id = add_full_stack_trace(session, hashed_trace)
-            
-            self.tb.tb_frame
+
             tb = self.tb.tb_next
             idx = 0
             while tb:
+                # iterate over traceback lines
+                # i.e. the object representation of the following traceback
+                # Traceback (most recent call last):
+                #   File "example.py", line 9, in <module>
+                #     calculate()
+                #   File "example.py", line 6, in calculate
+                #     return divide(10, 0)
+                #   File "example.py", line 2, in divide
+                #     return a / b
+                # ZeroDivisionError: division by zero
                 f_def = get_function_definition_from_frame(tb.tb_frame)
                 function_id = add_function_definition(session, f_def)
                 c_line = create_codeline_from_frame(tb.tb_frame)

@@ -103,7 +103,7 @@ class StacktraceProfiler(threading.Thread):
             self._lines_body = order_histogram(self._histogram.items())
             self.insert_lines_db(session, request_id)
             if self.e_logger is not None:
-                self.e_logger.log(request_id, session)
+                self.e_logger.save_to_db(request_id, session)
             if self._outlier_profiler:
                 self._outlier_profiler.add_outlier(session, request_id)
 

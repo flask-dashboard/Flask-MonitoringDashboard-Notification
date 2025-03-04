@@ -5,9 +5,9 @@ from flask_monitoringdashboard.database.exception_info import delete_exception, 
 from flask_monitoringdashboard.database.full_stack_trace import get_stacklines_from_full_stacktrace_id
 from flask_monitoringdashboard.database.function_definition import get_function_definition_from_id, get_function_startlineno_and_relativelineno_from_function_definition_id
 
-def get_exceptions_with_timestamp(session: Session, offset: int, per_page: int):
+def get_exception_groups(session: Session, offset: int, per_page: int):
     """
-    Gets information about exceptions including timestamps of latest and first occurence. 
+    Gets information about exceptions including timestamps of latest and first occurrence.
     :param session: session for the database
     :param offset: number of items to skip
     :param per_page: number of items to return
@@ -43,7 +43,7 @@ def delete_exceptions_via_full_stack_trace_id(session: Session, full_stack_trace
     """
     delete_exception(session, full_stack_trace_id)
 
-def get_detailed_exception_info(session: Session, offset: int, per_page: int, endpoint_id: int):
+def get_exception_groups_with_details_for_endpoint(session: Session, offset: int, per_page: int, endpoint_id: int):
     """
     Gets detailed information about exceptions on an endpoint (including stack trace).
     :param session: session for the database
