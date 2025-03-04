@@ -8,9 +8,9 @@ from flask_monitoringdashboard.database.full_stack_trace import get_stacklines_f
 from flask_monitoringdashboard.database.function_definition import get_function_definition_from_id, get_function_startlineno_and_relativelineno_from_function_definition_id
 
 app_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
-app_parent_dir = os.path.dirname(app_dir) + '/'
+app_parent_dir = os.path.dirname(app_dir) + os.sep
     
-def get_relative_file_path_if_in_app(file_path):
+def get_relative_file_path_if_in_app(file_path: str):
     """
     Returns the relative file path if the file is within the application directory. Otherwise, returns the full file path.
     :param file_path: The full file path to be checked.
