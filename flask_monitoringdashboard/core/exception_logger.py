@@ -3,23 +3,35 @@ import traceback
 import hashlib
 
 from types import FrameType, TracebackType
-from typing import  Union
+from typing import Union
 
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.core.user_exception_logger import ExcInfo, ScopedExceptionLogger
 from flask_monitoringdashboard.database import CodeLine, FunctionDefinition
 from flask_monitoringdashboard.database.exception_info import add_exception_info
-from flask_monitoringdashboard.database.full_stack_trace import add_full_stack_trace, get_stack_trace_by_hash
+from flask_monitoringdashboard.database.stack_trace_snapshot import add_stack_trace_snapshot, get_stack_trace_by_hash
 from flask_monitoringdashboard.database.exception_stack_line import add_exception_stack_line
 from flask_monitoringdashboard.database.function_definition import add_function_definition
 from flask_monitoringdashboard.database.exception_message import add_exception_message
 from flask_monitoringdashboard.database.exception_type import add_exception_type
 
 
+def hash_helper(s: str):
+    return hashlib.sha256(s.encode('utf-8')).hexdigest()
+
+def h_chain(h: str, tb: Union[TracebackType, None]):
+    if tb is None:
+        return h
+
+    f_def = get_function_definition_from_frame(tb.tb_frame)
+    new_hash = hash_helper(h+f_def.function_hash)
+
+    return h_chain(new_hash, tb.tb_next)
+
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
     f_def = FunctionDefinition()
     f_def.function_code = inspect.getsource(frame.f_code)
-    f_def.function_hash = hashlib.sha256(f_def.function_code.encode('utf-8')).hexdigest()
+    f_def.function_hash = hash_helper(f_def.function_code)
     return f_def
 
 def create_codeline_from_frame(frame: FrameType, lineno):
@@ -32,10 +44,10 @@ def create_codeline_from_frame(frame: FrameType, lineno):
         c_line.code = code_context[0]
     return c_line
 
-def hash_stack_trace(exc):
+def hash_stack_trace(exc, tb):
     stack_trace_string = ''.join(traceback.format_exception(exc))
-    stack_trace_hash = hashlib.sha256(stack_trace_string.encode('utf-8')).hexdigest()
-    return stack_trace_hash
+    chained_stack_trace_hash = hash_helper(stack_trace_string)
+    return h_chain(chained_stack_trace_hash, tb)
 
 class ExceptionLogger():
     def __init__(self, scoped_logger: ScopedExceptionLogger):
@@ -54,13 +66,13 @@ class ExceptionLogger():
         """
         Save exception info to DB 
         """
-        hashed_trace = hash_stack_trace(exc)
+        hashed_trace = hash_stack_trace(exc, tb)
         existing_trace = get_stack_trace_by_hash(session, hashed_trace)
         
         if existing_trace:
             trace_id = int(existing_trace.id)
         else:
-            trace_id = add_full_stack_trace(session, hashed_trace)
+            trace_id = add_stack_trace_snapshot(session, hashed_trace)
             idx = 0
             while tb:
                 # iterate over traceback lines

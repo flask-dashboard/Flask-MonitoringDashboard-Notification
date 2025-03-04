@@ -1,28 +1,39 @@
-export function EndpointExceptionController ($scope, $http, menuService, paginationService, endpointService) {
+export function EndpointExceptionController(
+    $scope,
+    $http,
+    menuService,
+    paginationService,
+    endpointService,
+) {
     Prism.plugins.NormalizeWhitespace.setDefaults({
-        'remove-trailing': false,
-        'remove-indent': false,  
-        'left-trim': true,
-        'right-trim': true
+        "remove-trailing": false,
+        "remove-indent": false,
+        "left-trim": true,
+        "right-trim": true,
     });
-    
+
     endpointService.reset();
-    menuService.reset('endpoint_exception');
+    menuService.reset("endpoint_exception");
     $scope.id2Function = {};
 
     $scope.table = [];
 
     endpointService.onNameChanged = function (name) {
-        $scope.title = 'Exceptions for ' + name;
+        $scope.title = "Exceptions for " + name;
     };
 
-    paginationService.init('exceptions');
-    $http.get('api/num_exceptions/'+ endpointService.info.id).then(function (response) {
-        paginationService.setTotal(response.data);
-    });
+    paginationService.init("exceptions");
+    $http.get("api/num_exceptions/" + endpointService.info.id).then(
+        function (response) {
+            paginationService.setTotal(response.data);
+        },
+    );
 
     paginationService.onReload = function () {
-        $http.get('api/detailed_exception_info/' + endpointService.info.id + '/' + paginationService.getLeft() + '/' + paginationService.perPage)
+        $http.get(
+            "api/detailed_exception_info/" + endpointService.info.id + "/" +
+                paginationService.getLeft() + "/" + paginationService.perPage,
+        )
             .then(function (response) {
                 $scope.table = response.data;
                 $scope.id2Function = {};
@@ -48,19 +59,22 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
         }
     };
 
-    $scope.deleteExceptionById = function (full_stack_trace_id){
-        if (full_stack_trace_id && confirm("Are you sure you want to delete exception?")){
-            $http.delete(`api/exception_info/${full_stack_trace_id}`)
-            .then((_) => {
-                paginationService.onReload();
-                paginationService.total--;
-            });
+    $scope.deleteExceptionById = function (stacktrace_snapshot_id) {
+        if (
+            stacktrace_snapshot_id &&
+            confirm("Are you sure you want to delete exception?")
+        ) {
+            $http.delete(`api/exception_info/${stacktrace_snapshot_id}`)
+                .then((_) => {
+                    paginationService.onReload();
+                    paginationService.total--;
+                });
         }
     };
 
-    $scope.collapseAllDetails = function(name) {
-       document.querySelectorAll(`#details_${name}`).forEach(details => {
-           details.open = false;
-       });
+    $scope.collapseAllDetails = function (name) {
+        document.querySelectorAll(`#details_${name}`).forEach((details) => {
+            details.open = false;
+        });
     };
-};
+}

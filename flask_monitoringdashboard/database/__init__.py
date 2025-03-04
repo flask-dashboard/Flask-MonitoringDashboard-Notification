@@ -238,13 +238,13 @@ class CustomGraphData(Base):
     value = Column(Float)
     """Actual value that is measured."""
 
-class FullStackTrace(Base):
-    """Table for storing a hash of a stack trace, to avoid 'duplicate' ExceptionStackLines."""
+class StacktraceSnapshot(Base):
+    """Table for storing a hash of a stack trace and its related functions, to avoid 'duplicate' ExceptionStackLines."""
     
-    __tablename__ = '{}FullStackTrace'.format(config.table_prefix)
+    __tablename__ = '{}StacktraceSnapshot'.format(config.table_prefix)
     
     id = Column(Integer, primary_key=True)
-    stack_trace_hash = Column(String(64), nullable=False, unique=True)
+    chained_stack_trace_hash = Column(String(64), nullable=False, unique=True)
     
     stack_lines = relationship('ExceptionStackLine', backref='exception_info')
 
@@ -280,7 +280,7 @@ class ExceptionInfo(Base):
     exception_msg_id = Column(Integer, ForeignKey(ExceptionMessage.id), nullable=False)
     exception_msg = relationship(ExceptionMessage)
     
-    full_stack_trace_id = Column(Integer, ForeignKey(FullStackTrace.id), nullable=False)
+    stacktrace_snapshot_id = Column(Integer, ForeignKey(StacktraceSnapshot.id), nullable=False)
 
 class FunctionDefinition(Base):
     """Table for storing entire functions for better logging"""
@@ -301,7 +301,7 @@ class ExceptionStackLine(Base):
 
     __tablename__ = '{}ExceptionStackLine'.format(config.table_prefix)
     
-    full_stack_trace_id = Column(Integer, ForeignKey(FullStackTrace.id), primary_key=True)
+    stacktrace_snapshot_id = Column(Integer, ForeignKey(StacktraceSnapshot.id), primary_key=True)
     """Request that belongs to this exc_stack_line."""
     
     code_id = Column(Integer, ForeignKey(CodeLine.id))

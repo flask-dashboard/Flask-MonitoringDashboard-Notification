@@ -1,7 +1,7 @@
 from types import TracebackType
-from typing import TypeAlias, Union
+from typing import Union
 
-ExcInfo: TypeAlias = tuple[type[BaseException], BaseException, TracebackType]
+ExcInfo = tuple[type[BaseException], BaseException, TracebackType]
 
 class ScopedExceptionLogger():
     def __init__(self) -> None:
@@ -10,4 +10,4 @@ class ScopedExceptionLogger():
 
     def add_exc(self, e: BaseException):
         self.user_captured_exceptions.append(e)
-
+    
