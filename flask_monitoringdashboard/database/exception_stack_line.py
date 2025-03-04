@@ -5,7 +5,7 @@ def add_exception_stack_line(session, stacktrace_snapshot_id, position, code_lin
     """
     Adds a ExceptionStackLine to the database (and possibly a CodeLine)
     :param session: Session for the database
-    :param stacktrace_snapshot_id: id of the full stack trace
+    :param stacktrace_snapshot_id: id of the stack trace snapshot
     :param position: position of the ExceptionStackLine
     :param code_line: quadruple that consists of: (filename, line_number, function_name, code)
     :param function_definition_id: id of the function

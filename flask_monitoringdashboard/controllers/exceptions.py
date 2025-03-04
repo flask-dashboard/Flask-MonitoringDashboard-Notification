@@ -4,7 +4,7 @@ import os
 import sys
 from flask_monitoringdashboard.database import FunctionDefinition
 from flask_monitoringdashboard.database.exception_info import delete_exception, get_exceptions_with_timestamps, get_exceptions_with_timestamps_and_stacktrace_id
-from flask_monitoringdashboard.database.full_stack_trace import get_stacklines_from_full_stacktrace_id
+from flask_monitoringdashboard.database.stack_trace_snapshot import get_stacklines_from_stacktrace_snapshot_id
 from flask_monitoringdashboard.database.function_definition import get_function_definition_from_id, get_function_startlineno_and_relativelineno_from_function_definition_id
 
 app_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -51,9 +51,9 @@ def get_exception_groups(session: Session, offset: int, per_page: int):
 
 def delete_exceptions_via_stacktrace_snapshot_id(session: Session, stacktrace_snapshot_id: int) -> None:
     """
-    Deltes the specified exception
+    Deletes the specified exception
     :param session: session for the database
-    :param full_stack_trace: stack trace id to be deleted
+    :param stacktrace_snapshot_id: stack trace id to be deleted
     :return: None
     """
     delete_exception(session, stacktrace_snapshot_id)
@@ -91,7 +91,7 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
                     'function_name': exceptionStackLine.code.function_name,
                     'function_definition_id': exceptionStackLine.function_definition_id
                 }
-                for exceptionStackLine in get_stacklines_from_full_stacktrace_id(session, exception.stacktrace_snapshot_id)],
+                for exceptionStackLine in get_stacklines_from_stacktrace_snapshot_id(session, exception.stacktrace_snapshot_id)],
             'latest_timestamp': exception.latest_timestamp,
             'first_timestamp': exception.first_timestamp,
             'count': exception.count

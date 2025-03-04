@@ -244,7 +244,7 @@ class StacktraceSnapshot(Base):
     __tablename__ = '{}StacktraceSnapshot'.format(config.table_prefix)
     
     id = Column(Integer, primary_key=True)
-    chained_stacktrace_hash = Column(String(64), nullable=False, unique=True)
+    chained_stack_trace_hash = Column(String(64), nullable=False, unique=True)
     
     stack_lines = relationship('ExceptionStackLine', backref='exception_info')
 

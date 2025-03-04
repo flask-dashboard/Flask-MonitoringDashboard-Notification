@@ -1,43 +1,68 @@
-export function EndpointExceptionController ($scope, $http, menuService, paginationService, endpointService) {
+export function EndpointExceptionController(
+    $scope,
+    $http,
+    menuService,
+    paginationService,
+    endpointService,
+) {
     Prism.plugins.NormalizeWhitespace.setDefaults({
-        'remove-trailing': false,
-        'remove-indent': false,  
-        'left-trim': true,
-        'right-trim': true
+        "remove-trailing": false,
+        "remove-indent": false,
+        "left-trim": true,
+        "right-trim": true,
     });
-    
+
     endpointService.reset();
-    menuService.reset('endpoint_exception');
+    menuService.reset("endpoint_exception");
     $scope.id2Function = {};
 
     $scope.table = [];
 
     endpointService.onNameChanged = function (name) {
-        $scope.title = 'Exceptions for ' + name;
+        $scope.title = "Exceptions for " + name;
     };
 
-    paginationService.init('exceptions');
-    $http.get('api/num_exceptions/'+ endpointService.info.id).then(function (response) {
-        paginationService.setTotal(response.data);
-    });
+    paginationService.init("exceptions");
+    $http.get("api/num_exceptions/" + endpointService.info.id).then(
+        function (response) {
+            paginationService.setTotal(response.data);
+        },
+    );
 
     paginationService.onReload = function () {
-        $http.get('api/detailed_exception_info/' + endpointService.info.id + '/' + paginationService.getLeft() + '/' + paginationService.perPage)
+        $http.get(
+            "api/detailed_exception_info/" + endpointService.info.id + "/" +
+                paginationService.getLeft() + "/" + paginationService.perPage,
+        )
             .then(function (response) {
                 $scope.table = response.data;
                 $scope.id2Function = {};
             });
     };
 
-    $scope.getUniqueKey = function (function_definition_id, stacktrace_snapshot_id, row_index) {
+    $scope.getUniqueKey = function (
+        function_definition_id,
+        stacktrace_snapshot_id,
+        row_index,
+    ) {
         return `code_${function_definition_id}_${stacktrace_snapshot_id}_${row_index}`; // the row_index is important when dealing with recursive functions
     };
 
-    $scope.getFunctionById = function (function_id, stacktrace_snapshot_id, row_index) {
-        let key = $scope.getUniqueKey(function_id, stacktrace_snapshot_id, row_index);
-        
-        if ($scope.id2Function[key] === undefined){
-            $http.get(`api/function_definition/${function_id}/${stacktrace_snapshot_id}`)
+    $scope.getFunctionById = function (
+        function_id,
+        stacktrace_snapshot_id,
+        row_index,
+    ) {
+        let key = $scope.getUniqueKey(
+            function_id,
+            stacktrace_snapshot_id,
+            row_index,
+        );
+
+        if ($scope.id2Function[key] === undefined) {
+            $http.get(
+                `api/function_definition/${function_id}/${stacktrace_snapshot_id}`,
+            )
                 .then((response) => {
                     $scope.id2Function[key] = response.data;
                     $scope.$applyAsync(() => {
@@ -48,19 +73,22 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
         }
     };
 
-    $scope.deleteExceptionById = function (stacktrace_snapshot_id){
-        if (stacktrace_snapshot_id && confirm("Are you sure you want to delete exception?")){
+    $scope.deleteExceptionById = function (stacktrace_snapshot_id) {
+        if (
+            stacktrace_snapshot_id &&
+            confirm("Are you sure you want to delete exception?")
+        ) {
             $http.delete(`api/exception_info/${stacktrace_snapshot_id}`)
-            .then((_) => {
-                paginationService.onReload();
-                paginationService.total--;
-            });
+                .then((_) => {
+                    paginationService.onReload();
+                    paginationService.total--;
+                });
         }
     };
 
-    $scope.collapseAllDetails = function(name) {
-       document.querySelectorAll(`#details_${name}`).forEach(details => {
-           details.open = false;
-       });
+    $scope.collapseAllDetails = function (name) {
+        document.querySelectorAll(`#details_${name}`).forEach((details) => {
+            details.open = false;
+        });
     };
-};
+}

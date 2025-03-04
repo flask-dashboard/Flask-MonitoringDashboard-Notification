@@ -3,23 +3,23 @@ from sqlalchemy.orm import Session
 from flask_monitoringdashboard.database import ExceptionStackLine, StacktraceSnapshot
 from sqlalchemy import desc
 
-def get_stack_trace_by_hash(session: Session, full_stack_trace: str) -> Union[StacktraceSnapshot, None]:
+def get_stack_trace_by_hash(session: Session, stack_trace_snapshot_hash: str) -> Union[StacktraceSnapshot, None]:
     """
-    Get StacktraceSnapshot record by its chained_stacktrace_hash.
+    Get StacktraceSnapshot record by its chained_stack_trace_hash.
     """
     result = (
         session.query(StacktraceSnapshot)
-        .filter_by(chained_stacktrace_hash=full_stack_trace)
+        .filter_by(chained_stack_trace_hash=stack_trace_snapshot_hash)
         .first()
     )
     return result
 
-def add_full_stack_trace(session: Session, full_stack_trace: str) -> int:
+def add_stack_trace_snapshot(session: Session, stack_trace_snapshot_hash: str) -> int:
     """
     Add a new StacktraceSnapshot record. Returns the id.
     """
     result = StacktraceSnapshot(
-        chained_stacktrace_hash = full_stack_trace
+        chained_stack_trace_hash = stack_trace_snapshot_hash
     )
     session.add(result)
     session.flush()
@@ -27,7 +27,7 @@ def add_full_stack_trace(session: Session, full_stack_trace: str) -> int:
     return int(result.id)
 
 
-def get_stacklines_from_full_stacktrace_id(session: Session, stacktrace_snapshot_id: int) -> list[ExceptionStackLine]:
+def get_stacklines_from_stacktrace_snapshot_id(session: Session, stacktrace_snapshot_id: int) -> list[ExceptionStackLine]:
     """
     Gets all the stack lines referred to by a stacktrace.
     :param session: session for the database

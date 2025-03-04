@@ -8,7 +8,7 @@ from typing import Union
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.database import CodeLine, FunctionDefinition
 from flask_monitoringdashboard.database.exception_info import add_exception_info
-from flask_monitoringdashboard.database.full_stack_trace import add_full_stack_trace, get_stack_trace_by_hash
+from flask_monitoringdashboard.database.stack_trace_snapshot import add_stack_trace_snapshot, get_stack_trace_by_hash
 from flask_monitoringdashboard.database.exception_stack_line import add_exception_stack_line
 from flask_monitoringdashboard.database.function_definition import add_function_definition
 from flask_monitoringdashboard.database.exception_message import add_exception_message
@@ -45,8 +45,8 @@ def create_codeline_from_frame(frame: FrameType):
 
 def hash_stack_trace(self):
     stack_trace_string = ''.join(traceback.format_exception(self.type, self.value, self.tb))
-    chained_stacktrace_hash = hash_helper(stack_trace_string)
-    return h_chain(chained_stacktrace_hash, self.tb)
+    chained_stack_trace_hash = hash_helper(stack_trace_string)
+    return h_chain(chained_stack_trace_hash, self.tb)
 
 class ExceptionLogger():
     def __init__(self, exc_info):
@@ -64,7 +64,7 @@ class ExceptionLogger():
         if existing_trace:
             trace_id = int(existing_trace.id)
         else:
-            trace_id = add_full_stack_trace(session, hashed_trace)
+            trace_id = add_stack_trace_snapshot(session, hashed_trace)
 
             tb = self.tb.tb_next
             idx = 0
