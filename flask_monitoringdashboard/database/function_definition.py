@@ -25,14 +25,14 @@ def get_function_definition_from_id(session: Session, function_id: int) -> Union
             .filter(FunctionDefinition.id == function_id)
             .first())
 
-def get_function_startlineno_and_relativelineno_from_function_definition_id(session : Session, function_defintion_id : int, full_stack_trace_id : int) -> Union[tuple[int, int], None]:
+def get_function_startlineno_and_relativelineno_from_function_definition_id(session : Session, function_defintion_id : int, stacktrace_snapshot_id : int) -> Union[tuple[int, int], None]:
     """
     Retrieves the starting line number of a function and the relative line number of an exception 
     from the ExceptionStackLine table.
 
     :param session: session for the database
     :param function_definition_id: id of the function
-    :param full_stack_trace_id: id of the stack trace
+    :param stacktrace_snapshot_id: id of the stack trace
     :return: A tuple containing:
             - (int) The absolute starting line number of the function in the source file.
             - (int) The relative line number of the exception within the function.
@@ -40,7 +40,7 @@ def get_function_startlineno_and_relativelineno_from_function_definition_id(sess
     """
     result : Union[ExceptionStackLine, None] = (session.query(ExceptionStackLine)
                     .filter(ExceptionStackLine.function_definition_id == function_defintion_id)
-                    .filter(ExceptionStackLine.full_stack_trace_id == full_stack_trace_id)
+                    .filter(ExceptionStackLine.stacktrace_snapshot_id == stacktrace_snapshot_id)
                     .first())
     if result is not None and isinstance(result.code, CodeLine):
         return result.code.line_number, result.relative_line_number

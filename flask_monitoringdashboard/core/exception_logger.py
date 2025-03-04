@@ -3,6 +3,7 @@ import traceback
 import hashlib
 
 from types import FrameType, TracebackType
+from typing import Union
 
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.database import CodeLine, FunctionDefinition
@@ -44,8 +45,8 @@ def create_codeline_from_frame(frame: FrameType):
 
 def hash_stack_trace(self):
     stack_trace_string = ''.join(traceback.format_exception(self.type, self.value, self.tb))
-    stack_trace_hash = hash_helper(stack_trace_string)
-    return h_chain(stack_trace_hash, self.tb)
+    chained_stacktrace_hash = hash_helper(stack_trace_string)
+    return h_chain(chained_stacktrace_hash, self.tb)
 
 class ExceptionLogger():
     def __init__(self, exc_info):

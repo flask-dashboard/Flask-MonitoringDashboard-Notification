@@ -25,7 +25,7 @@ def add_exception_info(session: Session, request_id: int, trace_id: int, excepti
         request_id=request_id,
         exception_type_id=exception_type_id,
         exception_msg_id=exception_msg_id,
-        full_stack_trace_id=trace_id
+        stacktrace_snapshot_id=trace_id
     )
     session.add(exception_info)
     session.commit()
@@ -40,7 +40,7 @@ def count_grouped_exceptions(session: Session):
         session.query(ExceptionInfo.request_id)
         .join(Request, ExceptionInfo.request)
         .join(Endpoint, Request.endpoint)
-        .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
+        .group_by(Endpoint.name, ExceptionInfo.stacktrace_snapshot_id)
         .count()
     )
 
@@ -56,7 +56,7 @@ def count_endpoint_grouped_exceptions(session: Session, endpoint_id: int):
         .join(Request, ExceptionInfo.request)
         .join(Endpoint, Request.endpoint)
         .filter(Endpoint.id == endpoint_id)
-        .group_by(ExceptionInfo.full_stack_trace_id)
+        .group_by(ExceptionInfo.stacktrace_snapshot_id)
         .count()
     )
 
@@ -89,7 +89,7 @@ def get_exceptions_with_timestamps(session: Session, offset: int, per_page: int)
         .join(Endpoint, Request.endpoint)
         .join(ExceptionType, ExceptionInfo.exception_type)
         .join(ExceptionMessage, ExceptionInfo.exception_msg)
-        .group_by(Endpoint.name, ExceptionInfo.full_stack_trace_id)
+        .group_by(Endpoint.name, ExceptionInfo.stacktrace_snapshot_id)
         .order_by(desc('latest_timestamp'))
         .offset(offset)
         .limit(per_page)
@@ -97,16 +97,16 @@ def get_exceptions_with_timestamps(session: Session, offset: int, per_page: int)
     )
     return result
 
-def delete_exception(session: Session, full_stack_trace_id: int) -> None:
+def delete_exception(session: Session, stacktrace_snapshot_id: int) -> None:
     """
     Deletes an exception based on the stack trace id
     :param session: session for the database
-    :param full_stack_trace_id: the stack trace id
+    :param stacktrace_snapshot_id: the stack trace id
     :return: None
     """
     _ = (session
         .query(ExceptionInfo)
-        .filter(ExceptionInfo.full_stack_trace_id == full_stack_trace_id)
+        .filter(ExceptionInfo.stacktrace_snapshot_id == stacktrace_snapshot_id)
         .delete())
     delete_entries_unreferenced_by_exception_info(session)
     session.commit()
@@ -121,7 +121,7 @@ def get_exceptions_with_timestamps_and_stacktrace_id(session: Session, offset: i
     :return: A list of dicts. Each dict contains:
              - exception_type (str)
              - exception_msg (str)
-             - full_stack_trace_id (int) for the exceptions
+             - stacktrace_snapshot_id (int) for the exceptions
              - latest_timestamp (datetime)
              - first_timestamp (datetime)
              - count (int) representing the number of occurrences.
@@ -130,7 +130,7 @@ def get_exceptions_with_timestamps_and_stacktrace_id(session: Session, offset: i
     session.query(
             ExceptionType.type,
             ExceptionMessage.message,
-            ExceptionInfo.full_stack_trace_id,
+            ExceptionInfo.stacktrace_snapshot_id,
             func.max(Request.time_requested).label('latest_timestamp'),
             func.min(Request.time_requested).label('first_timestamp'),
             func.count(ExceptionInfo.request_id).label('count')
@@ -140,7 +140,7 @@ def get_exceptions_with_timestamps_and_stacktrace_id(session: Session, offset: i
         .join(ExceptionType, ExceptionInfo.exception_type)
         .join(ExceptionMessage, ExceptionInfo.exception_msg)
         .filter(Endpoint.id == endpoint_id)
-        .group_by(ExceptionInfo.full_stack_trace_id)
+        .group_by(ExceptionInfo.stacktrace_snapshot_id)
         .order_by(desc('latest_timestamp'))
         .offset(offset)
         .limit(per_page)

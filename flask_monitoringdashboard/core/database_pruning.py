@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from flask_monitoringdashboard.core.custom_graph import scheduler
 from flask_monitoringdashboard.database import ( 
     session_scope, 
-    Request, Outlier, StackLine, CustomGraphData, ExceptionInfo, FullStackTrace, ExceptionStackLine, FunctionDefinition
+    Request, Outlier, StackLine, CustomGraphData, ExceptionInfo, StacktraceSnapshot, ExceptionStackLine, FunctionDefinition
 )
 
 def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
@@ -30,17 +30,17 @@ def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
         session.commit()
 
 def delete_entries_unreferenced_by_exception_info(session: Session):
-    """Delete FullStackTraces, ExceptionStackLines, FunctionDefinitions that are not referenced by any ExceptionInfos"""
+    """Delete StacktraceSnapshots, ExceptionStackLines, FunctionDefinitions that are not referenced by any ExceptionInfos"""
 
-    # Find and delete FullStackTraces (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos
-    full_stack_traces_to_delete = session.query(FullStackTrace).filter(
+    # Find and delete StacktraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos
+    full_stack_traces_to_delete = session.query(StacktraceSnapshot).filter(
         ~session.query(ExceptionInfo)
-        .filter(ExceptionInfo.full_stack_trace_id == FullStackTrace.id)
+        .filter(ExceptionInfo.stacktrace_snapshot_id == StacktraceSnapshot.id)
         .exists()
     ).all()
 
     for full_stack_trace in full_stack_traces_to_delete:
-        session.query(ExceptionStackLine).filter(ExceptionStackLine.full_stack_trace_id == full_stack_trace.id).delete()
+        session.query(ExceptionStackLine).filter(ExceptionStackLine.stacktrace_snapshot_id == full_stack_trace.id).delete()
         session.delete(full_stack_trace)
         
     # Find and delete FunctionDefenitions that are not referenced by any ExceptionStackLines

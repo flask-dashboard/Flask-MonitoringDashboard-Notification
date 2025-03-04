@@ -3,7 +3,7 @@ from flask import jsonify
 from flask_monitoringdashboard import blueprint
 from flask_monitoringdashboard.core.auth import secure
 
-from flask_monitoringdashboard.controllers.exceptions import delete_exceptions_via_full_stack_trace_id, get_exception_function_definition, get_exception_groups, get_exception_groups_with_details_for_endpoint
+from flask_monitoringdashboard.controllers.exceptions import delete_exceptions_via_stacktrace_snapshot_id, get_exception_function_definition, get_exception_groups, get_exception_groups_with_details_for_endpoint
 from flask_monitoringdashboard.core.telemetry import post_to_back_if_telemetry_enabled
 from flask_monitoringdashboard.database import session_scope
 
@@ -50,9 +50,9 @@ def get_detailed_exception_info_endpoint(endpoint_id: int, offset: int, per_page
         
         return jsonify(exceptions)
 
-@blueprint.route('/api/function_definition/<int:function_id>/<int:full_stack_trace_id>')
+@blueprint.route('/api/function_definition/<int:function_id>/<int:stacktrace_snapshot_id>')
 @secure
-def get_function_definition_for_exception(function_id, full_stack_trace_id):
+def get_function_definition_for_exception(function_id, stacktrace_snapshot_id):
     """
     Get the function definition and exception line number for a specific function involved in an exception.
     :return: A JSON object containing:
@@ -62,14 +62,14 @@ def get_function_definition_for_exception(function_id, full_stack_trace_id):
     """
     post_to_back_if_telemetry_enabled(**{'name': 'function_definition'})
     with session_scope() as session:
-        definition = get_exception_function_definition(session, function_id, full_stack_trace_id)
+        definition = get_exception_function_definition(session, function_id, stacktrace_snapshot_id)
         return jsonify(definition)
 
 
-@blueprint.route('/api/exception_info/<int:full_stack_trace_id>', methods=['DELETE'])
+@blueprint.route('/api/exception_info/<int:stacktrace_snapshot_id>', methods=['DELETE'])
 @secure
-def delete_exception(full_stack_trace_id: int):
+def delete_exception(stacktrace_snapshot_id: int):
     post_to_back_if_telemetry_enabled(**{'name': 'delete_exception'})
     with session_scope() as session:
-        delete_exceptions_via_full_stack_trace_id(session, full_stack_trace_id)
+        delete_exceptions_via_stacktrace_snapshot_id(session, stacktrace_snapshot_id)
     return "ok"

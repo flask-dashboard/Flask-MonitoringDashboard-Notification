@@ -49,14 +49,14 @@ def get_exception_groups(session: Session, offset: int, per_page: int):
         for exception in get_exceptions_with_timestamps(session, offset, per_page)
     ]
 
-def delete_exceptions_via_full_stack_trace_id(session: Session, full_stack_trace_id: int) -> None:
+def delete_exceptions_via_stacktrace_snapshot_id(session: Session, stacktrace_snapshot_id: int) -> None:
     """
     Deltes the specified exception
     :param session: session for the database
     :param full_stack_trace: stack trace id to be deleted
     :return: None
     """
-    delete_exception(session, full_stack_trace_id)
+    delete_exception(session, stacktrace_snapshot_id)
 
 def get_exception_groups_with_details_for_endpoint(session: Session, offset: int, per_page: int, endpoint_id: int):
     """
@@ -68,7 +68,7 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
     :return: A list of dicts. Each dict contains:
              - type (str) of the exception
              - message (str) of the exception
-             - full_stack_trace_id (int)
+             - stacktrace_snapshot_id (int)
              - full_stacktrace (lst of dicts) Each dict contains:
                 - code (str)
                 - filename (str)
@@ -83,7 +83,7 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
         {
             'type': exception.type, 
             'message': exception.message, 
-            'full_stack_trace_id': exception.full_stack_trace_id,
+            'stacktrace_snapshot_id': exception.stacktrace_snapshot_id,
             'full_stacktrace': [ 
                 {
                     'filename': get_relative_file_path_if_in_app(exceptionStackLine.code.filename),
@@ -91,7 +91,7 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
                     'function_name': exceptionStackLine.code.function_name,
                     'function_definition_id': exceptionStackLine.function_definition_id
                 }
-                for exceptionStackLine in get_stacklines_from_full_stacktrace_id(session, exception.full_stack_trace_id)],
+                for exceptionStackLine in get_stacklines_from_full_stacktrace_id(session, exception.stacktrace_snapshot_id)],
             'latest_timestamp': exception.latest_timestamp,
             'first_timestamp': exception.first_timestamp,
             'count': exception.count

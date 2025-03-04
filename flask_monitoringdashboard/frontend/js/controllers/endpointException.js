@@ -29,15 +29,15 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
             });
     };
 
-    $scope.getUniqueKey = function (function_definition_id, full_stack_trace_id, row_index) {
-        return `code_${function_definition_id}_${full_stack_trace_id}_${row_index}`; // the row_index is important when dealing with recursive functions
+    $scope.getUniqueKey = function (function_definition_id, stacktrace_snapshot_id, row_index) {
+        return `code_${function_definition_id}_${stacktrace_snapshot_id}_${row_index}`; // the row_index is important when dealing with recursive functions
     };
 
-    $scope.getFunctionById = function (function_id, full_stack_trace_id, row_index) {
-        let key = $scope.getUniqueKey(function_id, full_stack_trace_id, row_index);
+    $scope.getFunctionById = function (function_id, stacktrace_snapshot_id, row_index) {
+        let key = $scope.getUniqueKey(function_id, stacktrace_snapshot_id, row_index);
         
         if ($scope.id2Function[key] === undefined){
-            $http.get(`api/function_definition/${function_id}/${full_stack_trace_id}`)
+            $http.get(`api/function_definition/${function_id}/${stacktrace_snapshot_id}`)
                 .then((response) => {
                     $scope.id2Function[key] = response.data;
                     $scope.$applyAsync(() => {
@@ -48,9 +48,9 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
         }
     };
 
-    $scope.deleteExceptionById = function (full_stack_trace_id){
-        if (full_stack_trace_id && confirm("Are you sure you want to delete exception?")){
-            $http.delete(`api/exception_info/${full_stack_trace_id}`)
+    $scope.deleteExceptionById = function (stacktrace_snapshot_id){
+        if (stacktrace_snapshot_id && confirm("Are you sure you want to delete exception?")){
+            $http.delete(`api/exception_info/${stacktrace_snapshot_id}`)
             .then((_) => {
                 paginationService.onReload();
                 paginationService.total--;
