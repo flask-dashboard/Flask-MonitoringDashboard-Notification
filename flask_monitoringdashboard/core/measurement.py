@@ -115,13 +115,13 @@ def evaluate(route_handler, args, kwargs):
 
             return result, status_code
         except BaseException as e:
-            g.scoped_logger.raised = sys.exc_info()
+            g.scoped_logger.raised_exc_info = sys.exc_info()
             if isinstance(e, HTTPException):
                 return None, e.code
             return None, 500
 
     result, status_code = evaluate_()
-    if len(g.scoped_logger.exc_list) != 0 or g.scoped_logger.raised is not None:
+    if len(g.scoped_logger.exc_list) != 0 or g.scoped_logger.raised_exc_info is not None:
         return result, status_code, ExceptionLogger(g.scoped_logger)
     return result, status_code, None
 
@@ -138,8 +138,8 @@ def add_wrapper1(endpoint, fun):
         duration = time.time() - start_time
         start_performance_thread(endpoint, duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.value is not None:
-            raise e_logger.value
+        if e_logger is not None and e_logger.raised_exception is not None:
+            raise e_logger.raised_exception
 
         return result
 
@@ -158,8 +158,8 @@ def add_wrapper2(endpoint, fun):
         duration = time.time() - start_time
         outlier.stop(duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.value is not None:
-            raise e_logger.value
+        if e_logger is not None and e_logger.raised_exception is not None:
+            raise e_logger.raised_exception
 
         return result
 
@@ -178,8 +178,8 @@ def add_wrapper3(endpoint, fun):
         duration = time.time() - start_time
         thread.stop(duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.value is not None:
-            raise e_logger.value
+        if e_logger is not None and e_logger.raised_exception is not None:
+            raise e_logger.raised_exception
 
         return result
 

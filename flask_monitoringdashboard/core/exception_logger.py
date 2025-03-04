@@ -3,11 +3,10 @@ import traceback
 import hashlib
 
 from types import FrameType, TracebackType
-from typing import Union
+from typing import  Union
 
-from sqlalchemy import values
 from sqlalchemy.orm import Session
-from flask_monitoringdashboard.core.user_exception_logger import ScopedExceptionLogger
+from flask_monitoringdashboard.core.user_exception_logger import ExcInfo, ScopedExceptionLogger
 from flask_monitoringdashboard.database import CodeLine, FunctionDefinition
 from flask_monitoringdashboard.database.exception_info import add_exception_info
 from flask_monitoringdashboard.database.full_stack_trace import add_full_stack_trace, get_stack_trace_by_hash
@@ -15,6 +14,7 @@ from flask_monitoringdashboard.database.exception_stack_line import add_exceptio
 from flask_monitoringdashboard.database.function_definition import add_function_definition
 from flask_monitoringdashboard.database.exception_message import add_exception_message
 from flask_monitoringdashboard.database.exception_type import add_exception_type
+
 
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
     f_def = FunctionDefinition()
@@ -41,14 +41,19 @@ class ExceptionLogger():
     def __init__(self, scoped_logger: ScopedExceptionLogger):
         self.exceptions : list[BaseException] = scoped_logger.exc_list
         # These gymnastics are required as otherwise it will save a lot of unneeded stuff to the traceback
-        self.exc_info = scoped_logger.raised
-        self.value = self.exc_info[1] if self.exc_info is not None else None
-        self.tb = self.exc_info[2] if self.exc_info is not None else None
+        # i.e. The __traceback__ object that is attached to the Exception object will get written to if we do not do this trick
+        # This means that stack frames from when we reraise the execption later will be included which has no value to the user
+        raised_exc_info: Union[ExcInfo, None] = scoped_logger.raised_exc_info
+        self.raised_exception: Union[BaseException, None] = None
+        self.traceback: Union[TracebackType, None] = None
+        if raised_exc_info is not None:
+            self.raised_exception = raised_exc_info[1]
+            self.traceback = raised_exc_info[2]
         
     def save_to_db_(self, request_id: int, session: Session, exc: BaseException, typ: type[BaseException], tb: Union[TracebackType, None]):
-    """
-    Save exception info to DB 
-    """
+        """
+        Save exception info to DB 
+        """
         hashed_trace = hash_stack_trace(exc)
         existing_trace = get_stack_trace_by_hash(session, hashed_trace)
         
@@ -85,7 +90,7 @@ class ExceptionLogger():
         """
         for e in self.exceptions:
             self.save_to_db_(request_id, session, e, type(e), e.__traceback__)
-        if self.value is not None and self.tb is not None:
-            e = self.value
+        if self.raised_exception is not None and self.traceback is not None:
+            e = self.raised_exception
             # We have to choose the next frame as else it will include the evaluate function
-            self.save_to_db_(request_id, session, e, type(e), self.tb.tb_next)
+            self.save_to_db_(request_id, session, e, type(e), self.traceback.tb_next)
