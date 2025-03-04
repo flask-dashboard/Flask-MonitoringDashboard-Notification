@@ -46,6 +46,9 @@ class ExceptionLogger():
         self.tb = self.exc_info[2] if self.exc_info is not None else None
         
     def save_to_db_(self, request_id: int, session: Session, exc: BaseException, typ: type[BaseException], tb: Union[TracebackType, None]):
+    """
+    Save exception info to DB 
+    """
         hashed_trace = hash_stack_trace(exc)
         existing_trace = get_stack_trace_by_hash(session, hashed_trace)
         
