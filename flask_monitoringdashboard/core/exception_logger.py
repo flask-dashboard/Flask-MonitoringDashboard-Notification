@@ -78,7 +78,7 @@ class ExceptionLogger():
 
     def save_to_db(self, request_id: int, session: Session):
         """
-        Save exception info to DB
+        Iterates over all the exceptions and save each exception info to DB
         """
         for e in self.exceptions:
             self.save_to_db_(request_id, session, e, type(e), e.__traceback__)
