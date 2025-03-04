@@ -51,7 +51,7 @@ def test_start_outlier_thread(endpoint, config):
     num_threads = threading.active_count()
     outlier = start_outlier_thread(endpoint)
     assert threading.active_count() == num_threads + 1
-    outlier.stop(duration=1, status_code=200, None)
+    outlier.stop(duration=1, status_code=200, e_logger=None)
     wait_until_threads_finished(num_threads)
 
 
@@ -63,5 +63,5 @@ def test_start_profiler_and_outlier_thread(endpoint, config):
     num_threads = threading.active_count()
     thread = start_profiler_and_outlier_thread(endpoint)
     assert threading.active_count() == num_threads + 2
-    thread.stop(duration=1, status_code=200, None)
+    thread.stop(duration=1, status_code=200, e_logger=None)
     wait_until_threads_finished(num_threads)
