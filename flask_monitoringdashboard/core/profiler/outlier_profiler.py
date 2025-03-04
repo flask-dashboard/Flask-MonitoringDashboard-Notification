@@ -1,6 +1,7 @@
 import sys
 import threading
 import traceback
+from typing import Union
 
 import psutil
 from flask import request
@@ -58,7 +59,7 @@ class OutlierProfiler(threading.Thread):
             self._cpu_percent = str(psutil.cpu_percent(interval=None, percpu=True))
             self._memory = str(psutil.virtual_memory())
 
-    def stop(self, duration, status_code, e_logger : ExceptionLogger | None):
+    def stop(self, duration, status_code, e_logger : Union[ExceptionLogger, None]):
         self._exit.set()
         update_duration_cache(endpoint_name=self._endpoint.name, duration=duration * 1000)
         with session_scope() as session:

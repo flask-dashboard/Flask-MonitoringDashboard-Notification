@@ -1,8 +1,9 @@
+from typing import Union
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.database import ExceptionStackLine, FullStackTrace
 from sqlalchemy import desc
 
-def get_stack_trace_by_hash(session: Session, full_stack_trace: str) -> FullStackTrace | None:
+def get_stack_trace_by_hash(session: Session, full_stack_trace: str) -> Union[FullStackTrace, None]:
     """
     Get FullStackTrace record by its stack_trace_hash.
     """

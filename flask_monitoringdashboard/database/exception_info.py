@@ -1,11 +1,12 @@
 """
 Contains all functions that access an ExceptionInfo object.
 """
+from typing import Union
 from sqlalchemy import func, desc
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.database import ExceptionInfo, Request, Endpoint, ExceptionType, ExceptionMessage
 from flask_monitoringdashboard.core.database_pruning import delete_entries_unreferenced_by_exception_info
-def get_exception_info(session: Session, request_id: int) -> ExceptionInfo | None:
+def get_exception_info(session: Session, request_id: int) -> Union[ExceptionInfo, None]:
     """
     Retrieve an ExceptionInfo record by request_id.
     """

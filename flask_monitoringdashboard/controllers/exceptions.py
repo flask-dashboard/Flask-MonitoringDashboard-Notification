@@ -1,3 +1,4 @@
+from typing import Union
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.database import FunctionDefinition
 from flask_monitoringdashboard.database.exception_info import delete_exception, get_exceptions_with_timestamps, get_exceptions_with_timestamps_and_stacktrace_id
@@ -93,7 +94,7 @@ def get_exception_function_definition(session: Session, function_id: int, stack_
              - code (str)
              - exception_line_number (int)
     """
-    result : FunctionDefinition | None = get_function_definition_from_id(session, function_id)
+    result : Union[FunctionDefinition, None] = get_function_definition_from_id(session, function_id)
     linenumbers = get_function_startlineno_and_relativelineno_from_function_definition_id(session, function_id, stack_trace_id)
     if result is None or linenumbers is None: 
         return {}

@@ -1,3 +1,4 @@
+from typing import Union
 from flask_monitoringdashboard.core.cache import update_duration_cache
 from flask_monitoringdashboard.core.profiler.base_profiler import BaseProfiler
 from flask_monitoringdashboard.database import session_scope
@@ -11,14 +12,14 @@ class PerformanceProfiler(BaseProfiler):
     Used when monitoring-level == 1
     """
 
-    def __init__(self, endpoint, ip, duration, group_by, e_logger: ExceptionLogger | None, status_code=200):
+    def __init__(self, endpoint, ip, duration, group_by, e_logger: Union[ExceptionLogger, None], status_code=200):
         super(PerformanceProfiler, self).__init__(endpoint)
         self._ip = ip
         self._duration = duration * 1000  # Conversion from sec to ms
         self._endpoint = endpoint
         self._group_by = group_by
         self._status_code = status_code
-        self.e_logger : ExceptionLogger | None = e_logger
+        self.e_logger : Union[ExceptionLogger, None] = e_logger
 
     def run(self):
         update_duration_cache(endpoint_name=self._endpoint.name, duration=self._duration)

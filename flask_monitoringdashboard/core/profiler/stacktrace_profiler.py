@@ -4,6 +4,7 @@ import threading
 import time
 import traceback
 from collections import defaultdict
+from typing import Union
 from flask_monitoringdashboard import config
 from flask_monitoringdashboard.core.cache import update_duration_cache
 from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
@@ -38,7 +39,7 @@ class StacktraceProfiler(threading.Thread):
         self._total = 0
         self._outlier_profiler = outlier_profiler
         self._status_code = 404
-        self.e_logger : ExceptionLogger | None = None
+        self.e_logger : Union[ExceptionLogger, None] = None
 
     def run(self):
         """
@@ -80,7 +81,7 @@ class StacktraceProfiler(threading.Thread):
 
         self._on_thread_stopped()
 
-    def stop(self, duration, status_code, e_logger : ExceptionLogger | None):
+    def stop(self, duration, status_code, e_logger : Union[ExceptionLogger, None]):
         self._duration = duration * 1000
         self._status_code = status_code
         if self._outlier_profiler:
