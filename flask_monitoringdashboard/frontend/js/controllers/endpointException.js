@@ -37,7 +37,7 @@ export function EndpointExceptionController ($scope, $http, menuService, paginat
         let key = $scope.getUniqueKey(function_id, full_stack_trace_id, row_index);
         
         if ($scope.id2Function[key] === undefined){
-            $http.get(`api/function_definition/${function_id}/${full_stack_trace_id}`)
+            $http.get(`api/function_definition/${function_id}/${full_stack_trace_id}/${row_index}`)
                 .then((response) => {
                     $scope.id2Function[key] = response.data;
                     $scope.$applyAsync(() => {
