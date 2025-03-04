@@ -268,8 +268,10 @@ class ExceptionInfo(Base):
     """Table for storing exception id together with request id."""
 
     __tablename__ = '{}ExceptionInfo'.format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
     
-    request_id = Column(Integer, ForeignKey(Request.id), primary_key=True)
+    request_id = Column(Integer, ForeignKey(Request.id))
     request = relationship(Request)
     
     exception_type_id = Column(Integer, ForeignKey(ExceptionType.id), nullable=False)
