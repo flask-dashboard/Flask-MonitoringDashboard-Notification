@@ -2,11 +2,9 @@
     Contains all functions that are used to track the performance of the flask-application.
     See init_measurement() for more detailed info.
 """
-import copy
 import sys
 import time
 from functools import wraps
-import traceback
 
 from flask import g
 from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
