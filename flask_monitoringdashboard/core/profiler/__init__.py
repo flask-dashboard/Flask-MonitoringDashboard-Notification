@@ -1,5 +1,7 @@
 import threading
+from typing import Union
 
+from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
 from flask_monitoringdashboard.core.get_ip import get_ip
 from flask_monitoringdashboard.core.group_by import get_group_by
 from flask_monitoringdashboard.core.profiler.base_profiler import BaseProfiler
@@ -16,7 +18,7 @@ def start_thread_last_requested(endpoint):
     BaseProfiler(endpoint).start()
 
 
-def start_performance_thread(endpoint, duration, status_code, e_logger):
+def start_performance_thread(endpoint, duration, status_code, e_logger: Union[ExceptionLogger, None]):
     """
     Starts a thread that updates performance, utilization and last_requested in the database.
     :param endpoint: Endpoint object
