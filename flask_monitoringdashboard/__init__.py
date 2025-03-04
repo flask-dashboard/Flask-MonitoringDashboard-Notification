@@ -13,8 +13,6 @@ The dashboard with the results that are collected can be found at:
 """
 
 import os
-import sys
-import traceback
 
 from flask import Blueprint, g
 
