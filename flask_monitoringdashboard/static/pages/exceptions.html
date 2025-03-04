@@ -52,29 +52,20 @@
                 cellspacing="0"
             >
                 <tbody>
-                    <tr
-                        ng-repeat="row in request.full_stacktrace"
-                        ng-init="key = getUniqueKey(row.function_definition_id, request.stacktrace_snapshot_id, $index)"
-                    >
-                        <td style="padding-left: 10px">
-                            <details
-                                ng-click="getFunctionById(row.function_definition_id, request.stacktrace_snapshot_id, $index)"
-                                id="details_{{request.stacktrace_snapshot_id}}"
-                            >
-                                <summary>
-                                    {{ row.filename }} <span style="color: grey"
-                                    >in</span> {{ row.function_name }} <span
-                                        style="color: grey"
-                                    >at</span> {{ row.line_number }}
-                                </summary>
-                                <div ng-if="f_def = id2Function[key]">
-                                    <pre
-                                        class="line-numbers"
-                                        style="white-space: pre"
-                                        data-line="{{f_def.exception_line_number+f_def.start_line_number}}"
-                                        data-line-offset="{{f_def.start_line_number}}"
-                                        data-start="{{f_def.start_line_number}}"
-                                    >
+                    <tr ng-repeat="row in request.full_stacktrace" ng-init="key = getUniqueKey(row.function_definition_id, request.full_stack_trace_id, row.position)">
+                        <td style="padding-left: 10px;">
+                            <details 
+                                ng-click="getFunctionById(row.function_definition_id, request.full_stack_trace_id, row.position)" 
+                                id="details_{{request.full_stack_trace_id}}">
+                            <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }} <span style="color: grey;">at</span> {{ row.line_number }} </summary>
+                            <div ng-if="f_def = id2Function[key]">
+                                <pre 
+                                    class="line-numbers" 
+                                    style="white-space: pre"
+                                    data-line="{{f_def.exception_line_number+f_def.start_line_number}}"
+                                    data-line-offset="{{f_def.start_line_number}}"
+                                    data-start="{{f_def.start_line_number}}"
+                                >
                                     <code class="language-python" ng-attr-id="{{ key }}">{{ f_def.function_code }}</code>
                                 </pre
                                     >

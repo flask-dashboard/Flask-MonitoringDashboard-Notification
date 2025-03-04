@@ -1,7 +1,5 @@
 from datetime import datetime, timedelta
-
 from sqlalchemy.orm import Session
-
 from flask_monitoringdashboard.core.custom_graph import scheduler
 from flask_monitoringdashboard.database import ( 
     session_scope, 
@@ -30,7 +28,24 @@ def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
         session.commit()
 
 def delete_entries_unreferenced_by_exception_info(session: Session):
-    """Delete StacktraceSnapshots, ExceptionStackLines, FunctionDefinitions that are not referenced by any ExceptionInfos"""
+    """
+    Delete ExceptionTypes, ExceptionMessages, FullStackTraces (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos, 
+    FunctionDefinitions that are not referenced by any ExceptionStackLines, and
+    CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
+    """
+    # Delete ExceptionTypes that are not referenced by any ExceptionInfos
+    session.query(ExceptionType).filter(
+        ~session.query(ExceptionInfo)
+        .filter(ExceptionInfo.exception_type_id == ExceptionType.id)
+        .exists()
+    ).delete(synchronize_session=False)
+
+    # Delete ExceptionMessages that are not referenced by any ExceptionInfos
+    session.query(ExceptionMessage).filter(
+        ~session.query(ExceptionInfo)
+        .filter(ExceptionInfo.exception_msg_id == ExceptionMessage.id)
+        .exists()
+    ).delete(synchronize_session=False)
 
     # Find and delete StacktraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos
     stack_trace_snapshots_to_delete = session.query(StacktraceSnapshot).filter(
@@ -38,20 +53,27 @@ def delete_entries_unreferenced_by_exception_info(session: Session):
         .filter(ExceptionInfo.stacktrace_snapshot_id == StacktraceSnapshot.id)
         .exists()
     ).all()
-
-    for stack_trace_snapshot in stack_trace_snapshots_to_delete:
-        session.query(ExceptionStackLine).filter(ExceptionStackLine.stacktrace_snapshot_id == stack_trace_snapshot.id).delete()
-        session.delete(stack_trace_snapshot)
+    for full_stack_trace in full_stack_traces_to_delete:
+        session.query(ExceptionStackLine).filter(ExceptionStackLine.full_stack_trace_id == full_stack_trace.id).delete()
+        session.delete(full_stack_trace)
         
-    # Find and delete FunctionDefinitions that are not referenced by any ExceptionStackLines
-    function_definitions_to_delete = session.query(FunctionDefinition).filter(
+    # Find and delete FunctionDefenitions that are not referenced by any ExceptionStackLines
+    session.query(FunctionDefinition).filter(
         ~session.query(ExceptionStackLine)
         .filter(ExceptionStackLine.function_definition_id == FunctionDefinition.id)
         .exists()
-    ).all()
+    ).delete(synchronize_session=False)
     
-    for function_definition in function_definitions_to_delete:
-        session.delete(function_definition)
+    # Find and delete CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
+    session.query(CodeLine).filter(
+        ~session.query(ExceptionStackLine)
+        .filter(ExceptionStackLine.code_id == CodeLine.id)
+        .exists() 
+        &
+        ~session.query(StackLine)
+        .filter(StackLine.code_id == CodeLine.id)
+        .exists()
+    ).delete(synchronize_session=False)
 
 
 def add_background_pruning_job(weeks_to_keep, delete_custom_graph_data, **schedule):

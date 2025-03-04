@@ -5,6 +5,8 @@
 import sys
 import time
 from functools import wraps
+
+from flask import g
 from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
 from werkzeug.exceptions import HTTPException
 
@@ -16,6 +18,7 @@ from flask_monitoringdashboard.core.profiler import (
     start_profiler_and_outlier_thread,
 )
 from flask_monitoringdashboard.core.rules import get_rules
+from flask_monitoringdashboard.core.user_exception_logger import ScopedExceptionLogger
 from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.endpoint import get_endpoint_by_name
 
@@ -103,18 +106,26 @@ def evaluate(route_handler, args, kwargs):
     :param kwargs:
     :return:
     """
-    try:
-        result = route_handler(*args, **kwargs)
-        status_code = status_code_from_response(result)
+    g.scoped_logger = ScopedExceptionLogger()
 
-        return result, status_code, None
-    except HTTPException as e:
-        exc_info = sys.exc_info()
-        return None, e.code, (ExceptionLogger(exc_info) if exc_info[0] is not None else None)
-    except (Exception, BaseException) as _:
-        # Same as above, but because we don't know an exception code, we return 500
-        exc_info = sys.exc_info()
-        return None, 500, (ExceptionLogger(exc_info) if exc_info[0] is not None else None)
+    def evaluate_():
+        try:
+            result = route_handler(*args, **kwargs)
+            status_code = status_code_from_response(result)
+
+            return result, status_code
+        except BaseException as e:
+            g.scoped_logger.uncaught_exception_info = sys.exc_info()
+            if isinstance(e, HTTPException):
+                return None, e.code
+            return None, 500
+
+    result, status_code = evaluate_()
+    if len(g.scoped_logger.user_captured_exceptions) != 0 or g.scoped_logger.uncaught_exception_info is not None:
+        return result, status_code, ExceptionLogger(g.scoped_logger)
+    return result, status_code, None
+
+
 
 
 def add_wrapper1(endpoint, fun):
@@ -127,8 +138,8 @@ def add_wrapper1(endpoint, fun):
         duration = time.time() - start_time
         start_performance_thread(endpoint, duration, status_code, e_logger)
 
-        if e_logger is not None:
-            raise e_logger.value
+        if e_logger is not None and e_logger.uncaught_exception_info is not None:
+            raise e_logger.uncaught_exception_info
 
         return result
 
@@ -147,8 +158,8 @@ def add_wrapper2(endpoint, fun):
         duration = time.time() - start_time
         outlier.stop(duration, status_code, e_logger)
 
-        if e_logger is not None:
-            raise e_logger.value
+        if e_logger is not None and e_logger.uncaught_exception_info is not None:
+            raise e_logger.uncaught_exception_info
 
         return result
 
@@ -167,8 +178,8 @@ def add_wrapper3(endpoint, fun):
         duration = time.time() - start_time
         thread.stop(duration, status_code, e_logger)
 
-        if e_logger is not None:
-            raise e_logger.value
+        if e_logger is not None and e_logger.uncaught_exception_info is not None:
+            raise e_logger.uncaught_exception_info
 
         return result
 

@@ -41,6 +41,7 @@ def get_function_startlineno_and_relativelineno_from_function_definition_id(sess
     result : Union[ExceptionStackLine, None] = (session.query(ExceptionStackLine)
                     .filter(ExceptionStackLine.function_definition_id == function_defintion_id)
                     .filter(ExceptionStackLine.stacktrace_snapshot_id == stacktrace_snapshot_id)
+                    .filter(ExceptionStackLine.position == position)
                     .first())
     if result is not None and isinstance(result.code, CodeLine):
         return result.code.line_number, result.relative_line_number

@@ -89,7 +89,8 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
                     'filename': get_relative_file_path_if_in_app(exceptionStackLine.code.filename),
                     'line_number': exceptionStackLine.code.line_number,
                     'function_name': exceptionStackLine.code.function_name,
-                    'function_definition_id': exceptionStackLine.function_definition_id
+                    'function_definition_id': exceptionStackLine.function_definition_id,
+                    'position': exceptionStackLine.position
                 }
                 for exceptionStackLine in get_stacklines_from_stacktrace_snapshot_id(session, exception.stacktrace_snapshot_id)],
             'latest_timestamp': exception.latest_timestamp,
@@ -98,7 +99,7 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
         }
         for exception in get_exceptions_with_timestamps_and_stacktrace_id(session, offset, per_page, endpoint_id)]
 
-def get_exception_function_definition(session: Session, function_id: int, stack_trace_id: int):
+def get_exception_function_definition(session: Session, function_id: int, stack_trace_id: int, position: int):
     """
     Retrieves the source code of the function where an exception occurred, the starting line number of the function in the source file, and the relative line number of the exception.
     :param session: session for the database
@@ -110,7 +111,7 @@ def get_exception_function_definition(session: Session, function_id: int, stack_
              - exception_line_number (int)
     """
     result : Union[FunctionDefinition, None] = get_function_definition_from_id(session, function_id)
-    linenumbers = get_function_startlineno_and_relativelineno_from_function_definition_id(session, function_id, stack_trace_id)
+    linenumbers = get_function_startlineno_and_relativelineno_from_function_definition_id(session, function_id, stack_trace_id, position)
     if result is None or linenumbers is None: 
         return {}
     file_lineno, relative_lineno = linenumbers
