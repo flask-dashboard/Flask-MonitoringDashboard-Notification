@@ -13,11 +13,14 @@ The dashboard with the results that are collected can be found at:
 """
 
 import os
+import sys
+import traceback
 
-from flask import Blueprint
+from flask import Blueprint, g
 
 from flask_monitoringdashboard.core.config import Config, TelemetryConfig
 from flask_monitoringdashboard.core.logger import log
+from flask_monitoringdashboard.core.user_exception_logger import ScopedExceptionLogger
 
 
 def loc():
@@ -120,3 +123,9 @@ def add_database_pruning_schedule(weeks_to_keep, delete_custom_graph_data, **sch
     from flask_monitoringdashboard.core import database_pruning
 
     database_pruning.add_background_pruning_job(weeks_to_keep, delete_custom_graph_data, **schedule)
+
+def capture(e: Exception):
+    if 'scoped_logger' not in g:
+        g.scoped_logger = ScopedExceptionLogger()
+    g.scoped_logger.add_exc(e)
+
