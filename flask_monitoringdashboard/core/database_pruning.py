@@ -2,6 +2,9 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.core.custom_graph import scheduler
 from flask_monitoringdashboard.database import ( 
+    CodeLine,
+    ExceptionMessage,
+    ExceptionType,
     session_scope, 
     Request, Outlier, StackLine, CustomGraphData, ExceptionInfo, StacktraceSnapshot, ExceptionStackLine, FunctionDefinition
 )
@@ -53,9 +56,9 @@ def delete_entries_unreferenced_by_exception_info(session: Session):
         .filter(ExceptionInfo.stacktrace_snapshot_id == StacktraceSnapshot.id)
         .exists()
     ).all()
-    for full_stack_trace in full_stack_traces_to_delete:
-        session.query(ExceptionStackLine).filter(ExceptionStackLine.full_stack_trace_id == full_stack_trace.id).delete()
-        session.delete(full_stack_trace)
+    for stack_trace_snapshot in stack_trace_snapshots_to_delete:
+        session.query(ExceptionStackLine).filter(ExceptionStackLine.stacktrace_snapshot_id == stack_trace_snapshot.id).delete()
+        session.delete(stack_trace_snapshot)
         
     # Find and delete FunctionDefenitions that are not referenced by any ExceptionStackLines
     session.query(FunctionDefinition).filter(
