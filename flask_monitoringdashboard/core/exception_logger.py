@@ -13,10 +13,23 @@ from flask_monitoringdashboard.database.function_definition import add_function_
 from flask_monitoringdashboard.database.exception_message import add_exception_message
 from flask_monitoringdashboard.database.exception_type import add_exception_type
 
+
+def hash_helper(s: str):
+    return hashlib.sha256(s.encode('utf-8')).hexdigest()
+
+def h_chain(h: str, tb: Union[TracebackType, None]):
+    if tb is None:
+        return h
+
+    f_def = get_function_definition_from_frame(tb.tb_frame)
+    new_hash = hash_helper(h+f_def.function_hash)
+
+    return h_chain(new_hash, tb.tb_next)
+
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
     f_def = FunctionDefinition()
     f_def.function_code = inspect.getsource(frame.f_code)
-    f_def.function_hash = hashlib.sha256(f_def.function_code.encode('utf-8')).hexdigest()
+    f_def.function_hash = hash_helper(f_def.function_code)
     return f_def
 
 def create_codeline_from_frame(frame: FrameType):
@@ -31,8 +44,8 @@ def create_codeline_from_frame(frame: FrameType):
 
 def hash_stack_trace(self):
     stack_trace_string = ''.join(traceback.format_exception(self.type, self.value, self.tb))
-    stack_trace_hash = hashlib.sha256(stack_trace_string.encode('utf-8')).hexdigest()
-    return stack_trace_hash
+    stack_trace_hash = hash_helper(stack_trace_string)
+    return h_chain(stack_trace_hash, self.tb)
 
 class ExceptionLogger():
     def __init__(self, exc_info):
