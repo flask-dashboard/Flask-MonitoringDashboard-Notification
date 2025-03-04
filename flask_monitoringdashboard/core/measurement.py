@@ -112,6 +112,7 @@ def evaluate(route_handler, args, kwargs):
         exc_info = sys.exc_info()
         return None, e.code, (ExceptionLogger(exc_info) if exc_info[0] is not None else None)
     except (Exception, BaseException) as _:
+        # Same as above, but because we don't know an exception code, we return 500
         exc_info = sys.exc_info()
         return None, 500, (ExceptionLogger(exc_info) if exc_info[0] is not None else None)
 
