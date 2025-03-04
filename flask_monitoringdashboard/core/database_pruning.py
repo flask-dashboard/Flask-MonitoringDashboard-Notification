@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from flask_monitoringdashboard.core.custom_graph import scheduler
 from flask_monitoringdashboard.database import ( 
     session_scope, 
-    CustomGraphData, ExceptionInfo, ExceptionMessage, ExceptionStackLine, ExceptionType, FullStackTrace, FunctionDefinition, Outlier, Request, StackLine
+    CustomGraphData, CodeLine, ExceptionInfo, ExceptionMessage, ExceptionStackLine, ExceptionType, FullStackTrace, FunctionDefinition, Outlier, Request, StackLine
 )
 
 def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
@@ -49,7 +49,6 @@ def delete_entries_unreferenced_by_exception_info(session: Session):
         .filter(ExceptionInfo.full_stack_trace_id == FullStackTrace.id)
         .exists()
     ).all()
-
     for full_stack_trace in full_stack_traces_to_delete:
         session.query(ExceptionStackLine).filter(ExceptionStackLine.full_stack_trace_id == full_stack_trace.id).delete()
         session.delete(full_stack_trace)
@@ -58,6 +57,17 @@ def delete_entries_unreferenced_by_exception_info(session: Session):
     session.query(FunctionDefinition).filter(
         ~session.query(ExceptionStackLine)
         .filter(ExceptionStackLine.function_definition_id == FunctionDefinition.id)
+        .exists()
+    ).delete(synchronize_session=False)
+    
+    # Find and delete CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
+    session.query(CodeLine).filter(
+        ~session.query(ExceptionStackLine)
+        .filter(ExceptionStackLine.code_id == CodeLine.id)
+        .exists() 
+        &
+        ~session.query(StackLine)
+        .filter(StackLine.code_id == CodeLine.id)
         .exists()
     ).delete(synchronize_session=False)
 
