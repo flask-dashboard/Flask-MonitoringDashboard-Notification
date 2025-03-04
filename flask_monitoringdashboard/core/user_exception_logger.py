@@ -5,9 +5,9 @@ ExcInfo: TypeAlias = tuple[type[BaseException], BaseException, TracebackType]
 
 class ScopedExceptionLogger():
     def __init__(self) -> None:
-        self.exc_list: list[BaseException] = []
-        self.raised_exc_info: Union[ExcInfo, None] = None
+        self.user_captured_exceptions: list[BaseException] = []
+        self.uncaught_exception_info: Union[ExcInfo, None] = None
 
     def add_exc(self, e: BaseException):
-        self.exc_list.append(e)
+        self.user_captured_exceptions.append(e)
 

@@ -39,16 +39,16 @@ def hash_stack_trace(exc):
 
 class ExceptionLogger():
     def __init__(self, scoped_logger: ScopedExceptionLogger):
-        self.exceptions : list[BaseException] = scoped_logger.exc_list
+        self.user_captured_exceptions : list[BaseException] = scoped_logger.user_captured_exceptions
         # These gymnastics are required as otherwise it will save a lot of unneeded stuff to the traceback
         # i.e. The __traceback__ object that is attached to the Exception object will get written to if we do not do this trick
         # This means that stack frames from when we reraise the execption later will be included which has no value to the user
-        raised_exc_info: Union[ExcInfo, None] = scoped_logger.raised_exc_info
-        self.raised_exception: Union[BaseException, None] = None
-        self.traceback: Union[TracebackType, None] = None
+        raised_exc_info: Union[ExcInfo, None] = scoped_logger.uncaught_exception_info
+        self.uncaught_exception_info: Union[BaseException, None] = None
+        self.uncaught_exception_traceback: Union[TracebackType, None] = None
         if raised_exc_info is not None:
-            self.raised_exception = raised_exc_info[1]
-            self.traceback = raised_exc_info[2]
+            self.uncaught_exception_info = raised_exc_info[1]
+            self.uncaught_exception_traceback = raised_exc_info[2]
         
     def save_to_db_(self, request_id: int, session: Session, exc: BaseException, typ: type[BaseException], tb: Union[TracebackType, None]):
         """
@@ -88,9 +88,9 @@ class ExceptionLogger():
         """
         Iterates over all the exceptions and save each exception info to DB
         """
-        for e in self.exceptions:
+        for e in self.user_captured_exceptions:
             self.save_to_db_(request_id, session, e, type(e), e.__traceback__)
-        if self.raised_exception is not None and self.traceback is not None:
-            e = self.raised_exception
+        if self.uncaught_exception_info is not None and self.uncaught_exception_traceback is not None:
+            e = self.uncaught_exception_info
             # We have to choose the next frame as else it will include the evaluate function
-            self.save_to_db_(request_id, session, e, type(e), self.traceback.tb_next)
+            self.save_to_db_(request_id, session, e, type(e), self.uncaught_exception_traceback.tb_next)
