@@ -47,7 +47,7 @@ def add_exception_info(
 
 def count_grouped_exceptions(session: Session):
     """
-    Count the number of different kinds of exceptions grouped by endpoint and full stack trace.
+    Count the number of different kinds of exceptions grouped by endpoint and stack trace snapshot.
     :param session: session for the database
     :return: Integer (total number of groups of exceptions)
     """
@@ -62,7 +62,7 @@ def count_grouped_exceptions(session: Session):
 
 def count_endpoint_grouped_exceptions(session: Session, endpoint_id: int):
     """
-    Count the number of different kinds of exceptions on an endpoint grouped by full stack trace.
+    Count the number of different kinds of exceptions on an endpoint grouped by stack trace snapshot.
     :param session: session for the database
     :param endpoint_id: filter exceptions on this endpoint id
     :return: Integer (total number of groups of exceptions)
@@ -135,7 +135,7 @@ def get_exceptions_with_timestamps_and_stack_trace_id(
     session: Session, offset: int, per_page: int, endpoint_id: int
 ):
     """
-    Gets the information about exceptions on an endpoint grouped by full stack trace and sorted by latest request time.
+    Gets the information about exceptions on an endpoint grouped by stack trace snapshot and sorted by latest request time.
     :param session: session for the database
     :param offset: number of items to skip
     :param per_page: number of items to return

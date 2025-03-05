@@ -60,7 +60,7 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
              - type (str) of the exception
              - message (str) of the exception
              - stack_trace_snapshot_id (int)
-             - full_stack_trace (lst of dicts) Each dict contains:
+             - stack_trace_snapshot (lst of dicts) Each dict contains:
                 - code (str)
                 - filename (str)
                 - line_number (int)
@@ -75,7 +75,7 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
             'type': exception.type, 
             'message': exception.message, 
             'stack_trace_snapshot_id': exception.stack_trace_snapshot_id,
-            'full_stack_trace': [ 
+            'stack_trace_snapshot': [ 
                 {
                     'filename': _get_relative_file_path_if_in_app(exceptionStackLine.code.filename),
                     'line_number': exceptionStackLine.code.line_number,

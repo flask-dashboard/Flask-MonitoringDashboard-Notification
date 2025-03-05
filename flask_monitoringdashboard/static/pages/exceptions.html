@@ -45,14 +45,15 @@
             </div>
             <table class="table table-bordered table-hover" width="100%" style="margin: 0" cellspacing="0">
                 <tbody>
-                    <tr ng-repeat="row in request.full_stack_trace"
+                    <tr ng-repeat="row in request.stack_trace_snapshot"
                         ng-init="key = getUniqueKey(row.function_definition_id, request.stack_trace_snapshot_id, row.position)">
                         <td style="padding-left: 10px;">
                             <details
                                 ng-click="getFunctionById(row.function_definition_id, request.stack_trace_snapshot_id, row.position)"
                                 id="details_{{request.stack_trace_snapshot_id}}">
                                 <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }}
-                                    <span style="color: grey;">at</span> {{ row.line_number }} </summary>
+                                    <span style="color: grey;">at</span> {{ row.line_number }}
+                                </summary>
                                 <div ng-if="f_def = id2Function[key]">
                                     <pre class="line-numbers" style="white-space: pre"
                                         data-line="{{f_def.exception_line_number+f_def.start_line_number}}"
