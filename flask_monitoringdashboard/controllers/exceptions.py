@@ -10,15 +10,6 @@ from flask_monitoringdashboard.database.function_definition import get_function_
 app_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 app_parent_dir = os.path.dirname(app_dir) + os.sep
     
-def get_relative_file_path_if_in_app(file_path: str):
-    """
-    Returns the relative file path if the file is within the application directory. Otherwise, returns the full file path.
-    :param file_path: The full file path to be checked.
-    :return: The relative file path if the file is inside the app directory, otherwise the full file path.
-    """
-    if file_path.startswith(app_parent_dir):
-        return file_path[len(app_parent_dir):]
-    return file_path
 
 def get_exception_groups(session: Session, offset: int, per_page: int):
     """
@@ -86,7 +77,7 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
             'stacktrace_snapshot_id': exception.stacktrace_snapshot_id,
             'full_stacktrace': [ 
                 {
-                    'filename': get_relative_file_path_if_in_app(exceptionStackLine.code.filename),
+                    'filename': _get_relative_file_path_if_in_app(exceptionStackLine.code.filename),
                     'line_number': exceptionStackLine.code.line_number,
                     'function_name': exceptionStackLine.code.function_name,
                     'function_definition_id': exceptionStackLine.function_definition_id,
@@ -121,3 +112,13 @@ def get_exception_function_definition(session: Session, function_id: int, stack_
             'function_code': result.function_code,
             'exception_line_number': relative_lineno
         }
+
+def _get_relative_file_path_if_in_app(file_path: str):
+    """
+    Returns the relative file path if the file is within the application directory. Otherwise, returns the full file path.
+    :param file_path: The full file path to be checked.
+    :return: The relative file path if the file is inside the app directory, otherwise the full file path.
+    """
+    if file_path.startswith(app_parent_dir):
+        return file_path[len(app_parent_dir):]
+    return file_path
