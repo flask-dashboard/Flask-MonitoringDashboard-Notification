@@ -27,18 +27,18 @@ def add_stack_trace_snapshot(session: Session, stack_trace_snapshot_hash: str) -
     return int(result.id)
 
 
-def get_stacklines_from_stacktrace_snapshot_id(session: Session, stacktrace_snapshot_id: int) -> list[ExceptionStackLine]:
+def get_stacklines_from_stack_trace_snapshot_id(session: Session, stack_trace_snapshot_id: int) -> list[ExceptionStackLine]:
     """
-    Gets all the stack lines referred to by a stacktrace.
+    Gets all the stack lines referred to by a stack_trace.
     :param session: session for the database
-    :param stacktrace_snapshot_id: Filter ExceptionStackLines on this stack trace id
+    :param stack_trace_snapshot_id: Filter ExceptionStackLines on this stack trace id
     :return: A list of ExceptionStackLine objects of a specific stack trace
     """
     result = (
         session.query(
             ExceptionStackLine
         )
-        .filter(ExceptionStackLine.stacktrace_snapshot_id == stacktrace_snapshot_id)
+        .filter(ExceptionStackLine.stack_trace_snapshot_id == stack_trace_snapshot_id)
         .order_by(desc(ExceptionStackLine.position))
         .all()
     )

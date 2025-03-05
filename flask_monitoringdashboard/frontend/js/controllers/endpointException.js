@@ -32,7 +32,7 @@ export function EndpointExceptionController(
     paginationService.onReload = function () {
         $http.get(
             "api/detailed_exception_info/" + endpointService.info.id + "/" +
-                paginationService.getLeft() + "/" + paginationService.perPage,
+            paginationService.getLeft() + "/" + paginationService.perPage,
         )
             .then(function (response) {
                 $scope.table = response.data;
@@ -46,8 +46,8 @@ export function EndpointExceptionController(
 
     $scope.getFunctionById = function (function_id, full_stack_trace_id, stack_trace_position) {
         let key = $scope.getUniqueKey(function_id, full_stack_trace_id, stack_trace_position);
-        
-        if ($scope.id2Function[key] === undefined){
+
+        if ($scope.id2Function[key] === undefined) {
             $http.get(`api/function_definition/${function_id}/${full_stack_trace_id}/${stack_trace_position}`)
                 .then((response) => {
                     $scope.id2Function[key] = response.data;
@@ -59,12 +59,12 @@ export function EndpointExceptionController(
         }
     };
 
-    $scope.deleteExceptionById = function (stacktrace_snapshot_id) {
+    $scope.deleteExceptionById = function (stack_trace_snapshot_id) {
         if (
-            stacktrace_snapshot_id &&
+            stack_trace_snapshot_id &&
             confirm("Are you sure you want to delete exception?")
         ) {
-            $http.delete(`api/exception_info/${stacktrace_snapshot_id}`)
+            $http.delete(`api/exception_info/${stack_trace_snapshot_id}`)
                 .then((_) => {
                     paginationService.onReload();
                     paginationService.total--;

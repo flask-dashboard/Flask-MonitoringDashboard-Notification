@@ -3,8 +3,8 @@ from sqlalchemy.orm import Session
 import os
 import sys
 from flask_monitoringdashboard.database import FunctionDefinition
-from flask_monitoringdashboard.database.exception_info import delete_exception, get_exceptions_with_timestamps, get_exceptions_with_timestamps_and_stacktrace_id
-from flask_monitoringdashboard.database.stack_trace_snapshot import get_stacklines_from_stacktrace_snapshot_id
+from flask_monitoringdashboard.database.exception_info import delete_exception, get_exceptions_with_timestamps, get_exceptions_with_timestamps_and_stack_trace_id
+from flask_monitoringdashboard.database.stack_trace_snapshot import get_stacklines_from_stack_trace_snapshot_id
 from flask_monitoringdashboard.database.function_definition import get_function_definition_from_id, get_function_startlineno_and_relativelineno_from_function_definition_id
 
 app_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -40,14 +40,14 @@ def get_exception_groups(session: Session, offset: int, per_page: int):
         for exception in get_exceptions_with_timestamps(session, offset, per_page)
     ]
 
-def delete_exceptions_via_stacktrace_snapshot_id(session: Session, stacktrace_snapshot_id: int) -> None:
+def delete_exceptions_via_stack_trace_snapshot_id(session: Session, stack_trace_snapshot_id: int) -> None:
     """
     Deletes the specified exception
     :param session: session for the database
-    :param stacktrace_snapshot_id: stack trace id to be deleted
+    :param stack_trace_snapshot_id: stack trace id to be deleted
     :return: None
     """
-    delete_exception(session, stacktrace_snapshot_id)
+    delete_exception(session, stack_trace_snapshot_id)
 
 def get_exception_groups_with_details_for_endpoint(session: Session, offset: int, per_page: int, endpoint_id: int):
     """
@@ -59,8 +59,8 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
     :return: A list of dicts. Each dict contains:
              - type (str) of the exception
              - message (str) of the exception
-             - stacktrace_snapshot_id (int)
-             - full_stacktrace (lst of dicts) Each dict contains:
+             - stack_trace_snapshot_id (int)
+             - full_stack_trace (lst of dicts) Each dict contains:
                 - code (str)
                 - filename (str)
                 - line_number (int)
@@ -74,8 +74,8 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
         {
             'type': exception.type, 
             'message': exception.message, 
-            'stacktrace_snapshot_id': exception.stacktrace_snapshot_id,
-            'full_stacktrace': [ 
+            'stack_trace_snapshot_id': exception.stack_trace_snapshot_id,
+            'full_stack_trace': [ 
                 {
                     'filename': _get_relative_file_path_if_in_app(exceptionStackLine.code.filename),
                     'line_number': exceptionStackLine.code.line_number,
@@ -83,12 +83,12 @@ def get_exception_groups_with_details_for_endpoint(session: Session, offset: int
                     'function_definition_id': exceptionStackLine.function_definition_id,
                     'position': exceptionStackLine.position
                 }
-                for exceptionStackLine in get_stacklines_from_stacktrace_snapshot_id(session, exception.stacktrace_snapshot_id)],
+                for exceptionStackLine in get_stacklines_from_stack_trace_snapshot_id(session, exception.stack_trace_snapshot_id)],
             'latest_timestamp': exception.latest_timestamp,
             'first_timestamp': exception.first_timestamp,
             'count': exception.count
         }
-        for exception in get_exceptions_with_timestamps_and_stacktrace_id(session, offset, per_page, endpoint_id)]
+        for exception in get_exceptions_with_timestamps_and_stack_trace_id(session, offset, per_page, endpoint_id)]
 
 def get_exception_function_definition(session: Session, function_id: int, stack_trace_id: int, position: int):
     """

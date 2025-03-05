@@ -53,11 +53,11 @@ def delete_entries_unreferenced_by_exception_info(session: Session):
     # Find and delete StacktraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos
     stack_trace_snapshots_to_delete = session.query(StacktraceSnapshot).filter(
         ~session.query(ExceptionInfo)
-        .filter(ExceptionInfo.stacktrace_snapshot_id == StacktraceSnapshot.id)
+        .filter(ExceptionInfo.stack_trace_snapshot_id == StacktraceSnapshot.id)
         .exists()
     ).all()
     for stack_trace_snapshot in stack_trace_snapshots_to_delete:
-        session.query(ExceptionStackLine).filter(ExceptionStackLine.stacktrace_snapshot_id == stack_trace_snapshot.id).delete()
+        session.query(ExceptionStackLine).filter(ExceptionStackLine.stack_trace_snapshot_id == stack_trace_snapshot.id).delete()
         session.delete(stack_trace_snapshot)
         
     # Find and delete FunctionDefenitions that are not referenced by any ExceptionStackLines
