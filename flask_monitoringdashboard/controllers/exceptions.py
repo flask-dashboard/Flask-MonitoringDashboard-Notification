@@ -102,13 +102,13 @@ def get_exception_function_definition(session: Session, function_id: int, stack_
              - exception_line_number (int)
     """
     result : Union[FunctionDefinition, None] = get_function_definition_from_id(session, function_id)
-    linenumbers = get_function_startlineno_and_relativelineno_from_function_definition_id(session, function_id, stack_trace_id, position)
-    if result is None or linenumbers is None: 
+    line_numbers = get_function_startlineno_and_relativelineno_from_function_definition_id(session, function_id, stack_trace_id, position)
+    if result is None or line_numbers is None:
         return {}
-    file_lineno, relative_lineno = linenumbers
-    startlineno = file_lineno - relative_lineno
+    file_lineno, relative_lineno = line_numbers
+    start_lineno = file_lineno - relative_lineno
     return {
-            'start_line_number': startlineno,
+            'start_line_number': start_lineno,
             'function_code': result.function_code,
             'exception_line_number': relative_lineno
         }
