@@ -281,6 +281,7 @@ class ExceptionInfo(Base):
     exception_msg = relationship(ExceptionMessage)
     
     stack_trace_snapshot_id = Column(Integer, ForeignKey(StacktraceSnapshot.id), nullable=False)
+    stack_trace_snapshot = relationship(StacktraceSnapshot)
 
 class FunctionDefinition(Base):
     """Table for storing entire functions for better logging"""
@@ -302,7 +303,8 @@ class ExceptionStackLine(Base):
     __tablename__ = '{}ExceptionStackLine'.format(config.table_prefix)
     
     stack_trace_snapshot_id = Column(Integer, ForeignKey(StacktraceSnapshot.id), primary_key=True)
-    """Request that belongs to this exc_stack_line."""
+    stack_trace_snapshot = relationship(StacktraceSnapshot)
+    """Stack trace that belongs to this exc_stack_line."""
     
     code_id = Column(Integer, ForeignKey(CodeLine.id))
     code = relationship(CodeLine)

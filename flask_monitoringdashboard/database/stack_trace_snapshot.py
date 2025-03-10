@@ -18,6 +18,10 @@ def add_stack_trace_snapshot(session: Session, stack_trace_snapshot_hash: str) -
     """
     Add a new StacktraceSnapshot record. Returns the id.
     """
+    existing_trace = get_stack_trace_by_hash(session, stack_trace_snapshot_hash)
+    if existing_trace is not None:
+        return int(existing_trace.id)
+
     result = StacktraceSnapshot(
         chained_stack_trace_hash = stack_trace_snapshot_hash
     )
