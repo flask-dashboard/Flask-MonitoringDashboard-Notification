@@ -23,7 +23,7 @@ from flask_monitoringdashboard.database import (
     ExceptionType,
     ExceptionMessage,
     ExceptionStackLine,
-    StacktraceSnapshot,
+    StackTraceSnapshot,
     FunctionDefinition,
 )
 from tests.fixtures.database import ModelFactory
@@ -176,9 +176,9 @@ class FunctionDefinitionFactory(ModelFactory):
     function_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
 
 
-class StacktraceSnapshotFactory(ModelFactory):
+class StackTraceSnapshotFactory(ModelFactory):
     class Meta:
-        model = StacktraceSnapshot
+        model = StackTraceSnapshot
 
     chained_stack_trace_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
 
@@ -226,7 +226,7 @@ register(PathHashFactory, "path_hash")
 register(ExceptionMessageFactory, "exception_message")
 register(ExceptionTypeFactory, "exception_type")
 register(FunctionDefinitionFactory, "function_definition")
-register(StacktraceSnapshotFactory, "stack_trace_snapshot")
+register(StackTraceSnapshotFactory, "stack_trace_snapshot")
 register(
     ExceptionStackLineFactory,
     "exception_stack_line",

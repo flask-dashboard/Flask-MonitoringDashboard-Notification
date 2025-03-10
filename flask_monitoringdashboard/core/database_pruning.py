@@ -11,7 +11,7 @@ from flask_monitoringdashboard.database import (
     StackLine,
     CustomGraphData,
     ExceptionInfo,
-    StacktraceSnapshot,
+    StackTraceSnapshot,
     ExceptionStackLine,
     FunctionDefinition,
 )
@@ -49,7 +49,7 @@ def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
 
 def delete_entries_unreferenced_by_exception_info(session: Session):
     """
-    Delete ExceptionTypes, ExceptionMessages, StacktraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos,
+    Delete ExceptionTypes, ExceptionMessages, StackTraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos,
     FunctionDefinitions that are not referenced by any ExceptionStackLines, and
     CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
     """
@@ -67,12 +67,12 @@ def delete_entries_unreferenced_by_exception_info(session: Session):
         .exists()
     ).delete(synchronize_session=False)
 
-    # Find and delete StacktraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos
+    # Find and delete StackTraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos
     stack_trace_snapshots_to_delete = (
-        session.query(StacktraceSnapshot)
+        session.query(StackTraceSnapshot)
         .filter(
             ~session.query(ExceptionInfo)
-            .filter(ExceptionInfo.stack_trace_snapshot_id == StacktraceSnapshot.id)
+            .filter(ExceptionInfo.stack_trace_snapshot_id == StackTraceSnapshot.id)
             .exists()
         )
         .all()

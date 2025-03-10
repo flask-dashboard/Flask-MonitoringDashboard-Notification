@@ -1,17 +1,17 @@
 from typing import Union
 from sqlalchemy.orm import Session
-from flask_monitoringdashboard.database import ExceptionStackLine, StacktraceSnapshot
+from flask_monitoringdashboard.database import ExceptionStackLine, StackTraceSnapshot
 from sqlalchemy import desc
 
 
 def get_stack_trace_by_hash(
     session: Session, stack_trace_snapshot_hash: str
-) -> Union[StacktraceSnapshot, None]:
+) -> Union[StackTraceSnapshot, None]:
     """
-    Get StacktraceSnapshot record by its chained_stack_trace_hash.
+    Get StackTraceSnapshot record by its chained_stack_trace_hash.
     """
     result = (
-        session.query(StacktraceSnapshot)
+        session.query(StackTraceSnapshot)
         .filter_by(chained_stack_trace_hash=stack_trace_snapshot_hash)
         .first()
     )
@@ -20,13 +20,13 @@ def get_stack_trace_by_hash(
 
 def add_stack_trace_snapshot(session: Session, stack_trace_snapshot_hash: str) -> int:
     """
-    Add a new StacktraceSnapshot record. Returns the id.
+    Add a new StackTraceSnapshot record. Returns the id.
     """
     existing_trace = get_stack_trace_by_hash(session, stack_trace_snapshot_hash)
     if existing_trace is not None:
         return int(existing_trace.id)
 
-    result = StacktraceSnapshot(chained_stack_trace_hash=stack_trace_snapshot_hash)
+    result = StackTraceSnapshot(chained_stack_trace_hash=stack_trace_snapshot_hash)
     session.add(result)
     session.flush()
 

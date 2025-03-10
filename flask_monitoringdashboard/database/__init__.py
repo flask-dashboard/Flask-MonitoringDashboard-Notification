@@ -241,10 +241,10 @@ class CustomGraphData(Base):
     """Actual value that is measured."""
 
 
-class StacktraceSnapshot(Base):
+class StackTraceSnapshot(Base):
     """Table for storing a hash of a stack trace and its related functions, to avoid 'duplicate' ExceptionStackLines."""
 
-    __tablename__ = "{}StacktraceSnapshot".format(config.table_prefix)
+    __tablename__ = "{}StackTraceSnapshot".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
     chained_stack_trace_hash = Column(String(64), nullable=False, unique=True)
@@ -287,9 +287,9 @@ class ExceptionInfo(Base):
     exception_msg = relationship(ExceptionMessage)
 
     stack_trace_snapshot_id = Column(
-        Integer, ForeignKey(StacktraceSnapshot.id), nullable=False
+        Integer, ForeignKey(StackTraceSnapshot.id), nullable=False
     )
-    stack_trace_snapshot = relationship(StacktraceSnapshot)
+    stack_trace_snapshot = relationship(StackTraceSnapshot)
 
 
 class FunctionDefinition(Base):
@@ -312,9 +312,9 @@ class ExceptionStackLine(Base):
     __tablename__ = "{}ExceptionStackLine".format(config.table_prefix)
 
     stack_trace_snapshot_id = Column(
-        Integer, ForeignKey(StacktraceSnapshot.id), primary_key=True
+        Integer, ForeignKey(StackTraceSnapshot.id), primary_key=True
     )
-    stack_trace_snapshot = relationship(StacktraceSnapshot)
+    stack_trace_snapshot = relationship(StackTraceSnapshot)
     """Stack trace that belongs to this exc_stack_line."""
 
     code_id = Column(Integer, ForeignKey(CodeLine.id))
@@ -385,7 +385,7 @@ def get_tables():
         CodeLine,
         CustomGraph,
         CustomGraphData,
-        StacktraceSnapshot,
+        StackTraceSnapshot,
         ExceptionType,
         ExceptionMessage,
         ExceptionInfo,

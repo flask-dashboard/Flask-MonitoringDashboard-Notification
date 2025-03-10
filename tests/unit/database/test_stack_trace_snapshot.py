@@ -4,7 +4,7 @@ This file contains all unit tests of full stack trace in the database.
 """
 
 import pytest
-from flask_monitoringdashboard.database import StacktraceSnapshot
+from flask_monitoringdashboard.database import StackTraceSnapshot
 from flask_monitoringdashboard.database.stack_trace_snapshot import (
     get_stack_trace_by_hash,
     add_stack_trace_snapshot,
@@ -13,29 +13,29 @@ from flask_monitoringdashboard.database.stack_trace_snapshot import (
 
 
 def test_add_stack_trace_snapshot(session):
-    stack_trace_snapshot_count = session.query(StacktraceSnapshot).count()
+    stack_trace_snapshot_count = session.query(StackTraceSnapshot).count()
     chained_stack_trace_hash = "test_hash"
     stack_trace_snapshot_id = add_stack_trace_snapshot(
         session, chained_stack_trace_hash
     )
     f_stack_trace = (
-        session.query(StacktraceSnapshot)
-        .filter(StacktraceSnapshot.chained_stack_trace_hash == chained_stack_trace_hash)
+        session.query(StackTraceSnapshot)
+        .filter(StackTraceSnapshot.chained_stack_trace_hash == chained_stack_trace_hash)
         .one()
     )
     assert stack_trace_snapshot_id == f_stack_trace.id
-    assert stack_trace_snapshot_count + 1 == session.query(StacktraceSnapshot).count()
+    assert stack_trace_snapshot_count + 1 == session.query(StackTraceSnapshot).count()
 
 
 def test_add_existing_stack_trace_snapshot(session, stack_trace_snapshot):
     stack_trace_snapshot_id = add_stack_trace_snapshot(
         session, stack_trace_snapshot.chained_stack_trace_hash
     )
-    stack_trace_snapshot_count = session.query(StacktraceSnapshot).count()
+    stack_trace_snapshot_count = session.query(StackTraceSnapshot).count()
     stack_trace_snapshot_id_2 = add_stack_trace_snapshot(
         session, stack_trace_snapshot.chained_stack_trace_hash
     )
-    assert stack_trace_snapshot_count == session.query(StacktraceSnapshot).count()
+    assert stack_trace_snapshot_count == session.query(StackTraceSnapshot).count()
     assert stack_trace_snapshot_id == stack_trace_snapshot_id_2
 
 
