@@ -26,24 +26,24 @@ from flask_monitoringdashboard.database.exception_message import add_exception_m
 from flask_monitoringdashboard.database.exception_type import add_exception_type
 
 
-def hash_helper(s: str):
+def _hash(s: str):
     return hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
-def h_chain(h: str, tb: Union[TracebackType, None]):
+def _hash_traceback_object(h: str, tb: Union[TracebackType, None]):
     if tb is None:
         return h
 
     f_def = get_function_definition_from_frame(tb.tb_frame)
-    new_hash = hash_helper(h + f_def.function_hash)
+    new_hash = _hash(h + f_def.function_hash)
 
-    return h_chain(new_hash, tb.tb_next)
+    return _hash_traceback_object(new_hash, tb.tb_next)
 
 
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
     f_def = FunctionDefinition()
     f_def.function_code = inspect.getsource(frame.f_code)
-    f_def.function_hash = hash_helper(f_def.function_code)
+    f_def.function_hash = _hash(f_def.function_code)
     return f_def
 
 
@@ -59,9 +59,12 @@ def create_codeline_from_frame(frame: FrameType, lineno):
 
 
 def hash_stack_trace(exc, tb):
+    """
+    Hashes the stack trace of an exception including the function definition of each frame in the traceback.
+    """
     stack_trace_string = "".join(traceback.format_exception(exc))
-    chained_stack_trace_hash = hash_helper(stack_trace_string)
-    return h_chain(chained_stack_trace_hash, tb)
+    chained_stack_trace_hash = _hash(stack_trace_string)
+    return _hash_traceback_object(chained_stack_trace_hash, tb)
 
 
 class ExceptionLogger:
@@ -79,14 +82,14 @@ class ExceptionLogger:
             self.uncaught_exception_info = raised_exc_info[1]
             self.uncaught_exception_traceback = raised_exc_info[2]
 
-    def save_to_db_(
+    def _save_to_db(
         self,
         request_id: int,
         session: Session,
         exc: BaseException,
         typ: type[BaseException],
         tb: Union[TracebackType, None],
-    ):
+        ):
         """
         Save exception info to DB
         """
@@ -132,14 +135,14 @@ class ExceptionLogger:
         Iterates over all the exceptions and save each exception info to DB
         """
         for e in self.user_captured_exceptions:
-            self.save_to_db_(request_id, session, e, type(e), e.__traceback__)
+            self._save_to_db(request_id, session, e, type(e), e.__traceback__)
         if (
             self.uncaught_exception_info is not None
             and self.uncaught_exception_traceback is not None
         ):
             e = self.uncaught_exception_info
             # We have to choose the next frame as else it will include the evaluate function
-            self.save_to_db_(
+            self._save_to_db(
                 request_id,
                 session,
                 e,
