@@ -1,7 +1,8 @@
 """
-    Contains all functions that are used to track the performance of the flask-application.
-    See init_measurement() for more detailed info.
+Contains all functions that are used to track the performance of the flask-application.
+See init_measurement() for more detailed info.
 """
+
 import sys
 import time
 from functools import wraps
@@ -22,6 +23,7 @@ from flask_monitoringdashboard.core.user_exception_logger import ScopedException
 from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.endpoint import get_endpoint_by_name
 
+
 def init_measurement():
     """
     This should be added to the list of functions that are executed before the first request.
@@ -32,6 +34,7 @@ def init_measurement():
         for rule in get_rules():
             endpoint = get_endpoint_by_name(session, rule.endpoint)
             add_decorator(endpoint)
+
 
 def add_decorator(endpoint):
     """
@@ -48,7 +51,7 @@ def add_decorator(endpoint):
     elif endpoint.monitor_level == 3:
         add_wrapper3(endpoint, fun)
     else:
-        raise ValueError('Incorrect monitoringLevel')
+        raise ValueError("Incorrect monitoringLevel")
 
 
 def add_wrapper0(endpoint, fun):
@@ -88,7 +91,7 @@ def status_code_from_response(result):
     else:
         # Try to pull it from an object
         try:
-            status_code = getattr(result, 'status_code')
+            status_code = getattr(result, "status_code")
         except:
             pass
 
@@ -96,6 +99,7 @@ def status_code_from_response(result):
         return 500
 
     return status_code
+
 
 def evaluate(route_handler, args, kwargs):
     """
@@ -121,11 +125,12 @@ def evaluate(route_handler, args, kwargs):
             return None, 500
 
     result, status_code = evaluate_()
-    if len(g.scoped_logger.user_captured_exceptions) != 0 or g.scoped_logger.uncaught_exception_info is not None:
+    if (
+        len(g.scoped_logger.user_captured_exceptions) != 0
+        or g.scoped_logger.uncaught_exception_info is not None
+    ):
         return result, status_code, ExceptionLogger(g.scoped_logger)
     return result, status_code, None
-
-
 
 
 def add_wrapper1(endpoint, fun):

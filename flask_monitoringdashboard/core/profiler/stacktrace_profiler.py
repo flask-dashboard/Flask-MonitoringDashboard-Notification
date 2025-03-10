@@ -15,7 +15,7 @@ from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.request import add_request
 from flask_monitoringdashboard.database.stack_line import add_stack_line
 
-FILENAME = 'flask_monitoringdashboard/core/measurement.py'
+FILENAME = "flask_monitoringdashboard/core/measurement.py"
 FILENAME_LEN = len(FILENAME)
 
 
@@ -25,7 +25,9 @@ class StacktraceProfiler(threading.Thread):
     This is used when monitoring-level == 2 and monitoring-level == 3
     """
 
-    def __init__(self, thread_to_monitor, endpoint, ip, group_by, outlier_profiler=None):
+    def __init__(
+        self, thread_to_monitor, endpoint, ip, group_by, outlier_profiler=None
+    ):
         threading.Thread.__init__(self)
         self._keeprunning = True
         self._thread_to_monitor = thread_to_monitor
@@ -39,7 +41,7 @@ class StacktraceProfiler(threading.Thread):
         self._total = 0
         self._outlier_profiler = outlier_profiler
         self._status_code = 404
-        self.e_logger : Union[ExceptionLogger, None] = None
+        self.e_logger: Union[ExceptionLogger, None] = None
 
     def run(self):
         """
@@ -57,12 +59,14 @@ class StacktraceProfiler(threading.Thread):
             try:
                 frame = sys._current_frames()[self._thread_to_monitor]
             except KeyError:
-                log('Can\'t get the stacktrace of the main thread. Stopping StacktraceProfiler')
-                log('Thread to monitor: %s' % self._thread_to_monitor)
-                log('Running threads: %s' % sys._current_frames().keys())
+                log(
+                    "Can't get the stacktrace of the main thread. Stopping StacktraceProfiler"
+                )
+                log("Thread to monitor: %s" % self._thread_to_monitor)
+                log("Running threads: %s" % sys._current_frames().keys())
                 break
             in_endpoint_code = False
-            self._path_hash.set_path('')
+            self._path_hash.set_path("")
             # filename, line number, function name, source code line
             for fn, ln, fun, line in traceback.extract_stack(frame):
                 if self._endpoint.name == fun:
@@ -70,7 +74,11 @@ class StacktraceProfiler(threading.Thread):
                 if in_endpoint_code:
                     key = (self._path_hash.get_path(fn, ln), fun, line)
                     self._histogram[key] += duration
-                if len(fn) > FILENAME_LEN and fn[-FILENAME_LEN:] == FILENAME and fun == "wrapper":
+                if (
+                    len(fn) > FILENAME_LEN
+                    and fn[-FILENAME_LEN:] == FILENAME
+                    and fun == "wrapper"
+                ):
                     in_endpoint_code = True
             if in_endpoint_code:
                 self._total += duration
@@ -81,7 +89,7 @@ class StacktraceProfiler(threading.Thread):
 
         self._on_thread_stopped()
 
-    def stop(self, duration, status_code, e_logger : Union[ExceptionLogger, None]):
+    def stop(self, duration, status_code, e_logger: Union[ExceptionLogger, None]):
         self._duration = duration * 1000
         self._status_code = status_code
         if self._outlier_profiler:
@@ -90,7 +98,9 @@ class StacktraceProfiler(threading.Thread):
         self.e_logger = e_logger
 
     def _on_thread_stopped(self):
-        update_duration_cache(endpoint_name=self._endpoint.name, duration=self._duration)
+        update_duration_cache(
+            endpoint_name=self._endpoint.name, duration=self._duration
+        )
         with session_scope() as session:
             request_id = add_request(
                 session,
@@ -141,14 +151,14 @@ class StacktraceProfiler(threading.Thread):
             fun = config.app.view_functions[self._endpoint.name]
         except AttributeError:
             fun = None
-        if hasattr(fun, 'original'):
+        if hasattr(fun, "original"):
             original = fun.original
             fn = inspect.getfile(original)
             lines, ln = inspect.getsourcelines(original)
             count = 0
             for line in lines:
-                lines_returned.append((fn, ln + count, 'None', line.strip()))
+                lines_returned.append((fn, ln + count, "None", line.strip()))
                 count += 1
-                if line.strip()[:4] == 'def ':
+                if line.strip()[:4] == "def ":
                     return lines_returned
-        raise ValueError('Cannot retrieve the function header')
+        raise ValueError("Cannot retrieve the function header")

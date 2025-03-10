@@ -12,17 +12,27 @@ class PerformanceProfiler(BaseProfiler):
     Used when monitoring-level == 1
     """
 
-    def __init__(self, endpoint, ip, duration, group_by, e_logger: Union[ExceptionLogger, None], status_code=200):
+    def __init__(
+        self,
+        endpoint,
+        ip,
+        duration,
+        group_by,
+        e_logger: Union[ExceptionLogger, None],
+        status_code=200,
+    ):
         super(PerformanceProfiler, self).__init__(endpoint)
         self._ip = ip
         self._duration = duration * 1000  # Conversion from sec to ms
         self._endpoint = endpoint
         self._group_by = group_by
         self._status_code = status_code
-        self.e_logger : Union[ExceptionLogger, None] = e_logger
+        self.e_logger: Union[ExceptionLogger, None] = e_logger
 
     def run(self):
-        update_duration_cache(endpoint_name=self._endpoint.name, duration=self._duration)
+        update_duration_cache(
+            endpoint_name=self._endpoint.name, duration=self._duration
+        )
         with session_scope() as session:
             request_id = add_request(
                 session,

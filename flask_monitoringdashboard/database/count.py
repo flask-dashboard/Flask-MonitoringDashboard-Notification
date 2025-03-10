@@ -39,7 +39,9 @@ def count_outliers(session, endpoint_id):
     :param endpoint_id: id of the endpoint
     :return: An integer with the number of rows in the Outlier-table.
     """
-    return count_rows(session, Request.id, Request.endpoint_id == endpoint_id, Request.outlier)
+    return count_rows(
+        session, Request.id, Request.endpoint_id == endpoint_id, Request.outlier
+    )
 
 
 def count_profiled_requests(session, endpoint_id):
@@ -55,4 +57,3 @@ def count_profiled_requests(session, endpoint_id):
         .join(Request.stack_lines)
         .scalar()
     )
-

@@ -6,7 +6,9 @@ import factory
 from pytest_factoryboy import register, LazyFixture
 
 from flask_monitoringdashboard.core.profiler.util import PathHash
-from flask_monitoringdashboard.core.profiler.util.grouped_stack_line import GroupedStackLine
+from flask_monitoringdashboard.core.profiler.util.grouped_stack_line import (
+    GroupedStackLine,
+)
 from flask_monitoringdashboard.core.profiler.util.string_hash import StringHash
 from flask_monitoringdashboard.database import (
     Endpoint,
@@ -30,6 +32,7 @@ from tests.fixtures.database import ModelFactory
 class UserFactory(ModelFactory):
     class Meta:
         model = User
+
     username = factory.LazyFunction(lambda: str(uuid.uuid4()))
     password_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
     is_admin = True
@@ -53,7 +56,7 @@ class EndpointFactory(ModelFactory):
     name = factory.LazyFunction(lambda: str(uuid.uuid4()))
     monitor_level = 1
     time_added = factory.LazyFunction(lambda: datetime.utcnow() - timedelta(days=1))
-    version_added = '1.0'
+    version_added = "1.0"
     last_requested = factory.LazyFunction(datetime.utcnow)
 
 
@@ -66,7 +69,7 @@ class RequestFactory(ModelFactory):
     time_requested = factory.LazyFunction(datetime.utcnow)
     version_requested = factory.LazyFunction(lambda: str(uuid.uuid4()))
     group_by = None
-    ip = factory.Faker('ipv4_private')
+    ip = factory.Faker("ipv4_private")
     status_code = 200
 
 
@@ -87,10 +90,10 @@ class CodeLineFactory(ModelFactory):
     class Meta:
         model = CodeLine
 
-    filename = 'abc.py'
+    filename = "abc.py"
     line_number = factory.LazyFunction(lambda: int(random() * 100))
-    function_name = 'f'
-    code = 'a=b'
+    function_name = "f"
+    code = "a=b"
 
 
 class StackLineFactory(ModelFactory):
@@ -108,7 +111,7 @@ class CustomGraphFactory(ModelFactory):
     class Meta:
         model = CustomGraph
 
-    title = factory.Faker('name')
+    title = factory.Faker("name")
     time_added = factory.LazyFunction(datetime.utcnow)
     version_added = factory.LazyFunction(lambda: str(uuid.uuid4()))
 
@@ -127,7 +130,7 @@ class GroupedStackLineFactory(factory.Factory):
         model = GroupedStackLine
 
     indent = 0
-    code = 'code'
+    code = "code"
     values = [10, 10, 40]
     total_sum = 100
     total_hits = 6
@@ -147,27 +150,31 @@ class PathHashFactory(factory.Factory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         obj = model_class()
-        obj._string_hash = kwargs.get('_string_hash')
+        obj._string_hash = kwargs.get("_string_hash")
         return obj
+
 
 class ExceptionMessageFactory(ModelFactory):
     class Meta:
         model = ExceptionMessage
 
-    message = factory.Faker('sentence')
+    message = factory.Faker("sentence")
+
 
 class ExceptionTypeFactory(ModelFactory):
     class Meta:
         model = ExceptionType
 
-    type = factory.Faker('word')
+    type = factory.Faker("word")
+
 
 class FunctionDefinitionFactory(ModelFactory):
     class Meta:
         model = FunctionDefinition
-    
-    function_code = 'def fun(): return 0'
+
+    function_code = "def fun(): return 0"
     function_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
+
 
 class StacktraceSnapshotFactory(ModelFactory):
     class Meta:
@@ -175,45 +182,62 @@ class StacktraceSnapshotFactory(ModelFactory):
 
     chained_stack_trace_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
 
+
 class ExceptionStackLineFactory(ModelFactory):
     class Meta:
         model = ExceptionStackLine
-    
+
     stack_trace_snapshot = None
     code = factory.SubFactory(CodeLineFactory)
     position = 0
     function_definition = None
     relative_line_number = factory.LazyFunction(lambda: int(random() * 100))
 
+
 class ExceptionInfoFactory(ModelFactory):
     class Meta:
         model = ExceptionInfo
-    
+
     request = None
     exception_msg = None
     exception_type = None
     stack_trace_snapshot = None
 
-register(UserFactory, 'user')
-register(UserFactory, 'another_user')
-register(EndpointFactory, 'endpoint')
-register(RequestFactory, 'request_1')  # unfortunately, we can't use fixture name: 'request'
-register(RequestFactory, 'request_2')
-register(OutlierFactory, 'outlier_1', request=LazyFixture('request_1'))
-register(OutlierFactory, 'outlier_2', request=LazyFixture('request_2'))
-register(CodeLineFactory, 'code_line')
-register(StackLineFactory, 'stack_line', request=LazyFixture('request_1'))
-register(StackLineFactory, 'stack_line_2', request=LazyFixture('request_2'), indent=1)
-register(CustomGraphFactory, 'custom_graph')
-register(CustomGraphDataFactory, 'custom_graph_data')
 
-register(GroupedStackLineFactory, 'grouped_stack_line')
-register(StringHashFactory, 'string_hash')
-register(PathHashFactory, 'path_hash')
+register(UserFactory, "user")
+register(UserFactory, "another_user")
+register(EndpointFactory, "endpoint")
+register(
+    RequestFactory, "request_1"
+)  # unfortunately, we can't use fixture name: 'request'
+register(RequestFactory, "request_2")
+register(OutlierFactory, "outlier_1", request=LazyFixture("request_1"))
+register(OutlierFactory, "outlier_2", request=LazyFixture("request_2"))
+register(CodeLineFactory, "code_line")
+register(StackLineFactory, "stack_line", request=LazyFixture("request_1"))
+register(StackLineFactory, "stack_line_2", request=LazyFixture("request_2"), indent=1)
+register(CustomGraphFactory, "custom_graph")
+register(CustomGraphDataFactory, "custom_graph_data")
 
-register(ExceptionMessageFactory, 'exception_message')
-register(ExceptionTypeFactory, 'exception_type')
-register(FunctionDefinitionFactory, 'function_definition')
-register(StacktraceSnapshotFactory, 'stack_trace_snapshot')
-register(ExceptionStackLineFactory, 'exception_stack_line', stack_trace_snapshot=LazyFixture('stack_trace_snapshot'), function_definition=LazyFixture('function_definition'))
-register(ExceptionInfoFactory, 'exception_info', request=LazyFixture('request_1'), exception_msg=LazyFixture('exception_message'), exception_type=LazyFixture('exception_type'), stack_trace_snapshot=LazyFixture('stack_trace_snapshot'))
+register(GroupedStackLineFactory, "grouped_stack_line")
+register(StringHashFactory, "string_hash")
+register(PathHashFactory, "path_hash")
+
+register(ExceptionMessageFactory, "exception_message")
+register(ExceptionTypeFactory, "exception_type")
+register(FunctionDefinitionFactory, "function_definition")
+register(StacktraceSnapshotFactory, "stack_trace_snapshot")
+register(
+    ExceptionStackLineFactory,
+    "exception_stack_line",
+    stack_trace_snapshot=LazyFixture("stack_trace_snapshot"),
+    function_definition=LazyFixture("function_definition"),
+)
+register(
+    ExceptionInfoFactory,
+    "exception_info",
+    request=LazyFixture("request_1"),
+    exception_msg=LazyFixture("exception_message"),
+    exception_type=LazyFixture("exception_type"),
+    stack_trace_snapshot=LazyFixture("stack_trace_snapshot"),
+)

@@ -19,9 +19,9 @@ def wait_until_threads_finished(num_threads):
         time.sleep(0.01)
 
 
-@pytest.mark.usefixtures('request_context')
+@pytest.mark.usefixtures("request_context")
 def test_start_thread_last_requested(endpoint, config):
-    config.app.url_map.add(Rule('/', endpoint=endpoint.name))
+    config.app.url_map.add(Rule("/", endpoint=endpoint.name))
     init_cache()
     num_threads = threading.active_count()
     start_thread_last_requested(endpoint)
@@ -30,11 +30,11 @@ def test_start_thread_last_requested(endpoint, config):
     assert memory_cache.get(endpoint.name).last_requested
 
 
-@pytest.mark.usefixtures('request_context')
+@pytest.mark.usefixtures("request_context")
 def test_start_performance_thread(endpoint, config):
-    config.app.url_map.add(Rule('/', endpoint=endpoint.name))
+    config.app.url_map.add(Rule("/", endpoint=endpoint.name))
     init_cache()
-    request.environ['REMOTE_ADDR'] = '127.0.0.1'
+    request.environ["REMOTE_ADDR"] = "127.0.0.1"
     num_threads = threading.active_count()
     start_performance_thread(endpoint, 1234, 200, None)
     assert threading.active_count() == num_threads + 1
@@ -43,11 +43,11 @@ def test_start_performance_thread(endpoint, config):
     assert memory_cache.get(endpoint.name).average_duration > 0
 
 
-@pytest.mark.usefixtures('request_context')
+@pytest.mark.usefixtures("request_context")
 def test_start_outlier_thread(endpoint, config):
-    config.app.url_map.add(Rule('/', endpoint=endpoint.name))
+    config.app.url_map.add(Rule("/", endpoint=endpoint.name))
     init_cache()
-    request.environ['REMOTE_ADDR'] = '127.0.0.1'
+    request.environ["REMOTE_ADDR"] = "127.0.0.1"
     num_threads = threading.active_count()
     outlier = start_outlier_thread(endpoint)
     assert threading.active_count() == num_threads + 1
@@ -55,11 +55,11 @@ def test_start_outlier_thread(endpoint, config):
     wait_until_threads_finished(num_threads)
 
 
-@pytest.mark.usefixtures('request_context')
+@pytest.mark.usefixtures("request_context")
 def test_start_profiler_and_outlier_thread(endpoint, config):
-    config.app.url_map.add(Rule('/', endpoint=endpoint.name))
+    config.app.url_map.add(Rule("/", endpoint=endpoint.name))
     init_cache()
-    request.environ['REMOTE_ADDR'] = '127.0.0.1'
+    request.environ["REMOTE_ADDR"] = "127.0.0.1"
     num_threads = threading.active_count()
     thread = start_profiler_and_outlier_thread(endpoint)
     assert threading.active_count() == num_threads + 2

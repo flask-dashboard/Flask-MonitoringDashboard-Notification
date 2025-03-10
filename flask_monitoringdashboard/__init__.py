@@ -23,12 +23,13 @@ from flask_monitoringdashboard.core.user_exception_logger import ScopedException
 
 def loc():
     """Get the current location of the project."""
-    return os.path.abspath(os.path.dirname(__file__)) + '/'
+    return os.path.abspath(os.path.dirname(__file__)) + "/"
 
 
 config = Config()
 telemetry_config = TelemetryConfig()
-blueprint = Blueprint('dashboard', __name__, template_folder=loc() + 'templates')
+blueprint = Blueprint("dashboard", __name__, template_folder=loc() + "templates")
+
 
 def bind(app, schedule=True, include_dashboard=True):
     """Binding the app to this object should happen before importing the routing-
@@ -42,8 +43,8 @@ def bind(app, schedule=True, include_dashboard=True):
     config.app = app
     # Provide a secret-key for using WTF-forms
     if not app.secret_key:
-        log('WARNING: You should provide a security key.')
-        app.secret_key = 'my-secret-key'
+        log("WARNING: You should provide a security key.")
+        app.secret_key = "my-secret-key"
 
     # Add all route-functions to the blueprint
     if include_dashboard:
@@ -59,7 +60,7 @@ def bind(app, schedule=True, include_dashboard=True):
             reporting,
             telemetry,
             pruning,
-            exception
+            exception,
         )
         import flask_monitoringdashboard.views
 
@@ -73,7 +74,9 @@ def bind(app, schedule=True, include_dashboard=True):
         blueprint.record_once(lambda _state: init_cache())
     except AssertionError as e:
         if app.config["TESTING"]:
-            print("We must find a better solution for the record_once exception in the tests")
+            print(
+                "We must find a better solution for the record_once exception in the tests"
+            )
         else:
             raise e
 
@@ -81,7 +84,7 @@ def bind(app, schedule=True, include_dashboard=True):
         custom_graph.init(app)
 
     # register the blueprint to the app
-    app.register_blueprint(blueprint, url_prefix='/' + config.link)
+    app.register_blueprint(blueprint, url_prefix="/" + config.link)
 
     # flush cache to db before shutdown
     import atexit
@@ -90,6 +93,7 @@ def bind(app, schedule=True, include_dashboard=True):
     atexit.register(flush_cache)
 
     if not include_dashboard:
+
         @app.teardown_request
         def teardown(_):
             flush_cache()
@@ -120,10 +124,12 @@ def add_database_pruning_schedule(weeks_to_keep, delete_custom_graph_data, **sch
     """
     from flask_monitoringdashboard.core import database_pruning
 
-    database_pruning.add_background_pruning_job(weeks_to_keep, delete_custom_graph_data, **schedule)
+    database_pruning.add_background_pruning_job(
+        weeks_to_keep, delete_custom_graph_data, **schedule
+    )
+
 
 def capture(e: Exception):
-    if 'scoped_logger' not in g:
+    if "scoped_logger" not in g:
         g.scoped_logger = ScopedExceptionLogger()
     g.scoped_logger.add_exc(e)
-

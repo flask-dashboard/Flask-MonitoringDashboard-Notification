@@ -3,7 +3,10 @@ from sqlalchemy.orm import Session
 from flask_monitoringdashboard.database import ExceptionStackLine, StacktraceSnapshot
 from sqlalchemy import desc
 
-def get_stack_trace_by_hash(session: Session, stack_trace_snapshot_hash: str) -> Union[StacktraceSnapshot, None]:
+
+def get_stack_trace_by_hash(
+    session: Session, stack_trace_snapshot_hash: str
+) -> Union[StacktraceSnapshot, None]:
     """
     Get StacktraceSnapshot record by its chained_stack_trace_hash.
     """
@@ -14,6 +17,7 @@ def get_stack_trace_by_hash(session: Session, stack_trace_snapshot_hash: str) ->
     )
     return result
 
+
 def add_stack_trace_snapshot(session: Session, stack_trace_snapshot_hash: str) -> int:
     """
     Add a new StacktraceSnapshot record. Returns the id.
@@ -22,16 +26,16 @@ def add_stack_trace_snapshot(session: Session, stack_trace_snapshot_hash: str) -
     if existing_trace is not None:
         return int(existing_trace.id)
 
-    result = StacktraceSnapshot(
-        chained_stack_trace_hash = stack_trace_snapshot_hash
-    )
+    result = StacktraceSnapshot(chained_stack_trace_hash=stack_trace_snapshot_hash)
     session.add(result)
     session.flush()
 
     return int(result.id)
 
 
-def get_stacklines_from_stack_trace_snapshot_id(session: Session, stack_trace_snapshot_id: int) -> list[ExceptionStackLine]:
+def get_stacklines_from_stack_trace_snapshot_id(
+    session: Session, stack_trace_snapshot_id: int
+) -> list[ExceptionStackLine]:
     """
     Gets all the stack lines referred to by a stack_trace.
     :param session: session for the database
@@ -39,12 +43,9 @@ def get_stacklines_from_stack_trace_snapshot_id(session: Session, stack_trace_sn
     :return: A list of ExceptionStackLine objects of a specific stack trace
     """
     result = (
-        session.query(
-            ExceptionStackLine
-        )
+        session.query(ExceptionStackLine)
         .filter(ExceptionStackLine.stack_trace_snapshot_id == stack_trace_snapshot_id)
         .order_by(desc(ExceptionStackLine.position))
         .all()
     )
     return result
-

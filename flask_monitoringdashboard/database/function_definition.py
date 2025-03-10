@@ -1,18 +1,24 @@
 from typing import Union
 from sqlalchemy.orm import Session
-from flask_monitoringdashboard.database import CodeLine, ExceptionStackLine, FunctionDefinition
+from flask_monitoringdashboard.database import (
+    CodeLine,
+    ExceptionStackLine,
+    FunctionDefinition,
+)
 
 
-def add_function_definition(session : Session, f_def: FunctionDefinition) -> int:
+def add_function_definition(session: Session, f_def: FunctionDefinition) -> int:
     """
     Adds a FunctionDefinition to the database if it does not already exist.
     :param session: Session for the database
     :param f_def: The FunctionDefinition object to be added
     :return: The ID of the existing or newly added FunctionDefinition.
     """
-    result : Union[FunctionDefinition, None] = (session.query(FunctionDefinition)
-            .filter(FunctionDefinition.function_hash == f_def.function_hash)
-            .first())
+    result: Union[FunctionDefinition, None] = (
+        session.query(FunctionDefinition)
+        .filter(FunctionDefinition.function_hash == f_def.function_hash)
+        .first()
+    )
     if result is not None:
         return result.id
     else:
@@ -20,14 +26,25 @@ def add_function_definition(session : Session, f_def: FunctionDefinition) -> int
         session.flush()
         return f_def.id
 
-def get_function_definition_from_id(session: Session, function_id: int) -> Union[FunctionDefinition, None]:
-    return (session.query(FunctionDefinition)
-            .filter(FunctionDefinition.id == function_id)
-            .first())
 
-def get_function_startlineno_and_relativelineno_from_function_definition_id(session : Session, function_defintion_id : int, stack_trace_snapshot_id : int, position: int) -> Union[tuple[int, int], None]:
+def get_function_definition_from_id(
+    session: Session, function_id: int
+) -> Union[FunctionDefinition, None]:
+    return (
+        session.query(FunctionDefinition)
+        .filter(FunctionDefinition.id == function_id)
+        .first()
+    )
+
+
+def get_function_startlineno_and_relativelineno_from_function_definition_id(
+    session: Session,
+    function_defintion_id: int,
+    stack_trace_snapshot_id: int,
+    position: int,
+) -> Union[tuple[int, int], None]:
     """
-    Retrieves the starting line number of a function and the relative line number of an exception 
+    Retrieves the starting line number of a function and the relative line number of an exception
     from the ExceptionStackLine table.
 
     :param session: session for the database
@@ -38,14 +55,14 @@ def get_function_startlineno_and_relativelineno_from_function_definition_id(sess
             - (int) The relative line number of the exception within the function.
             Returns None if no matching data is found.
     """
-    result : Union[ExceptionStackLine, None] = (session.query(ExceptionStackLine)
-                    .filter(ExceptionStackLine.function_definition_id == function_defintion_id)
-                    .filter(ExceptionStackLine.stack_trace_snapshot_id == stack_trace_snapshot_id)
-                    .filter(ExceptionStackLine.position == position)
-                    .first())
+    result: Union[ExceptionStackLine, None] = (
+        session.query(ExceptionStackLine)
+        .filter(ExceptionStackLine.function_definition_id == function_defintion_id)
+        .filter(ExceptionStackLine.stack_trace_snapshot_id == stack_trace_snapshot_id)
+        .filter(ExceptionStackLine.position == position)
+        .first()
+    )
     if result is not None and isinstance(result.code, CodeLine):
         return result.code.line_number, result.relative_line_number
     else:
         return None
-
-

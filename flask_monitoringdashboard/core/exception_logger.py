@@ -6,33 +6,46 @@ from types import FrameType, TracebackType
 from typing import Union
 
 from sqlalchemy.orm import Session
-from flask_monitoringdashboard.core.user_exception_logger import ExcInfo, ScopedExceptionLogger
+from flask_monitoringdashboard.core.user_exception_logger import (
+    ExcInfo,
+    ScopedExceptionLogger,
+)
 from flask_monitoringdashboard.database import CodeLine, FunctionDefinition
 from flask_monitoringdashboard.database.exception_info import add_exception_info
-from flask_monitoringdashboard.database.stack_trace_snapshot import add_stack_trace_snapshot, get_stack_trace_by_hash
-from flask_monitoringdashboard.database.exception_stack_line import add_exception_stack_line
-from flask_monitoringdashboard.database.function_definition import add_function_definition
+from flask_monitoringdashboard.database.stack_trace_snapshot import (
+    add_stack_trace_snapshot,
+    get_stack_trace_by_hash,
+)
+from flask_monitoringdashboard.database.exception_stack_line import (
+    add_exception_stack_line,
+)
+from flask_monitoringdashboard.database.function_definition import (
+    add_function_definition,
+)
 from flask_monitoringdashboard.database.exception_message import add_exception_message
 from flask_monitoringdashboard.database.exception_type import add_exception_type
 
 
 def hash_helper(s: str):
-    return hashlib.sha256(s.encode('utf-8')).hexdigest()
+    return hashlib.sha256(s.encode("utf-8")).hexdigest()
+
 
 def h_chain(h: str, tb: Union[TracebackType, None]):
     if tb is None:
         return h
 
     f_def = get_function_definition_from_frame(tb.tb_frame)
-    new_hash = hash_helper(h+f_def.function_hash)
+    new_hash = hash_helper(h + f_def.function_hash)
 
     return h_chain(new_hash, tb.tb_next)
+
 
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
     f_def = FunctionDefinition()
     f_def.function_code = inspect.getsource(frame.f_code)
     f_def.function_hash = hash_helper(f_def.function_code)
     return f_def
+
 
 def create_codeline_from_frame(frame: FrameType, lineno):
     c_line = CodeLine()
@@ -44,14 +57,18 @@ def create_codeline_from_frame(frame: FrameType, lineno):
         c_line.code = code_context[0]
     return c_line
 
+
 def hash_stack_trace(exc, tb):
-    stack_trace_string = ''.join(traceback.format_exception(exc))
+    stack_trace_string = "".join(traceback.format_exception(exc))
     chained_stack_trace_hash = hash_helper(stack_trace_string)
     return h_chain(chained_stack_trace_hash, tb)
 
-class ExceptionLogger():
+
+class ExceptionLogger:
     def __init__(self, scoped_logger: ScopedExceptionLogger):
-        self.user_captured_exceptions : list[BaseException] = scoped_logger.user_captured_exceptions
+        self.user_captured_exceptions: list[BaseException] = (
+            scoped_logger.user_captured_exceptions
+        )
         # These gymnastics are required as otherwise it will save a lot of unneeded stuff to the traceback
         # i.e. The __traceback__ object that is attached to the Exception object will get written to if we do not do this trick
         # This means that stack frames from when we reraise the execption later will be included which has no value to the user
@@ -61,14 +78,21 @@ class ExceptionLogger():
         if raised_exc_info is not None:
             self.uncaught_exception_info = raised_exc_info[1]
             self.uncaught_exception_traceback = raised_exc_info[2]
-        
-    def save_to_db_(self, request_id: int, session: Session, exc: BaseException, typ: type[BaseException], tb: Union[TracebackType, None]):
+
+    def save_to_db_(
+        self,
+        request_id: int,
+        session: Session,
+        exc: BaseException,
+        typ: type[BaseException],
+        tb: Union[TracebackType, None],
+    ):
         """
-        Save exception info to DB 
+        Save exception info to DB
         """
         hashed_trace = hash_stack_trace(exc, tb)
         existing_trace = get_stack_trace_by_hash(session, hashed_trace)
-        
+
         if existing_trace:
             trace_id = int(existing_trace.id)
         else:
@@ -88,10 +112,17 @@ class ExceptionLogger():
                 f_def = get_function_definition_from_frame(tb.tb_frame)
                 function_id = add_function_definition(session, f_def)
                 c_line = create_codeline_from_frame(tb.tb_frame, tb.tb_lineno)
-                add_exception_stack_line(session, trace_id, idx, c_line, function_id, c_line.line_number-tb.tb_frame.f_code.co_firstlineno)
+                add_exception_stack_line(
+                    session,
+                    trace_id,
+                    idx,
+                    c_line,
+                    function_id,
+                    c_line.line_number - tb.tb_frame.f_code.co_firstlineno,
+                )
                 tb = tb.tb_next
                 idx += 1
-        
+
         exc_msg_id = add_exception_message(session, str(exc))
         exc_type_id = add_exception_type(session, typ.__name__)
         add_exception_info(session, request_id, trace_id, exc_type_id, exc_msg_id)
@@ -102,7 +133,16 @@ class ExceptionLogger():
         """
         for e in self.user_captured_exceptions:
             self.save_to_db_(request_id, session, e, type(e), e.__traceback__)
-        if self.uncaught_exception_info is not None and self.uncaught_exception_traceback is not None:
+        if (
+            self.uncaught_exception_info is not None
+            and self.uncaught_exception_traceback is not None
+        ):
             e = self.uncaught_exception_info
             # We have to choose the next frame as else it will include the evaluate function
-            self.save_to_db_(request_id, session, e, type(e), self.uncaught_exception_traceback.tb_next)
+            self.save_to_db_(
+                request_id,
+                session,
+                e,
+                type(e),
+                self.uncaught_exception_traceback.tb_next,
+            )
