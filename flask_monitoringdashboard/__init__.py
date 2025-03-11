@@ -18,7 +18,7 @@ from flask import Blueprint, g
 
 from flask_monitoringdashboard.core.config import Config, TelemetryConfig
 from flask_monitoringdashboard.core.logger import log
-from flask_monitoringdashboard.core.user_exception_logger import ScopedExceptionLogger
+from flask_monitoringdashboard.core.scoped_exception_logger import ScopedExceptionLogger
 
 
 def loc():

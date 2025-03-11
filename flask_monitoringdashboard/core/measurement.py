@@ -19,7 +19,7 @@ from flask_monitoringdashboard.core.profiler import (
     start_profiler_and_outlier_thread,
 )
 from flask_monitoringdashboard.core.rules import get_rules
-from flask_monitoringdashboard.core.user_exception_logger import ScopedExceptionLogger
+from flask_monitoringdashboard.core.scoped_exception_logger import ScopedExceptionLogger
 from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.endpoint import get_endpoint_by_name
 

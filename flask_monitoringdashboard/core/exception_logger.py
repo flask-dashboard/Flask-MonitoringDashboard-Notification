@@ -6,7 +6,7 @@ from types import FrameType, TracebackType
 from typing import Union
 
 from sqlalchemy.orm import Session
-from flask_monitoringdashboard.core.user_exception_logger import (
+from flask_monitoringdashboard.core.scoped_exception_logger import (
     ExcInfo,
     ScopedExceptionLogger,
 )
