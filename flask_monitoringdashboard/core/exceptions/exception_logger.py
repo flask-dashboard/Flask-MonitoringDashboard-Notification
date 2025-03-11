@@ -95,11 +95,14 @@ class ExceptionLogger:
 
     def save_to_db(self, request_id: int, session: Session):
         """
-        Iterates over all the exceptions and save each exception info to DB
+        Iterates over all the user captured exceptions but also the uncaught ones and saves each exception info to DB
         """
+
+        # User Captured Exceptions
         for e in self.user_captured_exceptions:
             self._save_to_db(request_id, session, e, type(e), e.__traceback__)
 
+        # Uncaught exception
         if (
             self.uncaught_exception_info is not None
             and self.uncaught_exception_traceback is not None
