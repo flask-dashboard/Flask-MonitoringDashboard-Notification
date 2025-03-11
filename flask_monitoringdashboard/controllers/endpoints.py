@@ -24,6 +24,7 @@ from flask_monitoringdashboard.database.endpoint import (
     update_endpoint,
 )
 from flask_monitoringdashboard.database.versions import get_first_requests
+from flask_monitoringdashboard.database.exception_info import count_endpoint_grouped_exceptions
 
 
 def get_endpoint_overview(session):
@@ -73,6 +74,7 @@ def get_endpoint_overview(session):
             'median-week': get_value(median_week, endpoint.id),
             'median-overall': get_value(median_overall, endpoint.id),
             'last-accessed': get_value(access_times, endpoint.name, default=None),
+            'exceptions': count_endpoint_grouped_exceptions(session, endpoint.id),
         }
         for endpoint in get_endpoints(session)
     ]
