@@ -49,8 +49,8 @@ def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
 
 def delete_entries_unreferenced_by_exception_info(session: Session):
     """
-    Delete ExceptionTypes, ExceptionMessages, StackTraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos,
-    FunctionDefinitions that are not referenced by any ExceptionStackLines, and
+    Delete ExceptionTypes, ExceptionMessages, StackTraceSnapshots (along with their ExceptionStackLines) that are not
+    referenced by any ExceptionInfos,  FunctionDefinitions that are not referenced by any ExceptionStackLines, and
     CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
     """
     # Delete ExceptionTypes that are not referenced by any ExceptionInfos
