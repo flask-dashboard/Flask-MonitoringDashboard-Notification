@@ -60,7 +60,17 @@ The Flask Monitoring Dashboard is an extension for Flask applications that offer
   Suppose you have an User-table and you want to know how many users are registered on your Flask-application.
   Then, you can run the following query: 'SELECT Count(*) FROM USERS;'. But this is just annoying to do regularly.
   Therefore, you can configure this in the Flask-MonitoringDashboard, which will provide you this information per day (or other time interval).
-  
+
+- **Exception Monitoring and Capturing**  
+  Flask-MonitoringDashboard automatically logs unhandled exceptions with full stack traces, showing where and why errors occur, if you have monitoring level 1 or above.  
+
+  To capture handled exceptions manually and save them for displaying in the exception dashboard:
+  ```python
+  try:
+      # Your code
+  except Exception as e:
+      dashboard.capture(e)  # Logs exception with stack trace for debugging
+  ``` 
   
 The dashboard is automatically added to your existing Flask application.
 You can view the results by default using the default endpoint (this can be configured to another route):
