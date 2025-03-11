@@ -1,19 +1,15 @@
 import inspect
 from types import FrameType
-import hashlib
 
+from flask_monitoringdashboard.core.exceptions.text_hash import text_hash
 from flask_monitoringdashboard.database import FunctionDefinition, CodeLine
-
-
-def function_definition_hasher(s: str):
-    return hashlib.sha256(s.encode("utf-8")).hexdigest()
 
 
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
 
     f_def = FunctionDefinition()
     f_def.function_code = inspect.getsource(frame.f_code)
-    f_def.function_hash = function_definition_hasher(f_def.function_code)
+    f_def.function_hash = text_hash(f_def.function_code)
     return f_def
 
 
