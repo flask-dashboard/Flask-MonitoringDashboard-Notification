@@ -1,7 +1,7 @@
 import threading
 from typing import Union
 
-from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
+from flask_monitoringdashboard.core.exceptions.exception_logger import ExceptionLogger
 from flask_monitoringdashboard.core.get_ip import get_ip
 from flask_monitoringdashboard.core.group_by import get_group_by
 from flask_monitoringdashboard.core.profiler.base_profiler import BaseProfiler

@@ -8,7 +8,7 @@ import time
 from functools import wraps
 
 from flask import g
-from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
+from flask_monitoringdashboard.core.exceptions.exception_logger import ExceptionLogger
 from werkzeug.exceptions import HTTPException
 
 from flask_monitoringdashboard import config
@@ -19,7 +19,9 @@ from flask_monitoringdashboard.core.profiler import (
     start_profiler_and_outlier_thread,
 )
 from flask_monitoringdashboard.core.rules import get_rules
-from flask_monitoringdashboard.core.scoped_exception_logger import ScopedExceptionLogger
+from flask_monitoringdashboard.core.exceptions.scoped_exception_logger import (
+    ScopedExceptionLogger,
+)
 from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.endpoint import get_endpoint_by_name
 

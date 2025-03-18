@@ -7,7 +7,7 @@ from collections import defaultdict
 from typing import Union
 from flask_monitoringdashboard import config
 from flask_monitoringdashboard.core.cache import update_duration_cache
-from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
+from flask_monitoringdashboard.core.exceptions.exception_logger import ExceptionLogger
 from flask_monitoringdashboard.core.logger import log
 from flask_monitoringdashboard.core.profiler.util import order_histogram
 from flask_monitoringdashboard.core.profiler.util.path_hash import PathHash

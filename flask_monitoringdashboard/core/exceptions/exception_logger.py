@@ -1,16 +1,18 @@
-import inspect
-import traceback
-import hashlib
-
-from types import FrameType, TracebackType
+from types import TracebackType
 from typing import Union
 
 from sqlalchemy.orm import Session
-from flask_monitoringdashboard.core.scoped_exception_logger import (
+from flask_monitoringdashboard.core.exceptions.scoped_exception_logger import (
     ExcInfo,
     ScopedExceptionLogger,
 )
-from flask_monitoringdashboard.database import CodeLine, FunctionDefinition
+from flask_monitoringdashboard.core.exceptions.stack_frame_parsing import (
+    get_function_definition_from_frame,
+    create_codeline_from_frame,
+)
+from flask_monitoringdashboard.core.exceptions.stack_trace_hashing import (
+    hash_stack_trace,
+)
 from flask_monitoringdashboard.database.exception_info import add_exception_info
 from flask_monitoringdashboard.database.stack_trace_snapshot import (
     add_stack_trace_snapshot,
@@ -93,10 +95,14 @@ class ExceptionLogger:
 
     def save_to_db(self, request_id: int, session: Session):
         """
-        Iterates over all the exceptions and save each exception info to DB
+        Iterates over all the user captured exceptions but also the uncaught ones and saves each exception info to DB
         """
+
+        # User Captured Exceptions
         for e in self.user_captured_exceptions:
             self._save_to_db(request_id, session, e, type(e), e.__traceback__)
+
+        # Uncaught exception
         if (
             self.uncaught_exception_info is not None
             and self.uncaught_exception_traceback is not None
@@ -110,44 +116,3 @@ class ExceptionLogger:
                 type(e),
                 self.uncaught_exception_traceback.tb_next,
             )
-
-
-def _hash(s: str):
-    return hashlib.sha256(s.encode("utf-8")).hexdigest()
-
-
-def _hash_traceback_object(h: str, tb: Union[TracebackType, None]):
-    if tb is None:
-        return h
-
-    f_def = get_function_definition_from_frame(tb.tb_frame)
-    new_hash = _hash(h + f_def.function_hash)
-
-    return _hash_traceback_object(new_hash, tb.tb_next)
-
-
-def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
-    f_def = FunctionDefinition()
-    f_def.function_code = inspect.getsource(frame.f_code)
-    f_def.function_hash = _hash(f_def.function_code)
-    return f_def
-
-
-def create_codeline_from_frame(frame: FrameType, lineno):
-    c_line = CodeLine()
-    c_line.filename = frame.f_code.co_filename
-    c_line.line_number = lineno
-    c_line.function_name = frame.f_code.co_name
-    code_context = inspect.getframeinfo(frame).code_context
-    if code_context is not None and len(code_context) > 0:
-        c_line.code = code_context[0]
-    return c_line
-
-
-def hash_stack_trace(exc, tb):
-    """
-    Hashes the stack trace of an exception including the function definition of each frame in the traceback.
-    """
-    stack_trace_string = "".join(traceback.format_exception(exc))
-    chained_stack_trace_hash = _hash(stack_trace_string)
-    return _hash_traceback_object(chained_stack_trace_hash, tb)

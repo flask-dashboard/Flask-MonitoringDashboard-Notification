@@ -3,7 +3,7 @@ from flask_monitoringdashboard.core.cache import update_duration_cache
 from flask_monitoringdashboard.core.profiler.base_profiler import BaseProfiler
 from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.request import add_request
-from flask_monitoringdashboard.core.exception_logger import ExceptionLogger
+from flask_monitoringdashboard.core.exceptions.exception_logger import ExceptionLogger
 
 
 class PerformanceProfiler(BaseProfiler):
