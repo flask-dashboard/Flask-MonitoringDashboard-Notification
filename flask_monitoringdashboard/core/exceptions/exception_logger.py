@@ -33,14 +33,7 @@ class ExceptionLogger:
         self.user_captured_exceptions: list[BaseException] = (
             scoped_logger.user_captured_exceptions
         )
-        self.uncaught_exception_info: Union[BaseException, None] = scoped_logger.uncaught_exception_info
-        
-        if self.uncaught_exception_info is not None:
-            # The uncaught_exception_info is set in the evaluate_() function,
-            # which causes stack frames from evaluate_() to appear in the traceback.
-            # These frames are not relevant for the user, so we skip the first frame 
-            traceback_without_reraise = self.uncaught_exception_info.__traceback__.tb_next
-            self.uncaught_exception_info = self.uncaught_exception_info.with_traceback(traceback_without_reraise)
+        self.uncaught_exception: Union[BaseException, None] = scoped_logger.uncaught_exception
     
     def _save_to_db(
         self,
@@ -94,22 +87,23 @@ class ExceptionLogger:
         """
         Iterates over all the user captured exceptions but also the uncaught ones and saves each exception info to DB
         """
-
         # User Captured Exceptions
         for e in self.user_captured_exceptions:
             self._save_to_db(request_id, session, e, type(e), e.__traceback__)
 
-        # Uncaught exception
-        e = self.uncaught_exception_info
+        # Uncaught Exception
+        e = self.uncaught_exception
         if (
             e is not None and e.__traceback__ is not None
         ):
+            # We have to choose the next frame as else it will include the evaluate function from measurement.py
+            # where it was temporaritly captured for logging by the ScopedExceptionLogger, before getting reraised later
             self._save_to_db(
                 request_id,
                 session,
                 e,
                 type(e),
-                e.__traceback__
+                e.__traceback__.tb_next
             )
             
     def get_copy_of_uncaught_exception(self):
@@ -117,6 +111,6 @@ class ExceptionLogger:
         Helper function to reraise the uncaught exception with its original traceback, 
         The copy is made in order to preserve the original exception's stack trace
         """
-        exc = self.uncaught_exception_info
+        exc = self.uncaught_exception
         if exc is not None:
             return exc.__class__(exc.args).with_traceback(exc.__traceback__)

@@ -129,7 +129,7 @@ def evaluate(route_handler, args, kwargs):
     result, status_code = evaluate_()
     if (
         len(g.scoped_logger.user_captured_exceptions) != 0
-        or g.scoped_logger.uncaught_exception_info is not None
+        or g.scoped_logger.uncaught_exception is not None
     ):
         return result, status_code, ExceptionLogger(g.scoped_logger)
     return result, status_code, None
@@ -145,7 +145,7 @@ def add_wrapper1(endpoint, fun):
         duration = time.time() - start_time
         start_performance_thread(endpoint, duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.uncaught_exception_info is not None:
+        if e_logger is not None and e_logger.uncaught_exception is not None:
             raise e_logger.get_copy_of_uncaught_exception()
 
         return result
@@ -165,7 +165,7 @@ def add_wrapper2(endpoint, fun):
         duration = time.time() - start_time
         outlier.stop(duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.uncaught_exception_info is not None:
+        if e_logger is not None and e_logger.uncaught_exception is not None:
             raise e_logger.get_copy_of_uncaught_exception()
 
         return result
@@ -185,7 +185,7 @@ def add_wrapper3(endpoint, fun):
         duration = time.time() - start_time
         thread.stop(duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.uncaught_exception_info is not None:
+        if e_logger is not None and e_logger.uncaught_exception is not None:
             raise e_logger.get_copy_of_uncaught_exception()
 
         return result
