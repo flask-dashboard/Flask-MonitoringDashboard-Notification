@@ -3,7 +3,6 @@ from typing import Union
 
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.core.exceptions.scoped_exception_logger import (
-    ExcInfo,
     ScopedExceptionLogger,
 )
 from flask_monitoringdashboard.core.exceptions.stack_frame_parsing import (
@@ -34,17 +33,15 @@ class ExceptionLogger:
         self.user_captured_exceptions: list[BaseException] = (
             scoped_logger.user_captured_exceptions
         )
-
-        # These gymnastics are required as otherwise it will save a lot of unneeded stuff to the traceback
-        # i.e. The __traceback__ object that is attached to the Exception object will get written to if we do not do this trick
-        # This means that stack frames from when we reraise the execption later will be included which has no value to the user
-        raised_exc_info: Union[ExcInfo, None] = scoped_logger.uncaught_exception_info
-        self.uncaught_exception_info: Union[BaseException, None] = None
-        self.uncaught_exception_traceback: Union[TracebackType, None] = None
-        if raised_exc_info is not None:
-            self.uncaught_exception_info = raised_exc_info[1]
-            self.uncaught_exception_traceback = raised_exc_info[2]
-
+        self.uncaught_exception_info: Union[BaseException, None] = scoped_logger.uncaught_exception_info
+        
+        if self.uncaught_exception_info is not None:
+            # The uncaught_exception_info is set in the evaluate_() function,
+            # which causes stack frames from evaluate_() to appear in the traceback.
+            # These frames are not relevant for the user, so we skip the first frame 
+            traceback_without_reraise = self.uncaught_exception_info.__traceback__.tb_next
+            self.uncaught_exception_info = self.uncaught_exception_info.with_traceback(traceback_without_reraise)
+    
     def _save_to_db(
         self,
         request_id: int,
@@ -103,16 +100,23 @@ class ExceptionLogger:
             self._save_to_db(request_id, session, e, type(e), e.__traceback__)
 
         # Uncaught exception
+        e = self.uncaught_exception_info
         if (
-            self.uncaught_exception_info is not None
-            and self.uncaught_exception_traceback is not None
+            e is not None and e.__traceback__ is not None
         ):
-            e = self.uncaught_exception_info
-            # We have to choose the next frame as else it will include the evaluate function
             self._save_to_db(
                 request_id,
                 session,
                 e,
                 type(e),
-                self.uncaught_exception_traceback.tb_next,
+                e.__traceback__
             )
+            
+    def get_copy_of_uncaught_exception(self):
+        """
+        Helper function to reraise the uncaught exception with its original traceback, 
+        The copy is made in order to preserve the original exception's stack trace
+        """
+        exc = self.uncaught_exception_info
+        if exc is not None:
+            return exc.__class__(exc.args).with_traceback(exc.__traceback__)

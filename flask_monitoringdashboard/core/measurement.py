@@ -3,7 +3,6 @@ Contains all functions that are used to track the performance of the flask-appli
 See init_measurement() for more detailed info.
 """
 
-import sys
 import time
 from functools import wraps
 
@@ -121,7 +120,8 @@ def evaluate(route_handler, args, kwargs):
 
             return result, status_code
         except BaseException as e:
-            g.scoped_logger.uncaught_exception_info = sys.exc_info()
+            g.scoped_logger.uncaught_exception_info = e
+
             if isinstance(e, HTTPException):
                 return None, e.code
             return None, 500
@@ -146,7 +146,7 @@ def add_wrapper1(endpoint, fun):
         start_performance_thread(endpoint, duration, status_code, e_logger)
 
         if e_logger is not None and e_logger.uncaught_exception_info is not None:
-            raise e_logger.uncaught_exception_info
+            raise e_logger.get_copy_of_uncaught_exception()
 
         return result
 
@@ -166,7 +166,7 @@ def add_wrapper2(endpoint, fun):
         outlier.stop(duration, status_code, e_logger)
 
         if e_logger is not None and e_logger.uncaught_exception_info is not None:
-            raise e_logger.uncaught_exception_info
+            raise e_logger.get_copy_of_uncaught_exception()
 
         return result
 
@@ -186,7 +186,7 @@ def add_wrapper3(endpoint, fun):
         thread.stop(duration, status_code, e_logger)
 
         if e_logger is not None and e_logger.uncaught_exception_info is not None:
-            raise e_logger.uncaught_exception_info
+            raise e_logger.get_copy_of_uncaught_exception()
 
         return result
 
