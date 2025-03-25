@@ -23,7 +23,7 @@ def start_thread_last_requested(endpoint):
 
 
 def start_performance_thread(
-    endpoint, duration, status_code, e_logger: Union[ExceptionLogger, None]
+    endpoint, duration, status_code, e_logger: ExceptionLogger
 ):
     """
     Starts a thread that updates performance, utilization and last_requested in the database.

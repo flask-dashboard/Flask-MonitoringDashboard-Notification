@@ -127,13 +127,8 @@ def evaluate(route_handler, args, kwargs):
             return None, 500, e
 
     result, status_code, exception = evaluate_()
-    if (
-        len(g.scoped_logger.user_captured_exceptions) != 0
-        or g.scoped_logger.uncaught_exception is not None
-    ):
-        return result, status_code, ExceptionLogger(g.scoped_logger), exception
-    return result, status_code, None, exception
 
+    return result, status_code, ExceptionLogger(g.scoped_logger), exception
 
 def add_wrapper1(endpoint, fun):
     @wraps(fun)

@@ -41,7 +41,7 @@ class StacktraceProfiler(threading.Thread):
         self._total = 0
         self._outlier_profiler = outlier_profiler
         self._status_code = 404
-        self.e_logger: Union[ExceptionLogger, None] = None
+        self.e_logger: ExceptionLogger = None
 
     def run(self):
         """
@@ -89,7 +89,7 @@ class StacktraceProfiler(threading.Thread):
 
         self._on_thread_stopped()
 
-    def stop(self, duration, status_code, e_logger: Union[ExceptionLogger, None]):
+    def stop(self, duration, status_code, e_logger: ExceptionLogger):
         self._duration = duration * 1000
         self._status_code = status_code
         if self._outlier_profiler:
@@ -112,8 +112,7 @@ class StacktraceProfiler(threading.Thread):
             )
             self._lines_body = order_histogram(self._histogram.items())
             self.insert_lines_db(session, request_id)
-            if self.e_logger is not None:
-                self.e_logger.save_to_db(request_id, session)
+            self.e_logger.save_to_db(request_id, session)
             if self._outlier_profiler:
                 self._outlier_profiler.add_outlier(session, request_id)
 
