@@ -21,3 +21,4 @@ def test_get_exception_info(session, exception_info):
     assert e_info.exception_type_id == exception_info.exception_type_id
     assert e_info.exception_msg_id == exception_info.exception_msg_id
     assert e_info.stack_trace_snapshot_id == exception_info.stack_trace_snapshot_id
+    assert e_info.is_user_captured == exception_info.is_user_captured

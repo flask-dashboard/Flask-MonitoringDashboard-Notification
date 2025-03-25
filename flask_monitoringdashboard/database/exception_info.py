@@ -31,6 +31,7 @@ def add_exception_info(
     trace_id: int,
     exception_type_id: int,
     exception_msg_id: int,
+    is_user_caused: bool,
 ):
     """
     Add a new ExceptionInfo record.
@@ -40,6 +41,7 @@ def add_exception_info(
         exception_type_id=exception_type_id,
         exception_msg_id=exception_msg_id,
         stack_trace_snapshot_id=trace_id,
+        is_user_captured=is_user_captured,
     )
     session.add(exception_info)
     session.commit()

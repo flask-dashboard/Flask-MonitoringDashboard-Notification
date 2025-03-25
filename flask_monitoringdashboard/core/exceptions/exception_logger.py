@@ -52,6 +52,7 @@ class ExceptionLogger:
         exc: BaseException,
         typ: type[BaseException],
         tb: Union[TracebackType, None],
+        is_user_captured: bool = False,
     ):
         """
         Save exception info to DB
@@ -91,7 +92,7 @@ class ExceptionLogger:
 
         exc_msg_id = add_exception_message(session, str(exc))
         exc_type_id = add_exception_type(session, typ.__name__)
-        add_exception_info(session, request_id, trace_id, exc_type_id, exc_msg_id)
+        add_exception_info(session, request_id, trace_id, exc_type_id, exc_msg_id, is_user_captured)
 
     def save_to_db(self, request_id: int, session: Session):
         """
@@ -100,7 +101,7 @@ class ExceptionLogger:
 
         # User Captured Exceptions
         for e in self.user_captured_exceptions:
-            self._save_to_db(request_id, session, e, type(e), e.__traceback__)
+            self._save_to_db(request_id, session, e, type(e), e.__traceback__, True)
 
         # Uncaught exception
         if (
@@ -115,4 +116,5 @@ class ExceptionLogger:
                 e,
                 type(e),
                 self.uncaught_exception_traceback.tb_next,
+                False,
             )

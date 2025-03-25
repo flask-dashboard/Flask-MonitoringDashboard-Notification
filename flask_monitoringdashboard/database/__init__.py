@@ -291,6 +291,8 @@ class ExceptionInfo(Base):
     )
     stack_trace_snapshot = relationship(StackTraceSnapshot)
 
+    is_user_captured = Column(Boolean, nullable=False)
+
 
 class FunctionDefinition(Base):
     """Table for storing entire functions for better logging"""

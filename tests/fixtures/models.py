@@ -202,6 +202,7 @@ class ExceptionInfoFactory(ModelFactory):
     exception_msg = None
     exception_type = None
     stack_trace_snapshot = None
+    is_user_captured = False
 
 
 register(UserFactory, "user")
