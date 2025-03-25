@@ -130,6 +130,7 @@ def evaluate(route_handler, args, kwargs):
 
     return result, status_code, ExceptionLogger(g.scoped_logger), exception
 
+
 def add_wrapper1(endpoint, fun):
     @wraps(fun)
     def wrapper(*args, **kwargs):

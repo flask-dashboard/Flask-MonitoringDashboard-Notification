@@ -33,8 +33,10 @@ class ExceptionLogger:
         self.user_captured_exceptions: list[BaseException] = (
             scoped_logger.user_captured_exceptions
         )
-        self.uncaught_exception: Union[BaseException, None] = scoped_logger.uncaught_exception
-    
+        self.uncaught_exception: Union[BaseException, None] = (
+            scoped_logger.uncaught_exception
+        )
+
     def _save_to_db(
         self,
         request_id: int,
@@ -93,17 +95,9 @@ class ExceptionLogger:
 
         # Uncaught Exception
         e = self.uncaught_exception
-        if (
-            e is not None and e.__traceback__ is not None
-        ):
+        if e is not None and e.__traceback__ is not None:
             # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
             # where it was temporaritly captured for logging by the ScopedExceptionLogger, before getting reraised later
             e = e.with_traceback(e.__traceback__.tb_next)
-            
-            self._save_to_db(
-                request_id,
-                session,
-                e,
-                type(e),
-                e.__traceback__
-            )
+
+            self._save_to_db(request_id, session, e, type(e), e.__traceback__)
