@@ -172,8 +172,9 @@ class FunctionDefinitionFactory(ModelFactory):
     class Meta:
         model = FunctionDefinition
 
-    function_code = "def fun(): return 0"
-    function_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    code = "def fun(): return 0"
+    code_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    name = "fun"
 
 
 class StackTraceSnapshotFactory(ModelFactory):

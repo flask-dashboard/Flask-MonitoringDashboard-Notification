@@ -18,8 +18,8 @@ def test_add_function_definition(session, function_definition):
         .filter(FunctionDefinition.id == function_definition_id)
         .one()
     )
-    assert f_def.function_code == function_definition.function_code
-    assert f_def.function_hash == function_definition.function_hash
+    assert f_def.code == function_definition.code
+    assert f_def.code_hash == function_definition.code_hash
 
 
 def test_add_existing_function_definition(session, function_definition):
@@ -33,8 +33,8 @@ def test_add_existing_function_definition(session, function_definition):
 def test_get_function_definition_from_id(session, function_definition):
     f_def = get_function_definition_from_id(session, function_definition.id)
     assert f_def.id == function_definition.id
-    assert f_def.function_code == function_definition.function_code
-    assert f_def.function_hash == function_definition.function_hash
+    assert f_def.code == function_definition.code
+    assert f_def.code_hash == function_definition.code_hash
 
 
 def test_get_function_definition_from_invalid_id(session):

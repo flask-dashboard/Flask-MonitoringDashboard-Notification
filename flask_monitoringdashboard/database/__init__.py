@@ -301,11 +301,14 @@ class FunctionDefinition(Base):
 
     id = Column(Integer, primary_key=True)
 
-    function_code = Column(TEXT, nullable=True)
-    """The entire function"""
+    name = Column(String(250), nullable=True)
+    """The name of the function"""
 
-    function_hash = Column(String(64), nullable=True)
-    """The hash of the function"""
+    code = Column(TEXT, nullable=True)
+    """The entire function code"""
+
+    code_hash = Column(String(64), nullable=True)
+    """The hash of the function code"""
 
 
 class ExceptionStackLine(Base):

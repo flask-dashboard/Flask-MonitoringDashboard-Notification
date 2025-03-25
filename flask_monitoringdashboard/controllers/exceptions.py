@@ -141,7 +141,7 @@ def get_exception_function_definition(
     start_lineno = file_lineno - relative_lineno
     return {
         "start_line_number": start_lineno,
-        "function_code": result.function_code,
+        "code": result.code,
         "exception_line_number": relative_lineno,
     }
 

@@ -16,7 +16,7 @@ def add_function_definition(session: Session, f_def: FunctionDefinition) -> int:
     """
     result: Union[FunctionDefinition, None] = (
         session.query(FunctionDefinition)
-        .filter(FunctionDefinition.function_hash == f_def.function_hash)
+        .filter(FunctionDefinition.code_hash == f_def.code_hash)
         .first()
     )
     if result is not None:
