@@ -120,7 +120,7 @@ def evaluate(route_handler, args, kwargs):
 
             return result, status_code
         except BaseException as e:
-            g.scoped_logger.uncaught_exception_info = e
+            g.scoped_logger.uncaught_exception = e
 
             if isinstance(e, HTTPException):
                 return None, e.code
