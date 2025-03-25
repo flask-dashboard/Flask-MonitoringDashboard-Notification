@@ -310,6 +310,45 @@ class FunctionDefinition(Base):
     code_hash = Column(String(64), nullable=True)
     """The hash of the function code"""
 
+class FilePath(Base):
+    """Table for storing file paths"""
+
+    __tablename__ = "{}FilePath".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+    path = Column(String(250), nullable=False, unique=True)
+
+class FunctionLocation(Base):
+    """Table for storing functions with their locations in the source code"""
+
+    __tablename__ = "{}FunctionLocation".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+
+    file_path_id = Column(Integer, ForeignKey(FilePath.id))
+    file_path = relationship(FilePath)
+    """The file path of the file where the function is located"""
+
+    function_definition_id = Column(Integer, ForeignKey(FunctionDefinition.id))
+    function_definition = relationship(FunctionDefinition)
+    """The related function definition"""
+
+    function_start_line_number = Column(Integer, nullable=False)
+    """The starting line number of the function in the source file"""
+
+class ExceptionFrame(Base):
+    """Table for storing information of a frame in an exceptions traceback"""
+
+    __tablename__ = "{}ExceptionFrame".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+
+    function_location_id = Column(Integer, ForeignKey(FunctionLocation.id))
+    function_location = relationship(FunctionLocation)
+    """The location of the function that the frame points to"""
+
+    line_number = Column(Integer, nullable=False)
+    """The line number in the file the frame points to"""
 
 class ExceptionStackLine(Base):
     """Table for storing exception id together with request id."""
@@ -321,6 +360,10 @@ class ExceptionStackLine(Base):
     )
     stack_trace_snapshot = relationship(StackTraceSnapshot)
     """Stack trace that belongs to this exc_stack_line."""
+
+    exception_frame_id = Column(Integer, ForeignKey(ExceptionFrame.id), primary_key=True)
+    exception_frame = relationship(ExceptionFrame)
+    """The frame that belongs to this exc_stack_line."""
 
     code_id = Column(Integer, ForeignKey(CodeLine.id))
     code = relationship(CodeLine)
@@ -396,4 +439,7 @@ def get_tables():
         ExceptionInfo,
         FunctionDefinition,
         ExceptionStackLine,
+        FilePath,
+        FunctionLocation,
+        ExceptionFrame,
     ]

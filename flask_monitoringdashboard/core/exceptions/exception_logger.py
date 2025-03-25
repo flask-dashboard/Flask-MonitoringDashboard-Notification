@@ -21,6 +21,9 @@ from flask_monitoringdashboard.database.stack_trace_snapshot import (
 from flask_monitoringdashboard.database.exception_stack_line import (
     add_exception_stack_line,
 )
+from flask_monitoringdashboard.database.exception_frame import add_exception_frame
+from flask_monitoringdashboard.database.function_location import add_function_location
+from flask_monitoringdashboard.database.file_path import add_file_path
 from flask_monitoringdashboard.database.function_definition import (
     add_function_definition,
 )
@@ -78,10 +81,19 @@ class ExceptionLogger:
                 # ZeroDivisionError: division by zero
                 f_def = get_function_definition_from_frame(tb.tb_frame)
                 function_id = add_function_definition(session, f_def)
+                file_path = add_file_path(session, tb.tb_frame.f_code.co_filename)
+                f_location_id = add_function_location(
+                    session,
+                    file_path,
+                    function_id,
+                    tb.tb_frame.f_code.co_firstlineno,
+                )
+                frame_id = add_exception_frame(session, f_location_id, tb.tb_lineno)
                 c_line = create_codeline_from_frame(tb.tb_frame, tb.tb_lineno)
                 add_exception_stack_line(
                     session,
                     trace_id,
+                    frame_id,
                     idx,
                     c_line,
                     function_id,
