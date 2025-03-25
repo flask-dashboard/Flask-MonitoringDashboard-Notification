@@ -107,12 +107,3 @@ class ExceptionLogger:
                 type(e),
                 e.__traceback__
             )
-            
-    def get_copy_of_uncaught_exception(self):
-        """
-        Helper function to reraise the uncaught exception with its original traceback, 
-        The copy is made in order to preserve the original exception's stack trace
-        """
-        exc = self.uncaught_exception
-        if exc is not None:
-            return exc.__class__(exc.args).with_traceback(exc.__traceback__)
