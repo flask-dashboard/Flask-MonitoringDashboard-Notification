@@ -79,8 +79,7 @@ class OutlierProfiler(threading.Thread):
                 group_by=self._group_by,
                 status_code=status_code,
             )
-            if e_logger is not None:
-                e_logger.save_to_db(request_id, session)
+            e_logger.save_to_db(request_id, session)
             if self._memory:
                 add_outlier(
                     session,
