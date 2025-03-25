@@ -87,13 +87,11 @@ class ExceptionLogger:
 
     def save_to_db(self, request_id: int, session: Session):
         """
-        Iterates over all the user captured exceptions but also the uncaught ones and saves each exception info to DB
+        Iterates over all the user captured exceptions and also a possible uncaught one, and saves each exception to the DB
         """
-        # User Captured Exceptions
         for e in self.user_captured_exceptions:
             self._save_to_db(request_id, session, e, type(e), e.__traceback__)
 
-        # Uncaught Exception
         e = self.uncaught_exception
         if e is not None and e.__traceback__ is not None:
             # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
