@@ -18,7 +18,7 @@ class PerformanceProfiler(BaseProfiler):
         ip,
         duration,
         group_by,
-        e_logger: Union[ExceptionLogger, None],
+        e_logger: ExceptionLogger,
         status_code=200,
     ):
         super(PerformanceProfiler, self).__init__(endpoint)
@@ -27,7 +27,7 @@ class PerformanceProfiler(BaseProfiler):
         self._endpoint = endpoint
         self._group_by = group_by
         self._status_code = status_code
-        self.e_logger: Union[ExceptionLogger, None] = e_logger
+        self.e_logger: ExceptionLogger = e_logger
 
     def run(self):
         update_duration_cache(
@@ -42,5 +42,4 @@ class PerformanceProfiler(BaseProfiler):
                 group_by=self._group_by,
                 status_code=self._status_code,
             )
-            if self.e_logger is not None:
-                self.e_logger.save_to_db(request_id, session)
+            self.e_logger.save_to_db(request_id, session)

@@ -134,4 +134,4 @@ def add_database_pruning_schedule(weeks_to_keep, delete_custom_graph_data, **sch
 def capture(e: Exception):
     if "scoped_logger" not in g:
         g.scoped_logger = ScopedExceptionLogger()
-    g.scoped_logger.add_exc(e)
+    g.scoped_logger.add_user_captured_exc(e)

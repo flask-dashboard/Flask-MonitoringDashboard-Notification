@@ -89,7 +89,7 @@ class StacktraceProfiler(threading.Thread):
 
         self._on_thread_stopped()
 
-    def stop(self, duration, status_code, e_logger: Union[ExceptionLogger, None]):
+    def stop(self, duration, status_code, e_logger: ExceptionLogger):
         self._duration = duration * 1000
         self._status_code = status_code
         if self._outlier_profiler:

@@ -3,7 +3,6 @@ Contains all functions that are used to track the performance of the flask-appli
 See init_measurement() for more detailed info.
 """
 
-import sys
 import time
 from functools import wraps
 
@@ -119,20 +118,17 @@ def evaluate(route_handler, args, kwargs):
             result = route_handler(*args, **kwargs)
             status_code = status_code_from_response(result)
 
-            return result, status_code
+            return result, status_code, None
         except BaseException as e:
-            g.scoped_logger.uncaught_exception_info = sys.exc_info()
-            if isinstance(e, HTTPException):
-                return None, e.code
-            return None, 500
+            g.scoped_logger.set_uncaught_exc(e)
 
-    result, status_code = evaluate_()
-    if (
-        len(g.scoped_logger.user_captured_exceptions) != 0
-        or g.scoped_logger.uncaught_exception_info is not None
-    ):
-        return result, status_code, ExceptionLogger(g.scoped_logger)
-    return result, status_code, None
+            if isinstance(e, HTTPException):
+                return None, e.code, e
+            return None, 500, e
+
+    result, status_code, exception = evaluate_()
+
+    return result, status_code, ExceptionLogger(g.scoped_logger), exception
 
 
 def add_wrapper1(endpoint, fun):
@@ -140,13 +136,13 @@ def add_wrapper1(endpoint, fun):
     def wrapper(*args, **kwargs):
         start_time = time.time()
 
-        result, status_code, e_logger = evaluate(fun, args, kwargs)
+        result, status_code, e_logger, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
         start_performance_thread(endpoint, duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.uncaught_exception_info is not None:
-            raise e_logger.uncaught_exception_info
+        if exception is not None:
+            raise exception
 
         return result
 
@@ -160,13 +156,13 @@ def add_wrapper2(endpoint, fun):
         outlier = start_outlier_thread(endpoint)
         start_time = time.time()
 
-        result, status_code, e_logger = evaluate(fun, args, kwargs)
+        result, status_code, e_logger, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
         outlier.stop(duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.uncaught_exception_info is not None:
-            raise e_logger.uncaught_exception_info
+        if exception is not None:
+            raise exception
 
         return result
 
@@ -180,13 +176,13 @@ def add_wrapper3(endpoint, fun):
         thread = start_profiler_and_outlier_thread(endpoint)
         start_time = time.time()
 
-        result, status_code, e_logger = evaluate(fun, args, kwargs)
+        result, status_code, e_logger, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
         thread.stop(duration, status_code, e_logger)
 
-        if e_logger is not None and e_logger.uncaught_exception_info is not None:
-            raise e_logger.uncaught_exception_info
+        if exception is not None:
+            raise exception
 
         return result
 

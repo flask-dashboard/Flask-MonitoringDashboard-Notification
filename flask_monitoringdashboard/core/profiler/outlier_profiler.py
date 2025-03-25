@@ -65,7 +65,7 @@ class OutlierProfiler(threading.Thread):
             self._cpu_percent = str(psutil.cpu_percent(interval=None, percpu=True))
             self._memory = str(psutil.virtual_memory())
 
-    def stop(self, duration, status_code, e_logger: Union[ExceptionLogger, None]):
+    def stop(self, duration, status_code, e_logger: ExceptionLogger):
         self._exit.set()
         update_duration_cache(
             endpoint_name=self._endpoint.name, duration=duration * 1000
@@ -79,8 +79,7 @@ class OutlierProfiler(threading.Thread):
                 group_by=self._group_by,
                 status_code=status_code,
             )
-            if e_logger is not None:
-                e_logger.save_to_db(request_id, session)
+            e_logger.save_to_db(request_id, session)
             if self._memory:
                 add_outlier(
                     session,
