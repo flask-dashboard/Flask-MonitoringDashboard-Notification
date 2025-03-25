@@ -96,14 +96,16 @@ class ExceptionLogger:
         if (
             e is not None and e.__traceback__ is not None
         ):
-            # We have to choose the next frame as else it will include the evaluate function from measurement.py
+            # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
             # where it was temporaritly captured for logging by the ScopedExceptionLogger, before getting reraised later
+            e = e.with_traceback(e.__traceback__.tb_next)
+            
             self._save_to_db(
                 request_id,
                 session,
                 e,
                 type(e),
-                e.__traceback__.tb_next
+                e.__traceback__
             )
             
     def get_copy_of_uncaught_exception(self):
