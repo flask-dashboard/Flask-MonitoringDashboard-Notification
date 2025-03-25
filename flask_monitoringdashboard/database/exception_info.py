@@ -31,7 +31,7 @@ def add_exception_info(
     trace_id: int,
     exception_type_id: int,
     exception_msg_id: int,
-    is_user_caused: bool,
+    is_user_captured: bool,
 ):
     """
     Add a new ExceptionInfo record.
