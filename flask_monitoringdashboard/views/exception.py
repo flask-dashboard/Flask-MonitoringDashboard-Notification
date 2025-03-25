@@ -5,7 +5,7 @@ from flask_monitoringdashboard.core.auth import secure
 
 from flask_monitoringdashboard.controllers.exceptions import (
     delete_exceptions_via_stack_trace_snapshot_id,
-    get_exception_function_definition,
+    get_exception_function_info,
     get_exception_groups,
     get_exception_groups_with_details_for_endpoint,
 )
@@ -67,11 +67,11 @@ def get_detailed_exception_info_endpoint(endpoint_id: int, offset: int, per_page
 
 
 @blueprint.route(
-    "/api/function_definition/<int:function_id>/<int:stack_trace_snapshot_id>/<int:position>"
+    "/api/function_definition/<int:exception_frame_id>"
 )
 @secure
 def get_function_definition_for_exception(
-    function_id, stack_trace_snapshot_id, position
+    exception_frame_id
 ):
     """
     Get the function definition and exception line number for a specific function involved in an exception.
@@ -82,8 +82,8 @@ def get_function_definition_for_exception(
     """
     post_to_back_if_telemetry_enabled(**{"name": "function_definition"})
     with session_scope() as session:
-        definition = get_exception_function_definition(
-            session, function_id, stack_trace_snapshot_id, position
+        definition = get_exception_function_info(
+            session, exception_frame_id
         )
         return jsonify(definition)
 

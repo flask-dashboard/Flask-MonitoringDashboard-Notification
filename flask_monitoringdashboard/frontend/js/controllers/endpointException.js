@@ -40,15 +40,15 @@ export function EndpointExceptionController(
             });
     };
 
-    $scope.getUniqueKey = function (function_definition_id, stack_trace_snapshot_id, stack_trace_position) {
-        return `code_${function_definition_id}_${stack_trace_snapshot_id}_${stack_trace_position}`; // the row_index is important when dealing with recursive functions
+    $scope.getUniqueKey = function (exception_frame_id, stack_trace_snapshot_id, stack_trace_position) {
+        return `code_${exception_frame_id}_${stack_trace_snapshot_id}_${stack_trace_position}`; // the row_index is important when dealing with recursive functions
     };
 
-    $scope.getFunctionById = function (function_id, stack_trace_snapshot_id, stack_trace_position) {
-        let key = $scope.getUniqueKey(function_id, stack_trace_snapshot_id, stack_trace_position);
+    $scope.getFunctionById = function (exception_frame_id, stack_trace_snapshot_id, stack_trace_position) {
+        let key = $scope.getUniqueKey(exception_frame_id, stack_trace_snapshot_id, stack_trace_position);
 
         if ($scope.id2Function[key] === undefined) {
-            $http.get(`api/function_definition/${function_id}/${stack_trace_snapshot_id}/${stack_trace_position}`)
+            $http.get(`api/function_definition/${exception_frame_id}`)
                 .then((response) => {
                     $scope.id2Function[key] = response.data;
                     $scope.$applyAsync(() => {

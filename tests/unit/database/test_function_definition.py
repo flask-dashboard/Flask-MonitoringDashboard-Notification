@@ -40,25 +40,3 @@ def test_get_function_definition_from_id(session, function_definition):
 def test_get_function_definition_from_invalid_id(session):
     f_def = get_function_definition_from_id(session, -1)
     assert f_def is None
-
-
-def test_get_function_startlineno_and_relativelineno_from_function_definition_id(
-    session, exception_stack_line
-):
-    start_line_number, relative_line_number = (
-        get_function_startlineno_and_relativelineno_from_function_definition_id(
-            session,
-            exception_stack_line.function_definition_id,
-            exception_stack_line.stack_trace_snapshot_id,
-            exception_stack_line.position,
-        )
-    )
-    assert start_line_number == exception_stack_line.code.line_number
-    assert relative_line_number == exception_stack_line.relative_line_number
-
-
-def test_get_function_startlineno_and_relativelineno_from_invalid_id(session):
-    result = get_function_startlineno_and_relativelineno_from_function_definition_id(
-        session, -1, -1, 0
-    )
-    assert result is None
