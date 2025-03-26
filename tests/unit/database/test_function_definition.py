@@ -7,7 +7,6 @@ from flask_monitoringdashboard.database import FunctionDefinition
 from flask_monitoringdashboard.database.function_definition import (
     add_function_definition,
     get_function_definition_from_id,
-    get_function_startlineno_and_relativelineno_from_function_definition_id,
 )
 
 
