@@ -364,20 +364,9 @@ class ExceptionStackLine(Base):
     exception_frame_id = Column(Integer, ForeignKey(ExceptionFrame.id), primary_key=True)
     exception_frame = relationship(ExceptionFrame)
     """The frame that belongs to this exc_stack_line."""
-
-    code_id = Column(Integer, ForeignKey(CodeLine.id))
-    code = relationship(CodeLine)
-    """Corresponding codeline."""
-
+    
     position = Column(Integer, primary_key=True)
     """Position in the flattened stack tree."""
-
-    function_definition_id = Column(Integer, ForeignKey(FunctionDefinition.id))
-    function_definition = relationship(FunctionDefinition)
-    """The related function"""
-
-    relative_line_number = Column(Integer)
-    """The relative line to the function where the error ocurred"""
 
 
 # define the database

@@ -117,12 +117,9 @@ def delete_entries_unreferenced_by_exception_info(session: Session):
         .exists()
     ).delete(synchronize_session=False)
 
-    # Find and delete CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
+    # Find and delete CodeLines not referenced by any StackLines
     session.query(CodeLine).filter(
-        ~session.query(ExceptionStackLine)
-        .filter(ExceptionStackLine.code_id == CodeLine.id)
-        .exists()
-        & ~session.query(StackLine).filter(StackLine.code_id == CodeLine.id).exists()
+        ~session.query(StackLine).filter(StackLine.code_id == CodeLine.id).exists()
     ).delete(synchronize_session=False)
 
 

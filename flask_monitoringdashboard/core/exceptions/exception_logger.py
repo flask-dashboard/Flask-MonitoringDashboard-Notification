@@ -8,7 +8,6 @@ from flask_monitoringdashboard.core.exceptions.scoped_exception_logger import (
 )
 from flask_monitoringdashboard.core.exceptions.stack_frame_parsing import (
     get_function_definition_from_frame,
-    create_codeline_from_frame,
 )
 from flask_monitoringdashboard.core.exceptions.stack_trace_hashing import (
     hash_stack_trace,
@@ -89,15 +88,11 @@ class ExceptionLogger:
                     tb.tb_frame.f_code.co_firstlineno,
                 )
                 frame_id = add_exception_frame(session, f_location_id, tb.tb_lineno)
-                c_line = create_codeline_from_frame(tb.tb_frame, tb.tb_lineno)
                 add_exception_stack_line(
                     session,
                     trace_id,
                     frame_id,
                     idx,
-                    c_line,
-                    function_id,
-                    c_line.line_number - tb.tb_frame.f_code.co_firstlineno,
                 )
                 tb = tb.tb_next
                 idx += 1

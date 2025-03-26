@@ -211,10 +211,7 @@ class ExceptionStackLineFactory(ModelFactory):
 
     stack_trace_snapshot = None
     exception_frame = None
-    code = factory.SubFactory(CodeLineFactory)
     position = 0
-    function_definition = None
-    relative_line_number = factory.LazyFunction(lambda: int(random() * 100))
 
 
 class ExceptionInfoFactory(ModelFactory):
@@ -266,7 +263,6 @@ register(
     "exception_stack_line",
     stack_trace_snapshot=LazyFixture("stack_trace_snapshot"),
     exception_frame=LazyFixture("exception_frame"),
-    function_definition=LazyFixture("function_definition"),
 )
 register(
     ExceptionInfoFactory,
