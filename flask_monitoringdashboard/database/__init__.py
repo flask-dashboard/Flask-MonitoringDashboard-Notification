@@ -301,7 +301,7 @@ class FunctionDefinition(Base):
 
     id = Column(Integer, primary_key=True)
 
-    name = Column(String(250), nullable=True)
+    name = Column(String(256), nullable=True)
     """The name of the function"""
 
     code = Column(TEXT, nullable=True)

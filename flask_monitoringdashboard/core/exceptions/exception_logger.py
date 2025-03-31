@@ -54,7 +54,7 @@ class ExceptionLogger:
         exc: BaseException,
         typ: type[BaseException],
         tb: Union[TracebackType, None],
-        is_user_captured: bool = False,
+        is_user_captured: bool,
     ):
         """
         Save exception info to DB

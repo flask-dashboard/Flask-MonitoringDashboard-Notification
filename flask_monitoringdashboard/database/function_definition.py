@@ -37,6 +37,12 @@ def get_function_definition_from_id(
     )
 
 def get_function_definition_code_from_id(session: Session, function_id: int) -> Union[str, None]:
+    """
+    Retrieves the code of a function definition from the database using its ID.
+    :param session: Session for the database
+    :param function_id: ID of the FunctionDefinition
+    :return: The code of the function definition if found, otherwise None.
+    """
     result: Union[FunctionDefinition, None] = get_function_definition_from_id(session, function_id)
     if result is not None:
         return result.code
