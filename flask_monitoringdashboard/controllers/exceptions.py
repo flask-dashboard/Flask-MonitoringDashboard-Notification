@@ -12,8 +12,10 @@ from flask_monitoringdashboard.database.stack_trace_snapshot import (
     get_stacklines_from_stack_trace_snapshot_id,
 )
 from flask_monitoringdashboard.database.function_definition import (
-    get_function_definition_from_id,
-    get_function_startlineno_and_relativelineno_from_function_definition_id,
+    get_function_definition_code_from_id,
+)
+from flask_monitoringdashboard.database.exception_frame import (
+    get_function_info_from_exception_frame_id,
 )
 
 app_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -93,10 +95,10 @@ def get_exception_groups_with_details_for_endpoint(
             "stack_trace_snapshot": [
                 {
                     "filename": _get_relative_file_path_if_in_app(
-                        exceptionStackLine.code.filename
+                        exceptionStackLine.path
                     ),
-                    "line_number": exceptionStackLine.code.line_number,
-                    "function_name": exceptionStackLine.code.function_name,
+                    "line_number": exceptionStackLine.line_number,
+                    "function_name": exceptionStackLine.name,
                     "function_definition_id": exceptionStackLine.function_definition_id,
                     "position": exceptionStackLine.position,
                 }
@@ -113,36 +115,22 @@ def get_exception_groups_with_details_for_endpoint(
         )
     ]
 
-
-def get_exception_function_definition(
-    session: Session, function_id: int, stack_trace_id: int, position: int
-):
+def get_exception_function_info(session: Session, exception_frame_id: int):
     """
     Retrieves the source code of the function where an exception occurred, the starting line number of the function in the source file, and the relative line number of the exception.
     :param session: session for the database
-    :param function_id: the id of the function
-    :param stack_trace_id: the id of the stack trace
+    :param exception_frame_id: the id of the exception frame
     :return: a dict containing:
              - start_line_number (int)
              - code (str)
              - exception_line_number (int)
     """
-    result: Union[FunctionDefinition, None] = get_function_definition_from_id(
-        session, function_id
-    )
-    line_numbers = (
-        get_function_startlineno_and_relativelineno_from_function_definition_id(
-            session, function_id, stack_trace_id, position
-        )
-    )
-    if result is None or line_numbers is None:
-        return {}
-    file_lineno, relative_lineno = line_numbers
-    start_lineno = file_lineno - relative_lineno
+    function_start_line_number, exception_relative_line_number, function_definition_id = get_function_info_from_exception_frame_id(session, exception_frame_id)
+    function_code = get_function_definition_code_from_id(session, function_definition_id)
     return {
-        "start_line_number": start_lineno,
-        "function_code": result.function_code,
-        "exception_line_number": relative_lineno,
+        "start_line_number": function_start_line_number,
+        "code": function_code,
+        "exception_line_number": exception_relative_line_number
     }
 
 

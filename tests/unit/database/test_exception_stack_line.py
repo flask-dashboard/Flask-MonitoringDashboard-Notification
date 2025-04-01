@@ -10,7 +10,7 @@ from flask_monitoringdashboard.database.exception_stack_line import (
 
 
 def test_add_exception_stack_line(
-    session, stack_trace_snapshot, function_definition, code_line
+    session, stack_trace_snapshot, exception_frame
 ):
     assert (
         session.query(ExceptionStackLine)
@@ -21,10 +21,8 @@ def test_add_exception_stack_line(
     add_exception_stack_line(
         session,
         stack_trace_snapshot_id=stack_trace_snapshot.id,
+        exception_frame_id=exception_frame.id,
         position=0,
-        code_line=code_line,
-        function_defintion_id=function_definition.id,
-        relative_lineno=1,
     )
     session.commit()
     assert (

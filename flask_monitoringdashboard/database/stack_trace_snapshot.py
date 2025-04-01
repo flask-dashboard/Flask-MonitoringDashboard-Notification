@@ -1,6 +1,6 @@
 from typing import Union
 from sqlalchemy.orm import Session
-from flask_monitoringdashboard.database import ExceptionStackLine, StackTraceSnapshot
+from flask_monitoringdashboard.database import ExceptionStackLine, FilePath, StackTraceSnapshot, FunctionDefinition, FunctionLocation, ExceptionFrame
 from sqlalchemy import desc
 
 
@@ -35,15 +35,30 @@ def add_stack_trace_snapshot(session: Session, stack_trace_snapshot_hash: str) -
 
 def get_stacklines_from_stack_trace_snapshot_id(
     session: Session, stack_trace_snapshot_id: int
-) -> list[ExceptionStackLine]:
+):
     """
     Gets all the stack lines referred to by a stack_trace.
     :param session: session for the database
     :param stack_trace_snapshot_id: Filter ExceptionStackLines on this stack trace id
-    :return: A list of ExceptionStackLine objects of a specific stack trace
+    return: A list of dicts. Each dict contains:
+             - position (int) in the stack trace
+             - path (str) to the file
+             - line_number (int) in the file
+             - name (str) of the function
+             - function_definition_id (int) of the function
     """
     result = (
-        session.query(ExceptionStackLine)
+        session.query(
+            ExceptionStackLine.position,
+            FilePath.path,
+            ExceptionFrame.line_number,
+            FunctionDefinition.name,
+            FunctionLocation.function_definition_id,
+        )
+        .join(ExceptionFrame, ExceptionStackLine.exception_frame)
+        .join(FunctionLocation, ExceptionFrame.function_location)
+        .join(FunctionDefinition, FunctionLocation.function_definition)
+        .join(FilePath, FunctionLocation.file_path)
         .filter(ExceptionStackLine.stack_trace_snapshot_id == stack_trace_snapshot_id)
         .order_by(desc(ExceptionStackLine.position))
         .all()

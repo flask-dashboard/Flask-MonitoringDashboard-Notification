@@ -8,8 +8,9 @@ from flask_monitoringdashboard.database import FunctionDefinition, CodeLine
 def get_function_definition_from_frame(frame: FrameType) -> FunctionDefinition:
 
     f_def = FunctionDefinition()
-    f_def.function_code = inspect.getsource(frame.f_code)
-    f_def.function_hash = text_hash(f_def.function_code)
+    f_def.code = inspect.getsource(frame.f_code)
+    f_def.code_hash = text_hash(f_def.code)
+    f_def.name = frame.f_code.co_name[:256]
     return f_def
 
 

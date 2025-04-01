@@ -56,16 +56,8 @@ def test_get_stacklines_from_stack_trace_snapshot_id(session, exception_stack_li
         session, exception_stack_line.stack_trace_snapshot_id
     )
     assert len(stacklines) == 1
-    assert (
-        stacklines[0].stack_trace_snapshot_id
-        == exception_stack_line.stack_trace_snapshot_id
-    )
-    assert stacklines[0].code_id == exception_stack_line.code_id
     assert stacklines[0].position == exception_stack_line.position
-    assert (
-        stacklines[0].function_definition_id
-        == exception_stack_line.function_definition_id
-    )
-    assert (
-        stacklines[0].relative_line_number == exception_stack_line.relative_line_number
-    )
+    assert stacklines[0].path == exception_stack_line.exception_frame.function_location.file_path.path
+    assert stacklines[0].line_number == exception_stack_line.exception_frame.line_number
+    assert stacklines[0].name == exception_stack_line.exception_frame.function_location.function_definition.name
+    assert stacklines[0].function_definition_id == exception_stack_line.exception_frame.function_location.function_definition_id

@@ -13,6 +13,9 @@ from flask_monitoringdashboard.database import (
     ExceptionInfo,
     StackTraceSnapshot,
     ExceptionStackLine,
+    ExceptionFrame,
+    FunctionLocation,
+    FilePath,
     FunctionDefinition,
 )
 
@@ -37,6 +40,11 @@ def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
             ).delete()
             session.delete(request)
 
+        # Find and delete CodeLines not referenced by any StackLines
+        session.query(CodeLine).filter(
+            ~session.query(StackLine).filter(StackLine.code_id == CodeLine.id).exists()
+        ).delete(synchronize_session=False)
+
         if delete_custom_graph_data:
             session.query(CustomGraphData).filter(
                 CustomGraphData.time < date_to_delete_from
@@ -49,8 +57,11 @@ def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
 
 def delete_entries_unreferenced_by_exception_info(session: Session):
     """
-    Delete ExceptionTypes, ExceptionMessages, StackTraceSnapshots (along with their ExceptionStackLines) that are not
-    referenced by any ExceptionInfos,  FunctionDefinitions that are not referenced by any ExceptionStackLines, and
+    Delete ExceptionTypes, ExceptionMessages, StackTraceSnapshots (along with their ExceptionStackLines) 
+    that are not referenced by any ExceptionInfos, 
+    ExceptionFrames that are not referenced by any ExceptionStackLines,
+    FunctionLocations that are not referenced by any ExceptionFrames, 
+    FilePaths and FunctionDefinitions that are not referenced by any FunctionLocations, and
     CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
     """
     # Delete ExceptionTypes that are not referenced by any ExceptionInfos
@@ -83,19 +94,32 @@ def delete_entries_unreferenced_by_exception_info(session: Session):
         ).delete()
         session.delete(stack_trace_snapshot)
 
-    # Find and delete FunctionDefenitions that are not referenced by any ExceptionStackLines
-    session.query(FunctionDefinition).filter(
+    # Delete ExceptionFrames that are not referenced by any ExceptionStackLines
+    session.query(ExceptionFrame).filter(
         ~session.query(ExceptionStackLine)
-        .filter(ExceptionStackLine.function_definition_id == FunctionDefinition.id)
+        .filter(ExceptionStackLine.exception_frame_id == ExceptionFrame.id)
         .exists()
     ).delete(synchronize_session=False)
 
-    # Find and delete CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
-    session.query(CodeLine).filter(
-        ~session.query(ExceptionStackLine)
-        .filter(ExceptionStackLine.code_id == CodeLine.id)
+    # Delete FunctionLocations that are not referenced by any ExceptionFrames
+    session.query(FunctionLocation).filter(
+        ~session.query(ExceptionFrame)
+        .filter(ExceptionFrame.function_location_id == FunctionLocation.id)
         .exists()
-        & ~session.query(StackLine).filter(StackLine.code_id == CodeLine.id).exists()
+    ).delete(synchronize_session=False)
+
+    # Delete FilePaths that are not referenced by any FunctionLocations
+    session.query(FilePath).filter(
+        ~session.query(FunctionLocation)
+        .filter(FunctionLocation.file_path_id == FilePath.id)
+        .exists()
+    ).delete(synchronize_session=False)
+
+    # Delete FunctionDefinitions that are not referenced by any FunctionLocations
+    session.query(FunctionDefinition).filter(
+        ~session.query(FunctionLocation)
+        .filter(FunctionLocation.function_definition_id == FunctionDefinition.id)
+        .exists()
     ).delete(synchronize_session=False)
 
 

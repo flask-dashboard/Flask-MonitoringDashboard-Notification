@@ -24,6 +24,6 @@ def _hash_traceback_object(h: str, tb: Union[TracebackType, None]):
         return h
 
     f_def = get_function_definition_from_frame(tb.tb_frame)
-    new_hash = text_hash(h + f_def.function_hash)
+    new_hash = text_hash(h + f_def.code_hash)
 
     return _hash_traceback_object(new_hash, tb.tb_next)

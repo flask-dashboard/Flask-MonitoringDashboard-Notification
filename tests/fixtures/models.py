@@ -24,7 +24,10 @@ from flask_monitoringdashboard.database import (
     ExceptionMessage,
     ExceptionStackLine,
     StackTraceSnapshot,
+    FilePath,
     FunctionDefinition,
+    FunctionLocation,
+    ExceptionFrame,
 )
 from tests.fixtures.database import ModelFactory
 
@@ -167,14 +170,34 @@ class ExceptionTypeFactory(ModelFactory):
 
     type = factory.Faker("word")
 
+class FilePathFactory(ModelFactory):
+    class Meta:
+        model = FilePath
+
+    path = factory.Faker("file_path")
 
 class FunctionDefinitionFactory(ModelFactory):
     class Meta:
         model = FunctionDefinition
 
-    function_code = "def fun(): return 0"
-    function_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    code = "def fun(): return 0"
+    code_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    name = "fun"
 
+class FunctionLocationFactory(ModelFactory):
+    class Meta:
+        model = FunctionLocation
+
+    file_path = None
+    function_definition = None
+    function_start_line_number = factory.LazyFunction(lambda: int(random() * 100))
+
+class ExceptionFrameFactory(ModelFactory):
+    class Meta:
+        model = ExceptionFrame
+
+    function_location = None
+    line_number = factory.LazyFunction(lambda: int(random() * 100))
 
 class StackTraceSnapshotFactory(ModelFactory):
     class Meta:
@@ -182,16 +205,13 @@ class StackTraceSnapshotFactory(ModelFactory):
 
     chained_stack_trace_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
 
-
 class ExceptionStackLineFactory(ModelFactory):
     class Meta:
         model = ExceptionStackLine
 
     stack_trace_snapshot = None
-    code = factory.SubFactory(CodeLineFactory)
+    exception_frame = None
     position = 0
-    function_definition = None
-    relative_line_number = factory.LazyFunction(lambda: int(random() * 100))
 
 
 class ExceptionInfoFactory(ModelFactory):
@@ -202,6 +222,7 @@ class ExceptionInfoFactory(ModelFactory):
     exception_msg = None
     exception_type = None
     stack_trace_snapshot = None
+    is_user_captured = False
 
 
 register(UserFactory, "user")
@@ -225,13 +246,23 @@ register(PathHashFactory, "path_hash")
 
 register(ExceptionMessageFactory, "exception_message")
 register(ExceptionTypeFactory, "exception_type")
+register(FilePathFactory, "file_path")
 register(FunctionDefinitionFactory, "function_definition")
+register(
+    FunctionLocationFactory, "function_location",
+    file_path=LazyFixture("file_path"),
+    function_definition=LazyFixture("function_definition"),
+)
+register(
+    ExceptionFrameFactory, "exception_frame",
+    function_location=LazyFixture("function_location"),
+)
 register(StackTraceSnapshotFactory, "stack_trace_snapshot")
 register(
     ExceptionStackLineFactory,
     "exception_stack_line",
     stack_trace_snapshot=LazyFixture("stack_trace_snapshot"),
-    function_definition=LazyFixture("function_definition"),
+    exception_frame=LazyFixture("exception_frame"),
 )
 register(
     ExceptionInfoFactory,
