@@ -44,7 +44,7 @@ export function EndpointExceptionController(
         return `code_${function_definition_id}_${stack_trace_snapshot_id}_${stack_trace_position}`; // the stack_trace_position is important when dealing with recursive functions
     };
 
-    $scope.getFunctionById = function (function_definition_id, key) {
+    $scope.loadFunctionCodeById = function (function_definition_id, key) {
         if ($scope.id2Function[key] === undefined) {
             $http.get(`api/function_code/${function_definition_id}`)
                 .then((response) => {
@@ -70,8 +70,8 @@ export function EndpointExceptionController(
         }
     };
 
-    $scope.collapseAllDetails = function (name) {
-        document.querySelectorAll(`#details_${name}`).forEach((details) => {
+    $scope.collapseDetails = function (stack_trace_snapshot_id) {
+        document.querySelectorAll(`#details_${stack_trace_snapshot_id}`).forEach((details) => {
             details.open = false;
         });
     };

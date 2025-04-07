@@ -21,9 +21,8 @@
                         </div>
                         <div class="col-sm">
                             <h6>
-                                Latest: {{ request.latest_timestamp |
-                                dateDifference }} | First: {{
-                                request.first_timestamp | dateDifference }}
+                                Latest: {{ request.latest_timestamp | dateDifference }} 
+                                | First: {{ request.first_timestamp | dateDifference }}
                             </h6>
                         </div>
                     </div>
@@ -36,7 +35,7 @@
                         </div>
                         <div class="d-flex flex-column p-1">
                             <button class="btn btn-secondary"
-                                ng-click="collapseAllDetails(request.stack_trace_snapshot_id)">
+                                ng-click="collapseDetails(request.stack_trace_snapshot_id)">
                                 Collapse
                             </button>
                         </div>
@@ -49,18 +48,22 @@
                         ng-init="key = getUniqueKey(row.function_definition_id, request.stack_trace_snapshot_id, row.position)">
                         <td style="padding-left: 10px;">
                             <details
-                                ng-click="getFunctionById(row.function_definition_id, key)"
+                                ng-click="loadFunctionCodeById(row.function_definition_id, key)"
                                 id="details_{{request.stack_trace_snapshot_id}}">
-                                <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }}
+                                <summary>
+                                    {{ row.filename }} 
+                                    <span style="color: grey;">in</span> {{ row.function_name }}
                                     <span style="color: grey;">at</span> {{ row.line_number }}
                                 </summary>
-                                <div ng-if="function_code = id2Function[key]">
+                                <div ng-if="function_code = id2Function[key]"><!--show after code is loaded-->
                                     <pre class="line-numbers" style="white-space: pre"
                                         data-line="{{row.line_number}}"
                                         data-line-offset="{{row.function_start_line_number}}"
                                         data-start="{{row.function_start_line_number}}">
-                                    <code class="language-python" ng-attr-id="{{ key }}">{{ function_code }}</code>
-                                </pre>
+                                        <code class="language-python" id="{{ key }}">
+                                            {{ function_code }}
+                                        </code>
+                                    </pre>
                                 </div>
                             </details>
                         </td>
