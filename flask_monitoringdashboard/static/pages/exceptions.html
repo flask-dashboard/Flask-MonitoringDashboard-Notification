@@ -7,38 +7,26 @@
         <div class="card" ng-repeat="request in table" style="margin-bottom: 10px">
             <div class="card-header">
                 <div class="d-flex flex-row justify-content-between">
-                    <div class="d-flex flex-column">
-                        <div class="col-sm">
-                            <h6>{{ request.type }}</h6>
-                        </div>
-                        <div class="col-sm">
-                            <h6>Number of occurences: {{ request.count }}</h6>
-                        </div>
+                    <div>
+                        <h6>{{ request.type }}</h6>
+                        <h6>Number of occurences: {{ request.count }}</h6>
                     </div>
-                    <div class="d-flex flex-column">
-                        <div class="col-sm">
-                            <h6>{{ request.message }}</h6>
-                        </div>
-                        <div class="col-sm">
-                            <h6>
-                                Latest: {{ request.latest_timestamp | dateDifference }} 
-                                | First: {{ request.first_timestamp | dateDifference }}
-                            </h6>
-                        </div>
+                    <div>
+                        <h6>{{ request.message }}</h6>
+                        <h6>
+                            Latest: {{ request.latest_timestamp | dateDifference }} 
+                            | First: {{ request.first_timestamp | dateDifference }}
+                        </h6>
                     </div>
-                    <div class="d-flex flex-row justify-content-between">
-                        <div class="d-flex flex-column p-1">
-                            <button class="btn btn-danger"
+                    <div class="d-flex gap-2 p-2">
+                        <button class="btn btn-danger rounded"
                                 ng-click="deleteExceptionById(request.stack_trace_snapshot_id)">
-                                Delete
-                            </button>
-                        </div>
-                        <div class="d-flex flex-column p-1">
-                            <button class="btn btn-secondary"
+                            Delete
+                        </button>
+                        <button class="btn btn-secondary rounded"
                                 ng-click="collapseDetails(request.stack_trace_snapshot_id)">
-                                Collapse
-                            </button>
-                        </div>
+                            Collapse
+                        </button>
                     </div>
                 </div>
             </div>
