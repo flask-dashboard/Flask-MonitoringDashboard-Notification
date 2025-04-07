@@ -14,9 +14,6 @@ from flask_monitoringdashboard.database.stack_trace_snapshot import (
 from flask_monitoringdashboard.database.function_definition import (
     get_function_definition_code_from_id,
 )
-from flask_monitoringdashboard.database.exception_frame import (
-    get_function_info_from_exception_frame_id,
-)
 
 app_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 app_parent_dir = os.path.dirname(app_dir) + os.sep
@@ -116,6 +113,7 @@ def get_exception_groups_with_details_for_endpoint(
         )
     ]
 
+
 def get_function_definition_code(session: Session, function_definition_id: int):
     """
     Retrieves the source code of the function where an exception occurred, the starting line number of the function in the source file, and the relative line number of the exception.
@@ -124,10 +122,10 @@ def get_function_definition_code(session: Session, function_definition_id: int):
     :return: a dict containing:
              - code (str)
     """
-    function_code = get_function_definition_code_from_id(session, function_definition_id)
-    return {
-        "code": function_code
-    }
+    function_code = get_function_definition_code_from_id(
+        session, function_definition_id
+    )
+    return {"code": function_code}
 
 
 def _get_relative_file_path_if_in_app(file_path: str):

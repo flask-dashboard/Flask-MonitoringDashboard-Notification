@@ -70,7 +70,7 @@ def get_detailed_exception_info_endpoint(endpoint_id: int, offset: int, per_page
     "/api/function_code/<int:function_definition_id>"
 )
 @secure
-def get_function_definition_for_exception(
+def get_code_for_function_definition(
     function_definition_id
 ):
     """
