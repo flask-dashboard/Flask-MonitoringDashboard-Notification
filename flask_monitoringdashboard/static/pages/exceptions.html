@@ -54,12 +54,12 @@
                                 <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }}
                                     <span style="color: grey;">at</span> {{ row.line_number }}
                                 </summary>
-                                <div ng-if="f_def = id2Function[key]">
+                                <div ng-if="function_code = id2Function[key]">
                                     <pre class="line-numbers" style="white-space: pre"
                                         data-line="{{row.line_number}}"
                                         data-line-offset="{{row.function_start_line_number}}"
                                         data-start="{{row.function_start_line_number}}">
-                                    <code class="language-python" ng-attr-id="{{ key }}">{{ f_def.code }}</code>
+                                    <code class="language-python" ng-attr-id="{{ key }}">{{ function_code }}</code>
                                 </pre>
                                 </div>
                             </details>

@@ -119,13 +119,12 @@ def get_function_definition_code(session: Session, function_definition_id: int):
     Retrieves the source code of the function where an exception occurred, the starting line number of the function in the source file, and the relative line number of the exception.
     :param session: session for the database
     :param exception_frame_id: the id of the exception frame
-    :return: a dict containing:
-             - code (str)
+    :return: entire code of the function (str)
     """
     function_code = get_function_definition_code_from_id(
         session, function_definition_id
     )
-    return {"code": function_code}
+    return function_code
 
 
 def _get_relative_file_path_if_in_app(file_path: str):
