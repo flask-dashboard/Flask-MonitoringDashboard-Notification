@@ -56,9 +56,9 @@
                                 </summary>
                                 <div ng-if="f_def = id2Function[key]">
                                     <pre class="line-numbers" style="white-space: pre"
-                                        data-line="{{f_def.exception_line_number+f_def.start_line_number}}"
-                                        data-line-offset="{{f_def.start_line_number}}"
-                                        data-start="{{f_def.start_line_number}}">
+                                        data-line="{{row.line_number}}"
+                                        data-line-offset="{{row.function_start_line_number}}"
+                                        data-start="{{row.function_start_line_number}}">
                                     <code class="language-python" ng-attr-id="{{ key }}">{{ f_def.code }}</code>
                                 </pre>
                                 </div>

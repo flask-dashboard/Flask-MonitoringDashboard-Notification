@@ -98,6 +98,7 @@ def get_exception_groups_with_details_for_endpoint(
                         exceptionStackLine.path
                     ),
                     "line_number": exceptionStackLine.line_number,
+                    "function_start_line_number": exceptionStackLine.function_start_line_number,
                     "function_name": exceptionStackLine.name,
                     "function_definition_id": exceptionStackLine.function_definition_id,
                     "position": exceptionStackLine.position,
@@ -115,22 +116,17 @@ def get_exception_groups_with_details_for_endpoint(
         )
     ]
 
-def get_exception_function_info(session: Session, exception_frame_id: int):
+def get_function_definition_code(session: Session, function_definition_id: int):
     """
     Retrieves the source code of the function where an exception occurred, the starting line number of the function in the source file, and the relative line number of the exception.
     :param session: session for the database
     :param exception_frame_id: the id of the exception frame
     :return: a dict containing:
-             - start_line_number (int)
              - code (str)
-             - exception_line_number (int)
     """
-    function_start_line_number, exception_relative_line_number, function_definition_id = get_function_info_from_exception_frame_id(session, exception_frame_id)
     function_code = get_function_definition_code_from_id(session, function_definition_id)
     return {
-        "start_line_number": function_start_line_number,
-        "code": function_code,
-        "exception_line_number": exception_relative_line_number
+        "code": function_code
     }
 
 
