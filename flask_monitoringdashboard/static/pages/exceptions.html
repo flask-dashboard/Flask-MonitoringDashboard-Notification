@@ -49,7 +49,7 @@
                         ng-init="key = getUniqueKey(row.function_definition_id, request.stack_trace_snapshot_id, row.position)">
                         <td style="padding-left: 10px;">
                             <details
-                                ng-click="getFunctionById(row.function_definition_id, request.stack_trace_snapshot_id, row.position)"
+                                ng-click="getFunctionById(row.function_definition_id, key)"
                                 id="details_{{request.stack_trace_snapshot_id}}">
                                 <summary>{{ row.filename }} <span style="color: grey;">in</span> {{ row.function_name }}
                                     <span style="color: grey;">at</span> {{ row.line_number }}

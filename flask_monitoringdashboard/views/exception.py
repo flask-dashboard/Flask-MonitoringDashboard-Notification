@@ -67,7 +67,7 @@ def get_detailed_exception_info_endpoint(endpoint_id: int, offset: int, per_page
 
 
 @blueprint.route(
-    "/api/function_definition/<int:function_definition_id>"
+    "/api/function_code/<int:function_definition_id>"
 )
 @secure
 def get_function_definition_for_exception(
