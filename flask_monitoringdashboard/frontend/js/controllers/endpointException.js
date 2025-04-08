@@ -40,8 +40,8 @@ export function EndpointExceptionController(
             });
     };
 
-    $scope.getUniqueKey = function (function_definition_id, stack_trace_snapshot_id, stack_trace_position) {
-        return `code_${function_definition_id}_${stack_trace_snapshot_id}_${stack_trace_position}`; // the stack_trace_position is important when dealing with recursive functions
+    $scope.getUniqueKey = function (stack_trace_snapshot_id, stack_trace_position) {
+        return `code_${stack_trace_snapshot_id}_${stack_trace_position}`; // the stack_trace_position is important when dealing with recursive functions
     };
 
     $scope.loadFunctionCodeById = function (function_definition_id, key) {

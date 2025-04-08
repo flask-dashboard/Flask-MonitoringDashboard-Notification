@@ -121,10 +121,8 @@ def get_function_definition_code(session: Session, function_definition_id: int):
     :param exception_frame_id: the id of the exception frame
     :return: entire code of the function (str)
     """
-    function_code = get_function_definition_code_from_id(
-        session, function_definition_id
-    )
-    return function_code
+
+    return get_function_definition_code_from_id(session, function_definition_id)
 
 
 def _get_relative_file_path_if_in_app(file_path: str):
