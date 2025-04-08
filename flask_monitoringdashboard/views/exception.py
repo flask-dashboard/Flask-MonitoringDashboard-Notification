@@ -66,23 +66,16 @@ def get_detailed_exception_info_endpoint(endpoint_id: int, offset: int, per_page
         return jsonify(exceptions)
 
 
-@blueprint.route(
-    "/api/function_code/<int:function_definition_id>"
-)
+@blueprint.route("/api/function_code/<int:function_definition_id>")
 @secure
-def get_code_for_function_definition(
-    function_definition_id
-):
+def get_function_code(function_definition_id):
     """
     Get the function code for a specific function involved in an exception.
-    :return: A JSON object containing:
-            - 'code' (str): The function's source code.
+    :return: The function's source code (str)
     """
-    post_to_back_if_telemetry_enabled(**{"name": "function_definition"})
+    post_to_back_if_telemetry_enabled(**{"name": "function_code"})
     with session_scope() as session:
-        definition = get_function_definition_code(
-            session, function_definition_id
-        )
+        definition = get_function_definition_code(session, function_definition_id)
         return jsonify(definition)
 
 
