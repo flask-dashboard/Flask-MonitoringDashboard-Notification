@@ -10,7 +10,7 @@ export function ExceptionController($scope, $http, menuService, paginationServic
     });
 
     paginationService.onReload = function () {
-        $http.get('api/exception_info/' + paginationService.getLeft() + '/' + paginationService.perPage).then(function (response) {
+        $http.get('api/exception_occurrence/' + paginationService.getLeft() + '/' + paginationService.perPage).then(function (response) {
             $scope.table = response.data;
         });
     };

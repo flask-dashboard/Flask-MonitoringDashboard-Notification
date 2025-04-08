@@ -31,7 +31,7 @@ export function EndpointExceptionController(
 
     paginationService.onReload = function () {
         $http.get(
-            "api/detailed_exception_info/" + endpointService.info.id + "/" +
+            "api/detailed_exception_occurrence/" + endpointService.info.id + "/" +
             paginationService.getLeft() + "/" + paginationService.perPage,
         )
             .then(function (response) {
@@ -62,7 +62,7 @@ export function EndpointExceptionController(
             stack_trace_snapshot_id &&
             confirm("Are you sure you want to delete exception?")
         ) {
-            $http.delete(`api/exception_info/${stack_trace_snapshot_id}`)
+            $http.delete(`api/exception_occurrence/${stack_trace_snapshot_id}`)
                 .then((_) => {
                     paginationService.onReload();
                     paginationService.total--;

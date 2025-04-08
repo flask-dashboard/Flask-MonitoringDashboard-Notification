@@ -1,31 +1,31 @@
 """
-Contains all functions that access an ExceptionInfo object.
+Contains all functions that access an ExceptionOccurrence object.
 """
 
 from typing import Union
 from sqlalchemy import func, desc
 from sqlalchemy.orm import Session
 from flask_monitoringdashboard.database import (
-    ExceptionInfo,
+    ExceptionOccurrence,
     Request,
     Endpoint,
     ExceptionType,
     ExceptionMessage,
 )
 from flask_monitoringdashboard.core.database_pruning import (
-    delete_entries_unreferenced_by_exception_info,
+    delete_entries_unreferenced_by_exception_occurrence,
 )
 
 
-def get_exception_info(session: Session, request_id: int) -> Union[ExceptionInfo, None]:
+def get_exception_occurrence(session: Session, request_id: int) -> Union[ExceptionOccurrence, None]:
     """
-    Retrieve an ExceptionInfo record by request_id.
+    Retrieve an ExceptionOccurrence record by request_id.
     """
-    result = session.query(ExceptionInfo).filter_by(request_id=request_id).first()
+    result = session.query(ExceptionOccurrence).filter_by(request_id=request_id).first()
     return result
 
 
-def add_exception_info(
+def add_exception_occurrence(
     session: Session,
     request_id: int,
     trace_id: int,
@@ -34,16 +34,16 @@ def add_exception_info(
     is_user_captured: bool,
 ):
     """
-    Add a new ExceptionInfo record.
+    Add a new ExceptionOccurrence record.
     """
-    exception_info = ExceptionInfo(
+    exception_occurrence = ExceptionOccurrence(
         request_id=request_id,
         exception_type_id=exception_type_id,
         exception_msg_id=exception_msg_id,
         stack_trace_snapshot_id=trace_id,
         is_user_captured=is_user_captured,
     )
-    session.add(exception_info)
+    session.add(exception_occurrence)
     session.commit()
 
 
@@ -54,10 +54,10 @@ def count_grouped_exceptions(session: Session):
     :return: Integer (total number of groups of exceptions)
     """
     return (
-        session.query(ExceptionInfo.request_id)
-        .join(Request, ExceptionInfo.request)
+        session.query(ExceptionOccurrence.request_id)
+        .join(Request, ExceptionOccurrence.request)
         .join(Endpoint, Request.endpoint)
-        .group_by(Endpoint.name, ExceptionInfo.stack_trace_snapshot_id)
+        .group_by(Endpoint.name, ExceptionOccurrence.stack_trace_snapshot_id)
         .count()
     )
 
@@ -70,11 +70,11 @@ def count_endpoint_grouped_exceptions(session: Session, endpoint_id: int):
     :return: Integer (total number of groups of exceptions)
     """
     return (
-        session.query(ExceptionInfo.request_id)
-        .join(Request, ExceptionInfo.request)
+        session.query(ExceptionOccurrence.request_id)
+        .join(Request, ExceptionOccurrence.request)
         .join(Endpoint, Request.endpoint)
         .filter(Endpoint.id == endpoint_id)
-        .group_by(ExceptionInfo.stack_trace_snapshot_id)
+        .group_by(ExceptionOccurrence.stack_trace_snapshot_id)
         .count()
     )
 
@@ -102,13 +102,13 @@ def get_exceptions_with_timestamps(session: Session, offset: int, per_page: int)
             Endpoint.id,
             func.max(Request.time_requested).label("latest_timestamp"),
             func.min(Request.time_requested).label("first_timestamp"),
-            func.count(ExceptionInfo.request_id).label("count"),
+            func.count(ExceptionOccurrence.request_id).label("count"),
         )
-        .join(Request, ExceptionInfo.request)
+        .join(Request, ExceptionOccurrence.request)
         .join(Endpoint, Request.endpoint)
-        .join(ExceptionType, ExceptionInfo.exception_type)
-        .join(ExceptionMessage, ExceptionInfo.exception_msg)
-        .group_by(Endpoint.name, ExceptionInfo.stack_trace_snapshot_id)
+        .join(ExceptionType, ExceptionOccurrence.exception_type)
+        .join(ExceptionMessage, ExceptionOccurrence.exception_msg)
+        .group_by(Endpoint.name, ExceptionOccurrence.stack_trace_snapshot_id)
         .order_by(desc("latest_timestamp"))
         .offset(offset)
         .limit(per_page)
@@ -125,11 +125,11 @@ def delete_exception(session: Session, stack_trace_snapshot_id: int) -> None:
     :return: None
     """
     _ = (
-        session.query(ExceptionInfo)
-        .filter(ExceptionInfo.stack_trace_snapshot_id == stack_trace_snapshot_id)
+        session.query(ExceptionOccurrence)
+        .filter(ExceptionOccurrence.stack_trace_snapshot_id == stack_trace_snapshot_id)
         .delete()
     )
-    delete_entries_unreferenced_by_exception_info(session)
+    delete_entries_unreferenced_by_exception_occurrence(session)
     session.commit()
 
 
@@ -154,17 +154,17 @@ def get_exceptions_with_timestamps_and_stack_trace_id(
         session.query(
             ExceptionType.type,
             ExceptionMessage.message,
-            ExceptionInfo.stack_trace_snapshot_id,
+            ExceptionOccurrence.stack_trace_snapshot_id,
             func.max(Request.time_requested).label("latest_timestamp"),
             func.min(Request.time_requested).label("first_timestamp"),
-            func.count(ExceptionInfo.request_id).label("count"),
+            func.count(ExceptionOccurrence.request_id).label("count"),
         )
-        .join(Request, ExceptionInfo.request)
+        .join(Request, ExceptionOccurrence.request)
         .join(Endpoint, Request.endpoint)
-        .join(ExceptionType, ExceptionInfo.exception_type)
-        .join(ExceptionMessage, ExceptionInfo.exception_msg)
+        .join(ExceptionType, ExceptionOccurrence.exception_type)
+        .join(ExceptionMessage, ExceptionOccurrence.exception_msg)
         .filter(Endpoint.id == endpoint_id)
-        .group_by(ExceptionInfo.stack_trace_snapshot_id)
+        .group_by(ExceptionOccurrence.stack_trace_snapshot_id)
         .order_by(desc("latest_timestamp"))
         .offset(offset)
         .limit(per_page)

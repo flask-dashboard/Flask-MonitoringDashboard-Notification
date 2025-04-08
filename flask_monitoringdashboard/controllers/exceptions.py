@@ -1,9 +1,7 @@
-from typing import Union
 from sqlalchemy.orm import Session
 import os
 import sys
-from flask_monitoringdashboard.database import FunctionDefinition
-from flask_monitoringdashboard.database.exception_info import (
+from flask_monitoringdashboard.database.exception_occurrence import (
     delete_exception,
     get_exceptions_with_timestamps,
     get_exceptions_with_timestamps_and_stack_trace_id,

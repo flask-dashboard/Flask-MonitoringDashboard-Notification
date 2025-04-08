@@ -8,11 +8,11 @@ def get_stack_trace_by_hash(
     session: Session, stack_trace_snapshot_hash: str
 ) -> Union[StackTraceSnapshot, None]:
     """
-    Get StackTraceSnapshot record by its chained_stack_trace_hash.
+    Get StackTraceSnapshot record by its hash.
     """
     result = (
         session.query(StackTraceSnapshot)
-        .filter_by(chained_stack_trace_hash=stack_trace_snapshot_hash)
+        .filter_by(hash=stack_trace_snapshot_hash)
         .first()
     )
     return result
@@ -26,7 +26,7 @@ def add_stack_trace_snapshot(session: Session, stack_trace_snapshot_hash: str) -
     if existing_trace is not None:
         return int(existing_trace.id)
 
-    result = StackTraceSnapshot(chained_stack_trace_hash=stack_trace_snapshot_hash)
+    result = StackTraceSnapshot(hash=stack_trace_snapshot_hash)
     session.add(result)
     session.flush()
 

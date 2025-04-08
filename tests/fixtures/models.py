@@ -19,7 +19,7 @@ from flask_monitoringdashboard.database import (
     CustomGraph,
     CustomGraphData,
     User,
-    ExceptionInfo,
+    ExceptionOccurrence,
     ExceptionType,
     ExceptionMessage,
     ExceptionStackLine,
@@ -203,7 +203,7 @@ class StackTraceSnapshotFactory(ModelFactory):
     class Meta:
         model = StackTraceSnapshot
 
-    chained_stack_trace_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
 
 class ExceptionStackLineFactory(ModelFactory):
     class Meta:
@@ -214,9 +214,9 @@ class ExceptionStackLineFactory(ModelFactory):
     position = 0
 
 
-class ExceptionInfoFactory(ModelFactory):
+class ExceptionOccurrenceFactory(ModelFactory):
     class Meta:
-        model = ExceptionInfo
+        model = ExceptionOccurrence
 
     request = None
     exception_msg = None
@@ -265,8 +265,8 @@ register(
     exception_frame=LazyFixture("exception_frame"),
 )
 register(
-    ExceptionInfoFactory,
-    "exception_info",
+    ExceptionOccurrenceFactory,
+    "exception_occurrence",
     request=LazyFixture("request_1"),
     exception_msg=LazyFixture("exception_message"),
     exception_type=LazyFixture("exception_type"),

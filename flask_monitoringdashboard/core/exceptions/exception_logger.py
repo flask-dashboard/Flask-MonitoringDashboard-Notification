@@ -11,7 +11,7 @@ from flask_monitoringdashboard.core.exceptions.stack_frame_parsing import (
 from flask_monitoringdashboard.core.exceptions.stack_trace_hashing import (
     hash_stack_trace,
 )
-from flask_monitoringdashboard.database.exception_info import add_exception_info
+from flask_monitoringdashboard.database.exception_occurrence import add_exception_occurrence
 from flask_monitoringdashboard.database.stack_trace_snapshot import (
     add_stack_trace_snapshot,
     get_stack_trace_by_hash,
@@ -60,7 +60,7 @@ class ExceptionLogger:
             trace_id = add_stack_trace_snapshot(session, hashed_trace)
             idx = 0
             while tb:
-                # iterate over traceback lines
+                # iterate over traceback-type objects
                 # i.e. the object representation of the following traceback
                 # Traceback (most recent call last):
                 #   File "example.py", line 9, in <module>
@@ -91,7 +91,7 @@ class ExceptionLogger:
 
         exc_msg_id = add_exception_message(session, str(exc))
         exc_type_id = add_exception_type(session, typ.__name__)
-        add_exception_info(session, request_id, trace_id, exc_type_id, exc_msg_id, is_user_captured)
+        add_exception_occurrence(session, request_id, trace_id, exc_type_id, exc_msg_id, is_user_captured)
 
     def save_to_db(self, request_id: int, session: Session):
         """
