@@ -57,7 +57,7 @@ export function EndpointExceptionController(
         }
     };
 
-    $scope.deleteExceptionById = function (stack_trace_snapshot_id) {
+    $scope.deleteExceptionByStackTraceId = function (stack_trace_snapshot_id) {
         if (
             stack_trace_snapshot_id &&
             confirm("Are you sure you want to delete exception?")
@@ -70,7 +70,7 @@ export function EndpointExceptionController(
         }
     };
 
-    $scope.collapseDetails = function (stack_trace_snapshot_id) {
+    $scope.collapseDetailsByStackTraceId = function (stack_trace_snapshot_id) {
         document.querySelectorAll(`#details_${stack_trace_snapshot_id}`).forEach((details) => {
             details.open = false;
         });
