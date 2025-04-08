@@ -45,6 +45,7 @@ def get_stacklines_from_stack_trace_snapshot_id(
              - path (str) to the file
              - line_number (int) in the file
              - name (str) of the function
+             - function_start_line_number (int)
              - function_definition_id (int) of the function
     """
     result = (
@@ -53,6 +54,7 @@ def get_stacklines_from_stack_trace_snapshot_id(
             FilePath.path,
             ExceptionFrame.line_number,
             FunctionDefinition.name,
+            FunctionLocation.function_start_line_number,
             FunctionLocation.function_definition_id,
         )
         .join(ExceptionFrame, ExceptionStackLine.exception_frame)

@@ -14,9 +14,6 @@ from flask_monitoringdashboard.database.stack_trace_snapshot import (
 from flask_monitoringdashboard.database.function_definition import (
     get_function_definition_code_from_id,
 )
-from flask_monitoringdashboard.database.exception_frame import (
-    get_function_info_from_exception_frame_id,
-)
 
 app_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 app_parent_dir = os.path.dirname(app_dir) + os.sep
@@ -98,6 +95,7 @@ def get_exception_groups_with_details_for_endpoint(
                         exceptionStackLine.path
                     ),
                     "line_number": exceptionStackLine.line_number,
+                    "function_start_line_number": exceptionStackLine.function_start_line_number,
                     "function_name": exceptionStackLine.name,
                     "function_definition_id": exceptionStackLine.function_definition_id,
                     "position": exceptionStackLine.position,
@@ -115,23 +113,16 @@ def get_exception_groups_with_details_for_endpoint(
         )
     ]
 
-def get_exception_function_info(session: Session, exception_frame_id: int):
+
+def get_function_definition_code(session: Session, function_definition_id: int):
     """
     Retrieves the source code of the function where an exception occurred, the starting line number of the function in the source file, and the relative line number of the exception.
     :param session: session for the database
     :param exception_frame_id: the id of the exception frame
-    :return: a dict containing:
-             - start_line_number (int)
-             - code (str)
-             - exception_line_number (int)
+    :return: entire code of the function (str)
     """
-    function_start_line_number, exception_relative_line_number, function_definition_id = get_function_info_from_exception_frame_id(session, exception_frame_id)
-    function_code = get_function_definition_code_from_id(session, function_definition_id)
-    return {
-        "start_line_number": function_start_line_number,
-        "code": function_code,
-        "exception_line_number": exception_relative_line_number
-    }
+
+    return get_function_definition_code_from_id(session, function_definition_id)
 
 
 def _get_relative_file_path_if_in_app(file_path: str):

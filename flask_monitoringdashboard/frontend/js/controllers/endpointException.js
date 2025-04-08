@@ -40,15 +40,13 @@ export function EndpointExceptionController(
             });
     };
 
-    $scope.getUniqueKey = function (exception_frame_id, stack_trace_snapshot_id, stack_trace_position) {
-        return `code_${exception_frame_id}_${stack_trace_snapshot_id}_${stack_trace_position}`; // the row_index is important when dealing with recursive functions
+    $scope.getUniqueKey = function (stack_trace_snapshot_id, stack_trace_position) {
+        return `code_${stack_trace_snapshot_id}_${stack_trace_position}`; // the stack_trace_position is important when dealing with recursive functions
     };
 
-    $scope.getFunctionById = function (exception_frame_id, stack_trace_snapshot_id, stack_trace_position) {
-        let key = $scope.getUniqueKey(exception_frame_id, stack_trace_snapshot_id, stack_trace_position);
-
+    $scope.loadFunctionCodeById = function (function_definition_id, key) {
         if ($scope.id2Function[key] === undefined) {
-            $http.get(`api/function_definition/${exception_frame_id}`)
+            $http.get(`api/function_code/${function_definition_id}`)
                 .then((response) => {
                     $scope.id2Function[key] = response.data;
                     $scope.$applyAsync(() => {
@@ -59,7 +57,7 @@ export function EndpointExceptionController(
         }
     };
 
-    $scope.deleteExceptionById = function (stack_trace_snapshot_id) {
+    $scope.deleteExceptionByStackTraceId = function (stack_trace_snapshot_id) {
         if (
             stack_trace_snapshot_id &&
             confirm("Are you sure you want to delete exception?")
@@ -72,8 +70,8 @@ export function EndpointExceptionController(
         }
     };
 
-    $scope.collapseAllDetails = function (name) {
-        document.querySelectorAll(`#details_${name}`).forEach((details) => {
+    $scope.collapseDetailsByStackTraceId = function (stack_trace_snapshot_id) {
+        document.querySelectorAll(`#details_${stack_trace_snapshot_id}`).forEach((details) => {
             details.open = false;
         });
     };
