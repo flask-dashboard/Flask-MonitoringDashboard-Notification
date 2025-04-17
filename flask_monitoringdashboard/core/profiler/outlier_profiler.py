@@ -1,7 +1,6 @@
 import sys
 import threading
 import traceback
-from typing import Union
 
 import psutil
 from flask import request

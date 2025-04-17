@@ -24,7 +24,7 @@ from flask_monitoringdashboard.database.endpoint import (
     update_endpoint,
 )
 from flask_monitoringdashboard.database.versions import get_first_requests
-from flask_monitoringdashboard.database.exception_info import count_endpoint_grouped_exceptions
+from flask_monitoringdashboard.database.exception_occurrence import count_endpoint_grouped_exceptions
 
 
 def get_endpoint_overview(session):

@@ -247,9 +247,9 @@ class StackTraceSnapshot(Base):
     __tablename__ = "{}StackTraceSnapshot".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
-    chained_stack_trace_hash = Column(String(64), nullable=False, unique=True)
+    hash = Column(String(64), nullable=False, unique=True)
 
-    stack_lines = relationship("ExceptionStackLine", backref="exception_info")
+    stack_lines = relationship("ExceptionStackLine", backref="ExceptionOccurrence")
 
 
 class ExceptionType(Base):
@@ -270,10 +270,10 @@ class ExceptionMessage(Base):
     message = Column(TEXT, nullable=False)
 
 
-class ExceptionInfo(Base):
+class ExceptionOccurrence(Base):
     """Table for storing exception id together with request id."""
 
-    __tablename__ = "{}ExceptionInfo".format(config.table_prefix)
+    __tablename__ = "{}ExceptionOccurrence".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
 
@@ -425,7 +425,7 @@ def get_tables():
         StackTraceSnapshot,
         ExceptionType,
         ExceptionMessage,
-        ExceptionInfo,
+        ExceptionOccurrence,
         FunctionDefinition,
         ExceptionStackLine,
         FilePath,

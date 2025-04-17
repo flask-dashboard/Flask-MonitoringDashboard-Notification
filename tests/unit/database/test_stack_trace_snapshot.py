@@ -14,13 +14,13 @@ from flask_monitoringdashboard.database.stack_trace_snapshot import (
 
 def test_add_stack_trace_snapshot(session):
     stack_trace_snapshot_count = session.query(StackTraceSnapshot).count()
-    chained_stack_trace_hash = "test_hash"
+    hash = "test_hash"
     stack_trace_snapshot_id = add_stack_trace_snapshot(
-        session, chained_stack_trace_hash
+        session, hash
     )
     f_stack_trace = (
         session.query(StackTraceSnapshot)
-        .filter(StackTraceSnapshot.chained_stack_trace_hash == chained_stack_trace_hash)
+        .filter(StackTraceSnapshot.hash == hash)
         .one()
     )
     assert stack_trace_snapshot_id == f_stack_trace.id
@@ -29,11 +29,11 @@ def test_add_stack_trace_snapshot(session):
 
 def test_add_existing_stack_trace_snapshot(session, stack_trace_snapshot):
     stack_trace_snapshot_id = add_stack_trace_snapshot(
-        session, stack_trace_snapshot.chained_stack_trace_hash
+        session, stack_trace_snapshot.hash
     )
     stack_trace_snapshot_count = session.query(StackTraceSnapshot).count()
     stack_trace_snapshot_id_2 = add_stack_trace_snapshot(
-        session, stack_trace_snapshot.chained_stack_trace_hash
+        session, stack_trace_snapshot.hash
     )
     assert stack_trace_snapshot_count == session.query(StackTraceSnapshot).count()
     assert stack_trace_snapshot_id == stack_trace_snapshot_id_2
@@ -41,7 +41,7 @@ def test_add_existing_stack_trace_snapshot(session, stack_trace_snapshot):
 
 def test_get_stack_trace_by_hash(session, stack_trace_snapshot):
     f_stack_trace = get_stack_trace_by_hash(
-        session, stack_trace_snapshot.chained_stack_trace_hash
+        session, stack_trace_snapshot.hash
     )
     assert f_stack_trace.id == stack_trace_snapshot.id
 

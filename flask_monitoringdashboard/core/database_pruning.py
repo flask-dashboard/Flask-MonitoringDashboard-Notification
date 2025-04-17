@@ -10,7 +10,7 @@ from flask_monitoringdashboard.database import (
     Outlier,
     StackLine,
     CustomGraphData,
-    ExceptionInfo,
+    ExceptionOccurrence,
     StackTraceSnapshot,
     ExceptionStackLine,
     ExceptionFrame,
@@ -35,8 +35,8 @@ def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
         for request in requests_to_delete:
             session.query(Outlier).filter(Outlier.request_id == request.id).delete()
             session.query(StackLine).filter(StackLine.request_id == request.id).delete()
-            session.query(ExceptionInfo).filter(
-                ExceptionInfo.request_id == request.id
+            session.query(ExceptionOccurrence).filter(
+                ExceptionOccurrence.request_id == request.id
             ).delete()
             session.delete(request)
 
@@ -50,40 +50,40 @@ def prune_database_older_than_weeks(weeks_to_keep, delete_custom_graph_data):
                 CustomGraphData.time < date_to_delete_from
             ).delete()
 
-        delete_entries_unreferenced_by_exception_info(session)
+        delete_entries_unreferenced_by_exception_occurrence(session)
 
         session.commit()
 
 
-def delete_entries_unreferenced_by_exception_info(session: Session):
+def delete_entries_unreferenced_by_exception_occurrence(session: Session):
     """
     Delete ExceptionTypes, ExceptionMessages, StackTraceSnapshots (along with their ExceptionStackLines) 
-    that are not referenced by any ExceptionInfos, 
+    that are not referenced by any ExceptionOccurrences, 
     ExceptionFrames that are not referenced by any ExceptionStackLines,
     FunctionLocations that are not referenced by any ExceptionFrames, 
     FilePaths and FunctionDefinitions that are not referenced by any FunctionLocations, and
     CodeLines that are not referenced by any ExceptionStackLines and not referenced by any StackLines
     """
-    # Delete ExceptionTypes that are not referenced by any ExceptionInfos
+    # Delete ExceptionTypes that are not referenced by any ExceptionOccurrences
     session.query(ExceptionType).filter(
-        ~session.query(ExceptionInfo)
-        .filter(ExceptionInfo.exception_type_id == ExceptionType.id)
+        ~session.query(ExceptionOccurrence)
+        .filter(ExceptionOccurrence.exception_type_id == ExceptionType.id)
         .exists()
     ).delete(synchronize_session=False)
 
-    # Delete ExceptionMessages that are not referenced by any ExceptionInfos
+    # Delete ExceptionMessages that are not referenced by any ExceptionOccurrences
     session.query(ExceptionMessage).filter(
-        ~session.query(ExceptionInfo)
-        .filter(ExceptionInfo.exception_msg_id == ExceptionMessage.id)
+        ~session.query(ExceptionOccurrence)
+        .filter(ExceptionOccurrence.exception_msg_id == ExceptionMessage.id)
         .exists()
     ).delete(synchronize_session=False)
 
-    # Find and delete StackTraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionInfos
+    # Find and delete StackTraceSnapshots (along with their ExceptionStackLines) that are not referenced by any ExceptionOccurrences
     stack_trace_snapshots_to_delete = (
         session.query(StackTraceSnapshot)
         .filter(
-            ~session.query(ExceptionInfo)
-            .filter(ExceptionInfo.stack_trace_snapshot_id == StackTraceSnapshot.id)
+            ~session.query(ExceptionOccurrence)
+            .filter(ExceptionOccurrence.stack_trace_snapshot_id == StackTraceSnapshot.id)
             .exists()
         )
         .all()

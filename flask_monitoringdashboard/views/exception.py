@@ -12,20 +12,20 @@ from flask_monitoringdashboard.controllers.exceptions import (
 from flask_monitoringdashboard.core.telemetry import post_to_back_if_telemetry_enabled
 from flask_monitoringdashboard.database import session_scope
 
-from flask_monitoringdashboard.database.exception_info import (
+from flask_monitoringdashboard.database.exception_occurrence import (
     count_grouped_exceptions,
     count_endpoint_grouped_exceptions,
 )
 
 
-@blueprint.route("/api/exception_info/<int:offset>/<int:per_page>")
+@blueprint.route("/api/exception_occurrence/<int:offset>/<int:per_page>")
 @secure
-def get_exception_info(offset: int, per_page: int):
+def get_exception_occurrence(offset: int, per_page: int):
     """
     Get information about all the exceptions that have occured for all endpoint
     :return: A JSON-list with a JSON-object per exception-group (grouped by endpoint and stack trace)
     """
-    post_to_back_if_telemetry_enabled(**{"name": "exception_info"})
+    post_to_back_if_telemetry_enabled(**{"name": "exception_occurrence"})
     with session_scope() as session:
         exceptions = get_exception_groups(session, offset, per_page)
 
@@ -49,15 +49,15 @@ def num_endpoint_exceptions(endpoint_id: int):
 
 
 @blueprint.route(
-    "/api/detailed_exception_info/<int:endpoint_id>/<int:offset>/<int:per_page>"
+    "/api/detailed_exception_occurrence/<int:endpoint_id>/<int:offset>/<int:per_page>"
 )
 @secure
-def get_detailed_exception_info_endpoint(endpoint_id: int, offset: int, per_page: int):
+def get_detailed_exception_occurrence_endpoint(endpoint_id: int, offset: int, per_page: int):
     """
     Get information about all the exceptions that have occured for a specific endpoint
-    :return: A JSON-list with a JSON-object per traceback id
+    :return: A JSON-list with a JSON-object per stacktrace snapshot id
     """
-    post_to_back_if_telemetry_enabled(**{"name": "detailed_exception_info"})
+    post_to_back_if_telemetry_enabled(**{"name": "detailed_exception_occurrence"})
     with session_scope() as session:
         exceptions = get_exception_groups_with_details_for_endpoint(
             session, offset, per_page, endpoint_id
@@ -80,7 +80,7 @@ def get_function_code(function_definition_id):
 
 
 @blueprint.route(
-    "/api/exception_info/<int:stack_trace_snapshot_id>", methods=["DELETE"]
+    "/api/exception_occurrence/<int:stack_trace_snapshot_id>", methods=["DELETE"]
 )
 @secure
 def delete_exception(stack_trace_snapshot_id: int):
