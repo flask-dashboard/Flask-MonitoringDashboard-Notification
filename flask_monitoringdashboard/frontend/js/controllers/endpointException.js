@@ -15,6 +15,7 @@ export function EndpointExceptionController(
     endpointService.reset();
     menuService.reset("endpoint_exception");
     $scope.id2Function = {};
+    $scope.idHasBeenClicked = {};
 
     $scope.table = [];
 
@@ -37,6 +38,7 @@ export function EndpointExceptionController(
             .then(function (response) {
                 $scope.table = response.data;
                 $scope.id2Function = {};
+                $scope.idHasBeenClicked = {};
             });
     };
 
@@ -45,16 +47,24 @@ export function EndpointExceptionController(
     };
 
     $scope.loadFunctionCodeById = function (function_definition_id, key) {
-        if ($scope.id2Function[key] === undefined) {
+        if ($scope.id2Function[function_definition_id] === undefined) {
             $http.get(`api/function_code/${function_definition_id}`)
                 .then((response) => {
-                    $scope.id2Function[key] = response.data;
-                    $scope.$applyAsync(() => {
-                        let element = document.getElementById(key);
-                        Prism.highlightElement(element);
-                    });
+                    $scope.id2Function[function_definition_id] = response.data;
+                    $scope.idHasBeenClicked[key] = true; // important that only marked after data has been fetched
                 });
+        } else {
+            $scope.idHasBeenClicked[key] = true;
         }
+    };
+
+    $scope.highlightCode = function (key) {
+        $scope.$applyAsync(() => {
+          const element = document.getElementById(key);
+          if (element) {
+            Prism.highlightElement(element);
+          }
+        });
     };
 
     $scope.deleteExceptionByStackTraceId = function (stack_trace_snapshot_id) {

@@ -33,19 +33,19 @@
                     <tr ng-repeat="row in request.stack_trace_snapshot"
                         ng-init="key = getUniqueKey(request.stack_trace_snapshot_id, row.position)">
                         <td style="padding-left: 10px;">
-                            <details
-                                ng-click="loadFunctionCodeById(row.function_definition_id, key)"
-                                id="details_{{request.stack_trace_snapshot_id}}">
+                            <details ng-click="loadFunctionCodeById(row.function_definition_id, key)"
+                                     id="details_{{request.stack_trace_snapshot_id}}">
                                 <summary>
                                     {{ row.filename }} 
                                     <span style="color: grey;">in</span> {{ row.function_name }}
                                     <span style="color: grey;">at</span> {{ row.line_number }}
                                 </summary>
-                                <div ng-if="function_code = id2Function[key]"><!--show after code is loaded-->
+                                <div ng-if="idHasBeenClicked[key]" 
+                                     ng-init="function_code = id2Function[row.function_definition_id]; highlightCode(key)">
                                     <pre class="line-numbers" style="white-space: pre"
-                                        data-line="{{row.line_number}}"
-                                        data-line-offset="{{row.function_start_line_number}}"
-                                        data-start="{{row.function_start_line_number}}">
+                                         data-line="{{row.line_number}}"
+                                         data-line-offset="{{row.function_start_line_number}}"
+                                         data-start="{{row.function_start_line_number}}">
                                         <code class="language-python" id="{{ key }}">
                                             {{ function_code }}
                                         </code>
