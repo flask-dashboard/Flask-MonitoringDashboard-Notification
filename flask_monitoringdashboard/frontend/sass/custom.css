@@ -563,6 +563,33 @@ textarea#customReason:focus {
     }
 }
 
+.tooltip-wrapper {
+    position: relative;
+}
+
+.tooltip {
+    visibility: hidden;
+    opacity: 0;
+    background-color: #3e3e3e;
+    color: #fff;
+    text-align: left;
+    padding: 8px 12px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%; /* Show above */
+    left: 0;
+    white-space: normal; /* Allow text wrapping */
+    font-size: 12px;
+    transition: opacity 0.6s ease-in-out;
+    width: auto;
+}
+
+.tooltip-wrapper:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
 pre[data-line] .line-highlight {
     background: rgba(255, 215, 0, 0.3) !important; /* Light gold highlight */
 }

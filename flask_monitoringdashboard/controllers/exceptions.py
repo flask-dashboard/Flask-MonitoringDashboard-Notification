@@ -72,12 +72,14 @@ def get_exception_groups_with_details_for_endpoint(
              - type (str) of the exception
              - message (str) of the exception
              - stack_trace_snapshot_id (int)
-             - stack_trace_snapshot (lst of dicts) Each dict contains:
-                - code (str)
-                - filename (str)
-                - line_number (int)
+             - stack_trace_snapshot (list of dicts) Each dict contains:
+                - position (int)
+                - full_file_path (str)
+                - file_path (str)
                 - function_name (str)
                 - function_definition_id (int)
+                - function_start_line_number (int)
+                - line_number (int)
              - latest_timestamp (datetime)
              - first_timestamp (datetime)
              - count (int) representing the number of occurrences.
@@ -89,14 +91,15 @@ def get_exception_groups_with_details_for_endpoint(
             "stack_trace_snapshot_id": exception.stack_trace_snapshot_id,
             "stack_trace_snapshot": [
                 {
-                    "filename": _get_relative_file_path_if_in_app(
+                    "position": exceptionStackLine.position,
+                    "full_file_path": exceptionStackLine.path,
+                    "file_path": _get_relative_file_path_if_in_app(
                         exceptionStackLine.path
                     ),
-                    "line_number": exceptionStackLine.line_number,
-                    "function_start_line_number": exceptionStackLine.function_start_line_number,
-                    "function_name": exceptionStackLine.name,
                     "function_definition_id": exceptionStackLine.function_definition_id,
-                    "position": exceptionStackLine.position,
+                    "function_name": exceptionStackLine.name,
+                    "function_start_line_number": exceptionStackLine.function_start_line_number,
+                    "line_number": exceptionStackLine.line_number,
                 }
                 for exceptionStackLine in get_stacklines_from_stack_trace_snapshot_id(
                     session, exception.stack_trace_snapshot_id
