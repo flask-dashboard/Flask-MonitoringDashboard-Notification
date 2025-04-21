@@ -35,8 +35,9 @@
                         <td style="padding-left: 10px;">
                             <details ng-click="loadFunctionCodeById(row.function_definition_id, key)"
                                      id="details_{{request.stack_trace_snapshot_id}}">
-                                <summary>
-                                    {{ row.file_path }} 
+                                     <summary class="tooltip-wrapper">
+                                        {{ row.file_path }}
+                                        <span class="tooltip">{{ row.full_file_path }}</span>
                                     <span style="color: grey;">in</span> {{ row.function_name }}
                                     <span style="color: grey;">at</span> {{ row.line_number }}
                                 </summary>

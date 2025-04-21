@@ -74,6 +74,7 @@ def get_exception_groups_with_details_for_endpoint(
              - stack_trace_snapshot_id (int)
              - stack_trace_snapshot (list of dicts) Each dict contains:
                 - position (int)
+                - full_file_path (str)
                 - file_path (str)
                 - function_name (str)
                 - function_definition_id (int)
@@ -91,6 +92,7 @@ def get_exception_groups_with_details_for_endpoint(
             "stack_trace_snapshot": [
                 {
                     "position": exceptionStackLine.position,
+                    "full_file_path": exceptionStackLine.path,
                     "file_path": _get_relative_file_path_if_in_app(
                         exceptionStackLine.path
                     ),
