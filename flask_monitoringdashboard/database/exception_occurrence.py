@@ -17,7 +17,9 @@ from flask_monitoringdashboard.core.database_pruning import (
 )
 
 
-def get_exception_occurrence(session: Session, request_id: int) -> Union[ExceptionOccurrence, None]:
+def get_first_exception_occurrence(
+    session: Session, request_id: int
+) -> Union[ExceptionOccurrence, None]:
     """
     Retrieve an ExceptionOccurrence record by request_id.
     """
@@ -117,7 +119,7 @@ def get_exceptions_with_timestamps(session: Session, offset: int, per_page: int)
     return result
 
 
-def delete_exception(session: Session, stack_trace_snapshot_id: int) -> None:
+def delete_exception_occurrence(session: Session, stack_trace_snapshot_id: int) -> None:
     """
     Deletes an exception based on the stack trace id
     :param session: session for the database

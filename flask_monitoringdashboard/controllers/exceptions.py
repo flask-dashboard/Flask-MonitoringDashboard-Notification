@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 import os
 import sys
 from flask_monitoringdashboard.database.exception_occurrence import (
-    delete_exception,
+    delete_exception_occurrence,
     get_exceptions_with_timestamps,
     get_exceptions_with_timestamps_and_stack_trace_id,
 )
@@ -56,7 +56,7 @@ def delete_exceptions_via_stack_trace_snapshot_id(
     :param stack_trace_snapshot_id: stack trace id to be deleted
     :return: None
     """
-    delete_exception(session, stack_trace_snapshot_id)
+    delete_exception_occurrence(session, stack_trace_snapshot_id)
 
 
 def get_exception_groups_with_details_for_endpoint(
