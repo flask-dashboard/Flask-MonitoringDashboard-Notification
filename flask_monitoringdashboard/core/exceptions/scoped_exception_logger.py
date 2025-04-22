@@ -1,4 +1,5 @@
 from typing import Union
+import copy
 
 
 class ScopedExceptionLogger:
@@ -25,5 +26,17 @@ def _get_copy_of_exception(e: BaseException):
     Helper function to reraise the uncaught exception with its original traceback,
     The copy is made in order to preserve the original exception's stack trace
     """
-    if e is not None:
-        return e.__class__(*e.args).with_traceback(e.__traceback__)
+    if e is None:
+        return None
+
+    try:
+        new_exc = e.__class__(*e.args)
+    except Exception:
+        try:
+            new_exc = copy.deepcopy(e)
+        except Exception:
+            new_exc = e.__class__()
+
+    if e.__traceback__:
+        return new_exc.with_traceback(e.__traceback__)
+    return new_exc
