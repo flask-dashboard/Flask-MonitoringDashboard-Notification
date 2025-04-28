@@ -39,8 +39,24 @@ class ExceptionLogger:
             scoped_logger.uncaught_exception
         )
 
-    def _save_to_db(
-        self,
+    def save_to_db(self, request_id: int, session: Session):
+        """
+        Iterates over all the user captured exceptions and also a possible uncaught one, and saves each exception to the DB
+        """
+        for e in self.user_captured_exceptions:
+            save_exception_occurence_to_db(request_id, session, e, type(e), e.__traceback__, True)
+
+        e = self.uncaught_exception
+        if e is not None:
+            if e.__traceback__ is not None:
+                # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
+                # where it was temporaritly captured for logging by the ScopedExceptionLogger, before getting reraised later
+                e = e.with_traceback(e.__traceback__.tb_next)
+
+            save_exception_occurence_to_db(request_id, session, e, type(e), e.__traceback__, False)
+
+
+def save_exception_occurence_to_db(
         request_id: int,
         session: Session,
         exc: BaseException,
@@ -49,7 +65,7 @@ class ExceptionLogger:
         is_user_captured: bool,
     ):
         """
-        Save exception info to DB
+        Save exception occurence to DB
         """
         hashed_trace = hash_stack_trace(exc, tb)
         existing_trace = get_stack_trace_by_hash(session, hashed_trace)
@@ -92,18 +108,4 @@ class ExceptionLogger:
         exc_msg_id = add_exception_message(session, str(exc))
         exc_type_id = add_exception_type(session, typ.__name__)
         add_exception_occurrence(session, request_id, trace_id, exc_type_id, exc_msg_id, is_user_captured)
-
-    def save_to_db(self, request_id: int, session: Session):
-        """
-        Iterates over all the user captured exceptions and also a possible uncaught one, and saves each exception to the DB
-        """
-        for e in self.user_captured_exceptions:
-            self._save_to_db(request_id, session, e, type(e), e.__traceback__, True)
-
-        e = self.uncaught_exception
-        if e is not None and e.__traceback__ is not None:
-            # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
-            # where it was temporaritly captured for logging by the ScopedExceptionLogger, before getting reraised later
-            e = e.with_traceback(e.__traceback__.tb_next)
-
-            self._save_to_db(request_id, session, e, type(e), e.__traceback__, False)
+        
