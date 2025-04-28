@@ -108,9 +108,9 @@ def get_exceptions_with_timestamps(session: Session, offset: int, per_page: int)
     return result
 
 
-def delete_exception_occurrence(session: Session, stack_trace_snapshot_id: int) -> None:
+def delete_exception_group(session: Session, stack_trace_snapshot_id: int) -> None:
     """
-    Deletes an exception based on the stack trace id
+    Deletes a group of exceptions based on the stack trace id
     :param session: session for the database
     :param stack_trace_snapshot_id: the stack trace id
     :return: None

@@ -65,7 +65,7 @@ def save_exception_occurence_to_db(
         is_user_captured: bool,
     ):
         """
-        Save exception info to DB
+        Save exception occurence to DB
         """
         hashed_trace = hash_stack_trace(exc, tb)
         existing_trace = get_stack_trace_by_hash(session, hashed_trace)
