@@ -8,6 +8,7 @@ is attached to your flask application.
 """
 
 import time
+import json
 from random import random, randint
 
 from flask import Flask, redirect, url_for
@@ -85,13 +86,41 @@ def endpoint5():
     return "Ok"
 
 
-def a():
-    raise Exception("åhhh nej")
+def reraised_and_captured_exception():
+    try:
+        raise Exception("åhhh nej")
+    except BaseException as e:
+        dashboard.capture(e)
+        try: 
+            e.args = (f"Reraised exception: {e.args[0]}",)
+            raise e
+        except BaseException as e2:
+            dashboard.capture(e2)
+            e.args = (f"Rereraised exception: {e.args[0]} (uncaught)",)
+            raise e2
+        
+def non_app_exception():
+    json.loads('{"invalid_json": }')
+
+def recursive_function(n):
+    if n == 0:
+        raise Exception("recursive åhhh nej")
+    elif n % 3 == 0:
+        return recursive_function(n - 2)
+    elif n % 3 == 1:
+        return recursive_function(n - 1)
+    else:
+        return recursive_function(n - 1)
 
 
 def b():
-    return a()
-
+    n = randint(1,3)
+    if n == 1:
+        return reraised_and_captured_exception()
+    if n == 2:
+        return non_app_exception()
+    if n == 3:
+        return recursive_function(100)
 
 def c():
     return b()
