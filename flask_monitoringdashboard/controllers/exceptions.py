@@ -47,18 +47,6 @@ def get_exception_groups(session: Session, offset: int, per_page: int):
     ]
 
 
-def delete_exceptions_via_stack_trace_snapshot_id(
-    session: Session, stack_trace_snapshot_id: int
-) -> None:
-    """
-    Deletes the exceptions with the specified stack_trace_snapshot_id
-    :param session: session for the database
-    :param stack_trace_snapshot_id: stack trace id to be deleted
-    :return: None
-    """
-    delete_exception_group(session, stack_trace_snapshot_id)
-
-
 def get_exception_groups_with_details_for_endpoint(
     session: Session, offset: int, per_page: int, endpoint_id: int
 ):

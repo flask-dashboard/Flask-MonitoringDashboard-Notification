@@ -4,7 +4,6 @@ from flask_monitoringdashboard import blueprint
 from flask_monitoringdashboard.core.auth import secure
 
 from flask_monitoringdashboard.controllers.exceptions import (
-    delete_exceptions_via_stack_trace_snapshot_id,
     get_function_definition_code,
     get_exception_groups,
     get_exception_groups_with_details_for_endpoint,
@@ -15,6 +14,7 @@ from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.exception_occurrence import (
     count_grouped_exceptions,
     count_endpoint_grouped_exceptions,
+    delete_exception_group,
 )
 
 
@@ -86,5 +86,5 @@ def get_function_code(function_definition_id):
 def delete_exception(stack_trace_snapshot_id: int):
     post_to_back_if_telemetry_enabled(**{"name": "delete_exception"})
     with session_scope() as session:
-        delete_exceptions_via_stack_trace_snapshot_id(session, stack_trace_snapshot_id)
+        delete_exception_group(session, stack_trace_snapshot_id)
     return "ok"
