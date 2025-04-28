@@ -249,7 +249,7 @@ class StackTraceSnapshot(Base):
     id = Column(Integer, primary_key=True)
     hash = Column(String(64), nullable=False, unique=True)
 
-    stack_lines = relationship("ExceptionStackLine", backref="ExceptionOccurrence")
+    exception_stack_lines = relationship("ExceptionStackLine", back_populates="stack_trace_snapshot")
 
 
 class ExceptionType(Base):
@@ -362,7 +362,7 @@ class ExceptionStackLine(Base):
     stack_trace_snapshot_id = Column(
         Integer, ForeignKey(StackTraceSnapshot.id), primary_key=True
     )
-    stack_trace_snapshot = relationship(StackTraceSnapshot)
+    stack_trace_snapshot = relationship(StackTraceSnapshot, back_populates="exception_stack_lines")
     """Stack trace that belongs to this exc_stack_line."""
 
     exception_frame_id = Column(
