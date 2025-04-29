@@ -6,8 +6,8 @@ import traceback
 from collections import defaultdict
 from typing import Union
 from flask_monitoringdashboard import config
-from flask_monitoringdashboard.core.exceptions.scoped_exception_collector import (
-    ScopedExceptionCollector,
+from flask_monitoringdashboard.core.exceptions.exception_collector import (
+    ExceptionCollector,
 )
 from flask_monitoringdashboard.core.cache import update_duration_cache
 
@@ -44,7 +44,7 @@ class StacktraceProfiler(threading.Thread):
         self._total = 0
         self._outlier_profiler = outlier_profiler
         self._status_code = 404
-        self.e_collector: Union[ScopedExceptionCollector, None] = None
+        self.e_collector: Union[ExceptionCollector, None] = None
 
     def run(self):
         """
@@ -92,7 +92,7 @@ class StacktraceProfiler(threading.Thread):
 
         self._on_thread_stopped()
 
-    def stop(self, duration, status_code, e_collector: ScopedExceptionCollector):
+    def stop(self, duration, status_code, e_collector: ExceptionCollector):
         self._duration = duration * 1000
         self._status_code = status_code
         if self._outlier_profiler:

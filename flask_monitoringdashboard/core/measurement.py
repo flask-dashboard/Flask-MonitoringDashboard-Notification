@@ -18,8 +18,8 @@ from flask_monitoringdashboard.core.profiler import (
     start_profiler_and_outlier_thread,
 )
 from flask_monitoringdashboard.core.rules import get_rules
-from flask_monitoringdashboard.core.exceptions.scoped_exception_collector import (
-    ScopedExceptionCollector,
+from flask_monitoringdashboard.core.exceptions.exception_collector import (
+    ExceptionCollector,
 )
 from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.endpoint import get_endpoint_by_name
@@ -111,7 +111,7 @@ def evaluate(route_handler, args, kwargs):
     :param kwargs:
     :return:
     """
-    g.scoped_logger = ScopedExceptionCollector()
+    g.e_collector = ExceptionCollector()
 
     def evaluate_():
         try:
@@ -120,7 +120,7 @@ def evaluate(route_handler, args, kwargs):
 
             return result, status_code, None
         except BaseException as e:
-            g.scoped_logger.set_uncaught_exc(e)
+            g.e_collector.set_uncaught_exc(e)
 
             if isinstance(e, HTTPException):
                 return None, e.code, e
@@ -128,7 +128,7 @@ def evaluate(route_handler, args, kwargs):
 
     result, status_code, exception = evaluate_()
 
-    return result, status_code, g.scoped_logger, exception
+    return result, status_code, g.e_collector, exception
 
 
 def add_wrapper1(endpoint, fun):
@@ -136,10 +136,10 @@ def add_wrapper1(endpoint, fun):
     def wrapper(*args, **kwargs):
         start_time = time.time()
 
-        result, status_code, e_logger, exception = evaluate(fun, args, kwargs)
+        result, status_code, e_collector, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        start_performance_thread(endpoint, duration, status_code, e_logger)
+        start_performance_thread(endpoint, duration, status_code, e_collector)
 
         if exception is not None:
             raise exception
@@ -156,10 +156,10 @@ def add_wrapper2(endpoint, fun):
         outlier = start_outlier_thread(endpoint)
         start_time = time.time()
 
-        result, status_code, e_logger, exception = evaluate(fun, args, kwargs)
+        result, status_code, e_collector, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        outlier.stop(duration, status_code, e_logger)
+        outlier.stop(duration, status_code, e_collector)
 
         if exception is not None:
             raise exception
@@ -176,10 +176,10 @@ def add_wrapper3(endpoint, fun):
         thread = start_profiler_and_outlier_thread(endpoint)
         start_time = time.time()
 
-        result, status_code, e_logger, exception = evaluate(fun, args, kwargs)
+        result, status_code, e_collector, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        thread.stop(duration, status_code, e_logger)
+        thread.stop(duration, status_code, e_collector)
 
         if exception is not None:
             raise exception

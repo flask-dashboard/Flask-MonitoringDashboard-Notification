@@ -18,8 +18,8 @@ from flask import Blueprint, g
 
 from flask_monitoringdashboard.core.config import Config, TelemetryConfig
 from flask_monitoringdashboard.core.logger import log
-from flask_monitoringdashboard.core.exceptions.scoped_exception_collector import (
-    ScopedExceptionCollector,
+from flask_monitoringdashboard.core.exceptions.exception_collector import (
+    ExceptionCollector,
 )
 
 
@@ -132,6 +132,6 @@ def add_database_pruning_schedule(weeks_to_keep, delete_custom_graph_data, **sch
 
 
 def capture(e: Exception):
-    if "scoped_logger" not in g:
-        g.scoped_logger = ScopedExceptionCollector()
-    g.scoped_logger.add_user_captured_exc(e)
+    if "e_collector" not in g:
+        g.e_collector = ExceptionCollector()
+    g.e_collector.add_user_captured_exc(e)

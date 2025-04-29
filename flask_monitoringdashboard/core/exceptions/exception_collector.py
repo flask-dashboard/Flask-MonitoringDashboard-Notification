@@ -4,7 +4,7 @@ import copy
 from sqlalchemy.orm import Session
 
 
-class ScopedExceptionCollector:
+class ExceptionCollector:
     """
     This class is for logging user captured exceptions, in the scope of the current request.
     It is just a DTO for transmitting the user captured exceptions and uncaught exceptions to the exception logger.
@@ -40,7 +40,7 @@ class ScopedExceptionCollector:
         if e is not None:
             if e.__traceback__ is not None:
                 # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
-                # where it was temporaritly captured for logging by the ScopedExceptionCollector, before getting reraised later
+                # where it was temporaritly captured for logging by the ExceptionCollector, before getting reraised later
                 e = e.with_traceback(e.__traceback__.tb_next)
 
             save_exception_occurence_to_db(

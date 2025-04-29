@@ -1,6 +1,6 @@
 import threading
 
-from flask_monitoringdashboard import ScopedExceptionCollector
+from flask_monitoringdashboard import ExceptionCollector
 from flask_monitoringdashboard.core.get_ip import get_ip
 from flask_monitoringdashboard.core.group_by import get_group_by
 from flask_monitoringdashboard.core.profiler.base_profiler import BaseProfiler
@@ -22,7 +22,7 @@ def start_thread_last_requested(endpoint):
 
 
 def start_performance_thread(
-    endpoint, duration, status_code, e_collector: ScopedExceptionCollector
+    endpoint, duration, status_code, e_collector: ExceptionCollector
 ):
     """
     Starts a thread that updates performance, utilization and last_requested in the database.
