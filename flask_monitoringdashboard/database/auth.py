@@ -26,9 +26,9 @@ def get_all_users(session):
 
     return [
         {
-            'id': user.id,
-            'username': user.username,
-            'is_admin': user.is_admin,
+            "id": user.id,
+            "username": user.username,
+            "is_admin": user.is_admin,
         }
         for user in users
     ]

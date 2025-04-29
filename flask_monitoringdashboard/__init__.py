@@ -14,20 +14,23 @@ The dashboard with the results that are collected can be found at:
 
 import os
 
-from flask import Blueprint
+from flask import Blueprint, g
 
 from flask_monitoringdashboard.core.config import Config, TelemetryConfig
 from flask_monitoringdashboard.core.logger import log
+from flask_monitoringdashboard.core.exceptions.exception_collector import (
+    ExceptionCollector,
+)
 
 
 def loc():
     """Get the current location of the project."""
-    return os.path.abspath(os.path.dirname(__file__)) + '/'
+    return os.path.abspath(os.path.dirname(__file__)) + "/"
 
 
 config = Config()
 telemetry_config = TelemetryConfig()
-blueprint = Blueprint('dashboard', __name__, template_folder=loc() + 'templates')
+blueprint = Blueprint("dashboard", __name__, template_folder=loc() + "templates")
 
 
 def bind(app, schedule=True, include_dashboard=True):
@@ -42,8 +45,8 @@ def bind(app, schedule=True, include_dashboard=True):
     config.app = app
     # Provide a secret-key for using WTF-forms
     if not app.secret_key:
-        log('WARNING: You should provide a security key.')
-        app.secret_key = 'my-secret-key'
+        log("WARNING: You should provide a security key.")
+        app.secret_key = "my-secret-key"
 
     # Add all route-functions to the blueprint
     if include_dashboard:
@@ -58,7 +61,8 @@ def bind(app, schedule=True, include_dashboard=True):
             auth,
             reporting,
             telemetry,
-            pruning
+            pruning,
+            exception,
         )
         import flask_monitoringdashboard.views
 
@@ -72,7 +76,9 @@ def bind(app, schedule=True, include_dashboard=True):
         blueprint.record_once(lambda _state: init_cache())
     except AssertionError as e:
         if app.config["TESTING"]:
-            print("We must find a better solution for the record_once exception in the tests")
+            print(
+                "We must find a better solution for the record_once exception in the tests"
+            )
         else:
             raise e
 
@@ -80,7 +86,7 @@ def bind(app, schedule=True, include_dashboard=True):
         custom_graph.init(app)
 
     # register the blueprint to the app
-    app.register_blueprint(blueprint, url_prefix='/' + config.link)
+    app.register_blueprint(blueprint, url_prefix="/" + config.link)
 
     # flush cache to db before shutdown
     import atexit
@@ -89,6 +95,7 @@ def bind(app, schedule=True, include_dashboard=True):
     atexit.register(flush_cache)
 
     if not include_dashboard:
+
         @app.teardown_request
         def teardown(_):
             flush_cache()
@@ -119,4 +126,12 @@ def add_database_pruning_schedule(weeks_to_keep, delete_custom_graph_data, **sch
     """
     from flask_monitoringdashboard.core import database_pruning
 
-    database_pruning.add_background_pruning_job(weeks_to_keep, delete_custom_graph_data, **schedule)
+    database_pruning.add_background_pruning_job(
+        weeks_to_keep, delete_custom_graph_data, **schedule
+    )
+
+
+def capture(e: Exception):
+    if "e_collector" not in g:
+        g.e_collector = ExceptionCollector()
+    g.e_collector.add_user_captured_exc(e)

@@ -23,6 +23,8 @@ import moment from 'moment';
 window.moment = moment;
 
 import { OverviewController } from "./controllers/OverviewController";
+import { ExceptionController } from "./controllers/exception";
+import { EndpointExceptionController } from "./controllers/endpointException";
 import { HourlyLoadController } from "./controllers/hourlyLoad";
 import { MultiVersionController } from "./controllers/multiVersion";
 import { DailyUtilizationController } from "./controllers/dailyUtilization";
@@ -95,6 +97,10 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
             templateUrl: 'static/pages/overview.html',
             controller: ['$scope', '$http', '$location', 'menuService', 'endpointService', OverviewController]
         })
+        .when('/exception_overview', {
+            templateUrl: 'static/pages/exception_overview.html',
+            controller: ['$scope', '$http', 'menuService', 'paginationService', 'endpointService', ExceptionController]
+        })
         .when('/hourly_load', {
             templateUrl: 'static/pages/plotly_graph.html',
             controller: ['$scope', '$http', 'menuService', 'plotlyService', 'infoService',
@@ -154,6 +160,11 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
             templateUrl: 'static/pages/grouped_profiler.html',
             controller: ['$scope', '$http', 'menuService',
                 'endpointService', 'formService', EndpointGroupedProfilerController]
+        })
+        .when('/endpoint/:endpointId/exceptions', {
+            templateUrl: 'static/pages/exceptions.html',
+            controller: ['$scope', '$http', 'menuService',
+                'paginationService', 'endpointService', EndpointExceptionController]
         })
         .when('/endpoint/:endpointId/outliers', {
             templateUrl: 'static/pages/outliers.html',

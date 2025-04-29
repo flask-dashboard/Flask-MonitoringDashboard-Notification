@@ -1,9 +1,13 @@
 """
-    Contains all functions that are used to track the performance of the flask-application.
-    See init_measurement() for more detailed info.
+Contains all functions that are used to track the performance of the flask-application.
+See init_measurement() for more detailed info.
 """
+
 import time
 from functools import wraps
+
+from flask import g
+
 from werkzeug.exceptions import HTTPException
 
 from flask_monitoringdashboard import config
@@ -14,6 +18,9 @@ from flask_monitoringdashboard.core.profiler import (
     start_profiler_and_outlier_thread,
 )
 from flask_monitoringdashboard.core.rules import get_rules
+from flask_monitoringdashboard.core.exceptions.exception_collector import (
+    ExceptionCollector,
+)
 from flask_monitoringdashboard.database import session_scope
 from flask_monitoringdashboard.database.endpoint import get_endpoint_by_name
 
@@ -45,7 +52,7 @@ def add_decorator(endpoint):
     elif endpoint.monitor_level == 3:
         add_wrapper3(endpoint, fun)
     else:
-        raise ValueError('Incorrect monitoringLevel')
+        raise ValueError("Incorrect monitoringLevel")
 
 
 def add_wrapper0(endpoint, fun):
@@ -85,7 +92,7 @@ def status_code_from_response(result):
     else:
         # Try to pull it from an object
         try:
-            status_code = getattr(result, 'status_code')
+            status_code = getattr(result, "status_code")
         except:
             pass
 
@@ -104,15 +111,24 @@ def evaluate(route_handler, args, kwargs):
     :param kwargs:
     :return:
     """
-    try:
-        result = route_handler(*args, **kwargs)
-        status_code = status_code_from_response(result)
+    g.e_collector = ExceptionCollector()
 
-        return result, status_code, None
-    except HTTPException as e:
-        return None, e.code, e
-    except Exception as e:
-        return None, 500, e
+    def evaluate_():
+        try:
+            result = route_handler(*args, **kwargs)
+            status_code = status_code_from_response(result)
+
+            return result, status_code, None
+        except BaseException as e:
+            g.e_collector.set_uncaught_exc(e)
+
+            if isinstance(e, HTTPException):
+                return None, e.code, e
+            return None, 500, e
+
+    result, status_code, exception = evaluate_()
+
+    return result, status_code, g.e_collector, exception
 
 
 def add_wrapper1(endpoint, fun):
@@ -120,13 +136,13 @@ def add_wrapper1(endpoint, fun):
     def wrapper(*args, **kwargs):
         start_time = time.time()
 
-        result, status_code, raised_exception = evaluate(fun, args, kwargs)
+        result, status_code, e_collector, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        start_performance_thread(endpoint, duration, status_code)
+        start_performance_thread(endpoint, duration, status_code, e_collector)
 
-        if raised_exception:
-            raise raised_exception
+        if exception is not None:
+            raise exception
 
         return result
 
@@ -140,13 +156,13 @@ def add_wrapper2(endpoint, fun):
         outlier = start_outlier_thread(endpoint)
         start_time = time.time()
 
-        result, status_code, raised_exception = evaluate(fun, args, kwargs)
+        result, status_code, e_collector, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        outlier.stop(duration, status_code)
+        outlier.stop(duration, status_code, e_collector)
 
-        if raised_exception:
-            raise raised_exception
+        if exception is not None:
+            raise exception
 
         return result
 
@@ -160,13 +176,13 @@ def add_wrapper3(endpoint, fun):
         thread = start_profiler_and_outlier_thread(endpoint)
         start_time = time.time()
 
-        result, status_code, raised_exception = evaluate(fun, args, kwargs)
+        result, status_code, e_collector, exception = evaluate(fun, args, kwargs)
 
         duration = time.time() - start_time
-        thread.stop(duration, status_code)
+        thread.stop(duration, status_code, e_collector)
 
-        if raised_exception:
-            raise raised_exception
+        if exception is not None:
+            raise exception
 
         return result
 

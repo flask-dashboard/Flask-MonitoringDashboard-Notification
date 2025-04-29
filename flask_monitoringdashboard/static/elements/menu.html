@@ -11,6 +11,9 @@
             <li ng-class="{'active': menu.page=='hourly_load'}">
                 <a href="hourly_load">Hourly API Utilization</a>
             </li>
+            <li ng-class="{'active': menu.page=='exception_overview'}">
+                <a href="exception_overview">Exception Monitoring</a>
+            </li>
             <li ng-class="{'active': menu.page=='multi_version'}">
                 <a href="multi_version">Multi Version API Utilization</a>
             </li>
@@ -60,6 +63,10 @@
             <li ng-class="{'active': menu.page=='endpoint_grouped_profiler'}">
                 <a href="endpoint/{{ menu.endpoint.info.id }}/grouped-profiler">
                     Grouped Profiler</a>
+            </li>
+            <li ng-class="{'active': menu.page=='endpoint_exception'}">
+                <a href="endpoint/{{ menu.endpoint.info.id }}/exceptions">
+                    Exceptions</a>
             </li>
             <li ng-class="{'active': menu.page=='endpoint_outlier'}">
                 <a href="endpoint/{{ menu.endpoint.info.id }}/outliers">

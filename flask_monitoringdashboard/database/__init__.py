@@ -1,6 +1,7 @@
 """Creates the database.
 For information about how to access the database via a session-variable, see: session_scope()
 """
+
 import datetime
 import random
 import time
@@ -37,7 +38,7 @@ Base = declarative_base()
 class User(Base):
     """Table for storing user management."""
 
-    __tablename__ = '{}User'.format(config.table_prefix)
+    __tablename__ = "{}User".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
 
@@ -51,7 +52,8 @@ class User(Base):
     """False for guest permissions (only view access). True for admin permissions."""
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        # Using the pbkdf2 because it scrypt won't work on a Mac M1 with Sequoia
+        self.password_hash = generate_password_hash(password, "pbkdf2")
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
@@ -59,7 +61,8 @@ class User(Base):
 
 class TelemetryUser(Base):
     """Table for storing a unique identifier of an FMD user"""
-    __tablename__ = '{}TelemetryUser'.format(config.table_prefix)
+
+    __tablename__ = "{}TelemetryUser".format(config.table_prefix)
 
     id = Column(String(40), primary_key=True, default=str(uuid.uuid4()))
     """Unique anonymous identifier to group the data received through telemetry"""
@@ -77,7 +80,7 @@ class TelemetryUser(Base):
 class Endpoint(Base):
     """Table for storing information about the endpoints."""
 
-    __tablename__ = '{}Endpoint'.format(config.table_prefix)
+    __tablename__ = "{}Endpoint".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
 
@@ -100,12 +103,12 @@ class Endpoint(Base):
 class Request(Base):
     """Table for storing measurements of requests."""
 
-    __tablename__ = '{}Request'.format(config.table_prefix)
+    __tablename__ = "{}Request".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
 
     endpoint_id = Column(Integer, ForeignKey(Endpoint.id))
-    endpoint = relationship(Endpoint, backref='requests')
+    endpoint = relationship(Endpoint, backref="requests")
     """The endpoint that handles the request."""
 
     duration = Column(Float, nullable=False)
@@ -126,18 +129,18 @@ class Request(Base):
     status_code = Column(Integer, nullable=True)
     """HTTP status code of the request."""
 
-    outlier = relationship("Outlier", uselist=False, back_populates='request')
+    outlier = relationship("Outlier", uselist=False, back_populates="request")
 
 
 class Outlier(Base):
     """Table for storing information about outliers."""
 
-    __tablename__ = '{}Outlier'.format(config.table_prefix)
+    __tablename__ = "{}Outlier".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
 
     request_id = Column(Integer, ForeignKey(Request.id))
-    request = relationship(Request, back_populates='outlier')
+    request = relationship(Request, back_populates="outlier")
     """Request of the outlier."""
 
     request_header = Column(TEXT)
@@ -164,7 +167,7 @@ class CodeLine(Base):
     This is a quadruple (filename, line_number, function_name, code) that uniquely
     identifies a line in the code."""
 
-    __tablename__ = '{}CodeLine'.format(config.table_prefix)
+    __tablename__ = "{}CodeLine".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
 
@@ -184,7 +187,7 @@ class CodeLine(Base):
 class StackLine(Base):
     """Table for storing lines of execution paths of calls."""
 
-    __tablename__ = '{}StackLine'.format(config.table_prefix)
+    __tablename__ = "{}StackLine".format(config.table_prefix)
 
     request_id = Column(Integer, ForeignKey(Request.id), primary_key=True)
     request = relationship(Request, backref="stack_lines")
@@ -207,7 +210,7 @@ class StackLine(Base):
 class CustomGraph(Base):
     """Table for storing custom graphs names."""
 
-    __tablename__ = '{}CustomGraph'.format(config.table_prefix)
+    __tablename__ = "{}CustomGraph".format(config.table_prefix)
 
     graph_id = Column(Integer, primary_key=True)
 
@@ -224,7 +227,7 @@ class CustomGraph(Base):
 class CustomGraphData(Base):
     """Table for storing data collected by custom graphs."""
 
-    __tablename__ = '{}CustomGraphData'.format(config.table_prefix)
+    __tablename__ = "{}CustomGraphData".format(config.table_prefix)
 
     id = Column(Integer, primary_key=True)
 
@@ -237,6 +240,144 @@ class CustomGraphData(Base):
 
     value = Column(Float)
     """Actual value that is measured."""
+
+
+class StackTraceSnapshot(Base):
+    """Table for storing a hash of a stack trace and its related functions, to avoid 'duplicate' ExceptionStackLines."""
+
+    __tablename__ = "{}StackTraceSnapshot".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+    hash = Column(String(64), nullable=False, unique=True)
+
+    exception_stack_lines = relationship(
+        "ExceptionStackLine", back_populates="stack_trace_snapshot"
+    )
+
+
+class ExceptionType(Base):
+    """Table for storing Exception types"""
+
+    __tablename__ = "{}ExceptionType".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+    type = Column(String(256), nullable=False)
+
+
+class ExceptionMessage(Base):
+    """Table for storing Exception messages"""
+
+    __tablename__ = "{}ExceptionMessage".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+    message = Column(TEXT, nullable=False)
+
+
+class ExceptionOccurrence(Base):
+    """Table for storing exception id together with request id."""
+
+    __tablename__ = "{}ExceptionOccurrence".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+
+    request_id = Column(Integer, ForeignKey(Request.id))
+    request = relationship(Request)
+
+    exception_type_id = Column(Integer, ForeignKey(ExceptionType.id), nullable=False)
+    exception_type = relationship(ExceptionType)
+
+    exception_msg_id = Column(Integer, ForeignKey(ExceptionMessage.id), nullable=False)
+    exception_msg = relationship(ExceptionMessage)
+
+    stack_trace_snapshot_id = Column(
+        Integer, ForeignKey(StackTraceSnapshot.id), nullable=False
+    )
+    stack_trace_snapshot = relationship(StackTraceSnapshot)
+
+    is_user_captured = Column(Boolean, nullable=False)
+
+
+class FunctionDefinition(Base):
+    """Table for storing entire functions for better logging"""
+
+    __tablename__ = f"{config.table_prefix}FunctionDefinition"
+
+    id = Column(Integer, primary_key=True)
+
+    name = Column(String(256), nullable=True)
+    """The name of the function"""
+
+    code = Column(TEXT, nullable=True)
+    """The entire function code"""
+
+    code_hash = Column(String(64), nullable=True)
+    """The hash of the function code"""
+
+
+class FilePath(Base):
+    """Table for storing file paths"""
+
+    __tablename__ = "{}FilePath".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+    path = Column(String(250), nullable=False, unique=True)
+
+
+class FunctionLocation(Base):
+    """Table for storing functions with their locations in the source code"""
+
+    __tablename__ = "{}FunctionLocation".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+
+    file_path_id = Column(Integer, ForeignKey(FilePath.id))
+    file_path = relationship(FilePath)
+    """The file path of the file where the function is located"""
+
+    function_definition_id = Column(Integer, ForeignKey(FunctionDefinition.id))
+    function_definition = relationship(FunctionDefinition)
+    """The related function definition"""
+
+    function_start_line_number = Column(Integer, nullable=False)
+    """The starting line number of the function in the source file"""
+
+
+class ExceptionFrame(Base):
+    """Table for storing information of a frame in an exceptions traceback"""
+
+    __tablename__ = "{}ExceptionFrame".format(config.table_prefix)
+
+    id = Column(Integer, primary_key=True)
+
+    function_location_id = Column(Integer, ForeignKey(FunctionLocation.id))
+    function_location = relationship(FunctionLocation)
+    """The location of the function that the frame points to"""
+
+    line_number = Column(Integer, nullable=False)
+    """The line number in the file the frame points to"""
+
+
+class ExceptionStackLine(Base):
+    """Table for storing exception id together with request id."""
+
+    __tablename__ = "{}ExceptionStackLine".format(config.table_prefix)
+
+    stack_trace_snapshot_id = Column(
+        Integer, ForeignKey(StackTraceSnapshot.id), primary_key=True
+    )
+    stack_trace_snapshot = relationship(
+        StackTraceSnapshot, back_populates="exception_stack_lines"
+    )
+    """Stack trace that belongs to this exc_stack_line."""
+
+    exception_frame_id = Column(
+        Integer, ForeignKey(ExceptionFrame.id), primary_key=True
+    )
+    exception_frame = relationship(ExceptionFrame)
+    """The frame that belongs to this exc_stack_line."""
+
+    position = Column(Integer, primary_key=True)
+    """Position in the flattened stack tree."""
 
 
 # define the database
@@ -264,7 +405,7 @@ def session_scope():
         session.commit()
     except Exception as e:
         session.rollback()
-        print('No commit has been made, due to the following error: {}'.format(e))
+        print("No commit has been made, due to the following error: {}".format(e))
     finally:
         session.close()
 
@@ -284,4 +425,21 @@ def row2dict(row):
 
 
 def get_tables():
-    return [Endpoint, Request, Outlier, StackLine, CodeLine, CustomGraph, CustomGraphData]
+    return [
+        Endpoint,
+        Request,
+        Outlier,
+        StackLine,
+        CodeLine,
+        CustomGraph,
+        CustomGraphData,
+        StackTraceSnapshot,
+        ExceptionType,
+        ExceptionMessage,
+        ExceptionOccurrence,
+        FunctionDefinition,
+        ExceptionStackLine,
+        FilePath,
+        FunctionLocation,
+        ExceptionFrame,
+    ]

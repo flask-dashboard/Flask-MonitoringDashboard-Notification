@@ -6,7 +6,9 @@ import factory
 from pytest_factoryboy import register, LazyFixture
 
 from flask_monitoringdashboard.core.profiler.util import PathHash
-from flask_monitoringdashboard.core.profiler.util.grouped_stack_line import GroupedStackLine
+from flask_monitoringdashboard.core.profiler.util.grouped_stack_line import (
+    GroupedStackLine,
+)
 from flask_monitoringdashboard.core.profiler.util.string_hash import StringHash
 from flask_monitoringdashboard.database import (
     Endpoint,
@@ -17,6 +19,15 @@ from flask_monitoringdashboard.database import (
     CustomGraph,
     CustomGraphData,
     User,
+    ExceptionOccurrence,
+    ExceptionType,
+    ExceptionMessage,
+    ExceptionStackLine,
+    StackTraceSnapshot,
+    FilePath,
+    FunctionDefinition,
+    FunctionLocation,
+    ExceptionFrame,
 )
 from tests.fixtures.database import ModelFactory
 
@@ -24,6 +35,7 @@ from tests.fixtures.database import ModelFactory
 class UserFactory(ModelFactory):
     class Meta:
         model = User
+
     username = factory.LazyFunction(lambda: str(uuid.uuid4()))
     password_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
     is_admin = True
@@ -47,7 +59,7 @@ class EndpointFactory(ModelFactory):
     name = factory.LazyFunction(lambda: str(uuid.uuid4()))
     monitor_level = 1
     time_added = factory.LazyFunction(lambda: datetime.utcnow() - timedelta(days=1))
-    version_added = '1.0'
+    version_added = "1.0"
     last_requested = factory.LazyFunction(datetime.utcnow)
 
 
@@ -60,7 +72,7 @@ class RequestFactory(ModelFactory):
     time_requested = factory.LazyFunction(datetime.utcnow)
     version_requested = factory.LazyFunction(lambda: str(uuid.uuid4()))
     group_by = None
-    ip = factory.Faker('ipv4_private')
+    ip = factory.Faker("ipv4_private")
     status_code = 200
 
 
@@ -81,10 +93,10 @@ class CodeLineFactory(ModelFactory):
     class Meta:
         model = CodeLine
 
-    filename = 'abc.py'
+    filename = "abc.py"
     line_number = factory.LazyFunction(lambda: int(random() * 100))
-    function_name = 'f'
-    code = 'a=b'
+    function_name = "f"
+    code = "a=b"
 
 
 class StackLineFactory(ModelFactory):
@@ -102,7 +114,7 @@ class CustomGraphFactory(ModelFactory):
     class Meta:
         model = CustomGraph
 
-    title = factory.Faker('name')
+    title = factory.Faker("name")
     time_added = factory.LazyFunction(datetime.utcnow)
     version_added = factory.LazyFunction(lambda: str(uuid.uuid4()))
 
@@ -121,7 +133,7 @@ class GroupedStackLineFactory(factory.Factory):
         model = GroupedStackLine
 
     indent = 0
-    code = 'code'
+    code = "code"
     values = [10, 10, 40]
     total_sum = 100
     total_hits = 6
@@ -141,23 +153,122 @@ class PathHashFactory(factory.Factory):
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
         obj = model_class()
-        obj._string_hash = kwargs.get('_string_hash')
+        obj._string_hash = kwargs.get("_string_hash")
         return obj
 
 
-register(UserFactory, 'user')
-register(UserFactory, 'another_user')
-register(EndpointFactory, 'endpoint')
-register(RequestFactory, 'request_1')  # unfortunately, we can't use fixture name: 'request'
-register(RequestFactory, 'request_2')
-register(OutlierFactory, 'outlier_1', request=LazyFixture('request_1'))
-register(OutlierFactory, 'outlier_2', request=LazyFixture('request_2'))
-register(CodeLineFactory, 'code_line')
-register(StackLineFactory, 'stack_line', request=LazyFixture('request_1'))
-register(StackLineFactory, 'stack_line_2', request=LazyFixture('request_2'), indent=1)
-register(CustomGraphFactory, 'custom_graph')
-register(CustomGraphDataFactory, 'custom_graph_data')
+class ExceptionMessageFactory(ModelFactory):
+    class Meta:
+        model = ExceptionMessage
 
-register(GroupedStackLineFactory, 'grouped_stack_line')
-register(StringHashFactory, 'string_hash')
-register(PathHashFactory, 'path_hash')
+    message = factory.Faker("sentence")
+
+
+class ExceptionTypeFactory(ModelFactory):
+    class Meta:
+        model = ExceptionType
+
+    type = factory.Faker("word")
+
+class FilePathFactory(ModelFactory):
+    class Meta:
+        model = FilePath
+
+    path = factory.Faker("file_path")
+
+class FunctionDefinitionFactory(ModelFactory):
+    class Meta:
+        model = FunctionDefinition
+
+    code = "def fun(): return 0"
+    code_hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
+    name = "fun"
+
+class FunctionLocationFactory(ModelFactory):
+    class Meta:
+        model = FunctionLocation
+
+    file_path = None
+    function_definition = None
+    function_start_line_number = factory.LazyFunction(lambda: int(random() * 100))
+
+class ExceptionFrameFactory(ModelFactory):
+    class Meta:
+        model = ExceptionFrame
+
+    function_location = None
+    line_number = factory.LazyFunction(lambda: int(random() * 100))
+
+class StackTraceSnapshotFactory(ModelFactory):
+    class Meta:
+        model = StackTraceSnapshot
+
+    hash = factory.LazyFunction(lambda: str(uuid.uuid4()))
+
+class ExceptionStackLineFactory(ModelFactory):
+    class Meta:
+        model = ExceptionStackLine
+
+    stack_trace_snapshot = None
+    exception_frame = None
+    position = 0
+
+
+class ExceptionOccurrenceFactory(ModelFactory):
+    class Meta:
+        model = ExceptionOccurrence
+
+    request = None
+    exception_msg = None
+    exception_type = None
+    stack_trace_snapshot = None
+    is_user_captured = False
+
+
+register(UserFactory, "user")
+register(UserFactory, "another_user")
+register(EndpointFactory, "endpoint")
+register(
+    RequestFactory, "request_1"
+)  # unfortunately, we can't use fixture name: 'request'
+register(RequestFactory, "request_2")
+register(OutlierFactory, "outlier_1", request=LazyFixture("request_1"))
+register(OutlierFactory, "outlier_2", request=LazyFixture("request_2"))
+register(CodeLineFactory, "code_line")
+register(StackLineFactory, "stack_line", request=LazyFixture("request_1"))
+register(StackLineFactory, "stack_line_2", request=LazyFixture("request_2"), indent=1)
+register(CustomGraphFactory, "custom_graph")
+register(CustomGraphDataFactory, "custom_graph_data")
+
+register(GroupedStackLineFactory, "grouped_stack_line")
+register(StringHashFactory, "string_hash")
+register(PathHashFactory, "path_hash")
+
+register(ExceptionMessageFactory, "exception_message")
+register(ExceptionTypeFactory, "exception_type")
+register(FilePathFactory, "file_path")
+register(FunctionDefinitionFactory, "function_definition")
+register(
+    FunctionLocationFactory, "function_location",
+    file_path=LazyFixture("file_path"),
+    function_definition=LazyFixture("function_definition"),
+)
+register(
+    ExceptionFrameFactory, "exception_frame",
+    function_location=LazyFixture("function_location"),
+)
+register(StackTraceSnapshotFactory, "stack_trace_snapshot")
+register(
+    ExceptionStackLineFactory,
+    "exception_stack_line",
+    stack_trace_snapshot=LazyFixture("stack_trace_snapshot"),
+    exception_frame=LazyFixture("exception_frame"),
+)
+register(
+    ExceptionOccurrenceFactory,
+    "exception_occurrence",
+    request=LazyFixture("request_1"),
+    exception_msg=LazyFixture("exception_message"),
+    exception_type=LazyFixture("exception_type"),
+    stack_trace_snapshot=LazyFixture("stack_trace_snapshot"),
+)
