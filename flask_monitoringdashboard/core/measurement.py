@@ -104,31 +104,27 @@ def status_code_from_response(result):
 
 def evaluate(route_handler, args, kwargs):
     """
-    Invokes the given route handler and extracts the return value, status_code and the exception if it was raised
+    Invokes the given route handler and extracts the return value and status_code
+    moreover it returns the exception_collector, and an uncaught exception if it was raised
 
-    :param route_handler:
-    :param args:
-    :param kwargs:
-    :return:
+    :param route_handler: The Flask route handler function
+    :param args: Positional arguments for the handler
+    :param kwargs: Keyword arguments for the handler
+    :return: Tuple (result, status_code, exception_collector, exception)
     """
     g.e_collector = ExceptionCollector()
 
-    def evaluate_():
-        try:
-            result = route_handler(*args, **kwargs)
-            status_code = status_code_from_response(result)
+    try:
+        result = route_handler(*args, **kwargs)
+        status_code = status_code_from_response(result)
 
-            return result, status_code, None
-        except BaseException as e:
-            g.e_collector.set_uncaught_exc(e)
+        return result, status_code, g.e_collector, None
+    except BaseException as e:
+        g.e_collector.set_uncaught_exc(e)
 
-            if isinstance(e, HTTPException):
-                return None, e.code, e
-            return None, 500, e
-
-    result, status_code, exception = evaluate_()
-
-    return result, status_code, g.e_collector, exception
+        if isinstance(e, HTTPException):
+            return None, e.code, g.e_collector, e
+        return None, 500, g.e_collector, e
 
 
 def add_wrapper1(endpoint, fun):
