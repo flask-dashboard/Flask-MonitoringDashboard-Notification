@@ -26,6 +26,7 @@ represented in the diagram below.
 .. figure:: img/monitoring_levels.png
    :width: 100%
 
+
 Monitoring Level 0 - Disabled
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 When the monitoring level is set to 0, the Dashboard does not monitor anything about
@@ -184,8 +185,21 @@ the Hits (i.e. how many times it has been executed), average execution time
 and standard deviation, and also total execution time.
 
 
+2. Exception Monitoring
+~~~~~~~~~~~~~~~~~~~~
+  Flask-MonitoringDashboard automatically logs unhandled exceptions with full stack traces, showing where and why errors occur, if you have monitoring level 1 or above.
 
-2. Data Visualization
+  To capture handled exceptions manually and save them for displaying in the exception dashboard:
+  ```python
+  try:
+      # Your code
+  except Exception as e:
+      dashboard.capture(e)  # Logs exception with stack trace for debugging
+  ```
+
+
+
+3. Data Visualization
 ----------------------
 
 The Dashboard shows the collected data by means of two levels of abstraction:
@@ -242,7 +256,7 @@ This provides the following information (all information below is specific for a
 
 
 
-Make it your own!
+4. Make it your own!
 -----------------
 
 Just as no two applications are the same, we understand that monitoring requirements
@@ -310,7 +324,7 @@ is based on the appscheduler.schedulers.Background schedulers
 about which you can read more `in the corresponding documentation page <apscheduler.schedulers>`_.
 
 
-Adding database cleaning schedule
+5. Adding database cleaning schedule
 ----------------------------------
 
 As your application grows, so will the amount of data stored in the database.
@@ -340,7 +354,7 @@ clean the database every 2 months, on the first day of the month at 3:00 AM.
 
 That's it! Now you won't have to worry about the performance slowing down with time.
 
-Telemetry
+6. Telemetry
 ----------------------
 
 The Dashboard is setup to be able to collect telemetric-data. 
