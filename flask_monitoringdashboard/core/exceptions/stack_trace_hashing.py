@@ -12,9 +12,11 @@ from flask_monitoringdashboard.core.exceptions.stack_frame_parsing import (
 def hash_stack_trace(exc, tb):
     """
     Hashes the stack trace of an exception including the function definition
-    of each frame in the python traceback-type.
+    of each frame in thehash_stack_trace python traceback-type.
     """
-    stack_trace_string = "".join(traceback.format_exception(exc))
+
+    # Using the triple argument version to be compatible with Python 3.9
+    stack_trace_string = "".join(traceback.format_exception(type(exc), exc, tb))
     stack_trace_hash = text_hash(stack_trace_string)
     return _hash_traceback_type_object(stack_trace_hash, tb)
 

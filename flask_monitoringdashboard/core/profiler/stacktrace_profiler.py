@@ -6,10 +6,11 @@ import traceback
 from collections import defaultdict
 from typing import Union
 from flask_monitoringdashboard import config
-from flask_monitoringdashboard.core.cache import update_duration_cache
-from flask_monitoringdashboard.core.exceptions.exception_collector import (
-    ExceptionCollector,
+from flask_monitoringdashboard.core.exceptions.scoped_exception_collector import (
+    ScopedExceptionCollector,
 )
+from flask_monitoringdashboard.core.cache import update_duration_cache
+
 from flask_monitoringdashboard.core.logger import log
 from flask_monitoringdashboard.core.profiler.util import order_histogram
 from flask_monitoringdashboard.core.profiler.util.path_hash import PathHash
@@ -43,7 +44,7 @@ class StacktraceProfiler(threading.Thread):
         self._total = 0
         self._outlier_profiler = outlier_profiler
         self._status_code = 404
-        self.e_logger: Union[ExceptionCollector, None] = None
+        self.e_collector: Union[ScopedExceptionCollector, None] = None
 
     def run(self):
         """
@@ -91,13 +92,13 @@ class StacktraceProfiler(threading.Thread):
 
         self._on_thread_stopped()
 
-    def stop(self, duration, status_code, e_logger: ExceptionCollector):
+    def stop(self, duration, status_code, e_collector: ScopedExceptionCollector):
         self._duration = duration * 1000
         self._status_code = status_code
         if self._outlier_profiler:
             self._outlier_profiler.stop_by_profiler()
         self._keeprunning = False
-        self.e_logger = e_logger
+        self.e_collector = e_collector
 
     def _on_thread_stopped(self):
         update_duration_cache(
@@ -114,8 +115,8 @@ class StacktraceProfiler(threading.Thread):
             )
             self._lines_body = order_histogram(self._histogram.items())
             self.insert_lines_db(session, request_id)
-            if self.e_logger is not None:
-                self.e_logger.save_to_db(request_id, session)
+            if self.e_collector is not None:
+                self.e_collector.save_to_db(request_id, session)
             if self._outlier_profiler:
                 self._outlier_profiler.add_outlier(session, request_id)
 

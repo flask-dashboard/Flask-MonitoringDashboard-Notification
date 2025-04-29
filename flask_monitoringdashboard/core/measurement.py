@@ -7,9 +7,7 @@ import time
 from functools import wraps
 
 from flask import g
-from flask_monitoringdashboard.core.exceptions.exception_collector import (
-    ExceptionCollector,
-)
+
 from werkzeug.exceptions import HTTPException
 
 from flask_monitoringdashboard import config
@@ -130,7 +128,7 @@ def evaluate(route_handler, args, kwargs):
 
     result, status_code, exception = evaluate_()
 
-    return result, status_code, ExceptionCollector(g.scoped_logger), exception
+    return result, status_code, g.scoped_logger, exception
 
 
 def add_wrapper1(endpoint, fun):

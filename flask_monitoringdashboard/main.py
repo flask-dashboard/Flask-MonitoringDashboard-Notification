@@ -91,16 +91,18 @@ def reraised_and_captured_exception():
         raise Exception("åhhh nej")
     except BaseException as e:
         dashboard.capture(e)
-        try: 
+        try:
             e.args = (f"Reraised exception: {e.args[0]}",)
             raise e
         except BaseException as e2:
             dashboard.capture(e2)
             e.args = (f"Rereraised exception: {e.args[0]} (uncaught)",)
             raise e2
-        
+
+
 def non_app_exception():
     json.loads('{"invalid_json": }')
+
 
 def recursive_function(n):
     if n == 0:
@@ -114,13 +116,14 @@ def recursive_function(n):
 
 
 def b():
-    n = randint(1,3)
+    n = randint(1, 3)
     if n == 1:
         return reraised_and_captured_exception()
     if n == 2:
         return non_app_exception()
     if n == 3:
         return recursive_function(100)
+
 
 def c():
     return b()
