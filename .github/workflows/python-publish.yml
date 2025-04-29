@@ -6,7 +6,8 @@ on:
       - master
     paths:
       - flask_monitoringdashboard/constants.json
-    
+  workflow_dispatch:
+
 jobs:
 
   test:
