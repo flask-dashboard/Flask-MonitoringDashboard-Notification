@@ -6,6 +6,13 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 Please note that the changes before version 1.10.0 have not been documented.
 
 
+v4.0.1
+----------
+Changed
+
+- Bugfix: queries work also with MySQL now
+
+
 v4.0.0
 ----------
 Changed
