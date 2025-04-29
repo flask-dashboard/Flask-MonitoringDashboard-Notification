@@ -70,7 +70,7 @@ def count_grouped_exceptions(session: Session):
     :return: Integer (total number of groups of exceptions)
     """
     return (
-        session.query(ExceptionOccurrence.request_id)
+        session.query(Endpoint.name, ExceptionOccurrence.stack_trace_snapshot_id)
         .join(Request, ExceptionOccurrence.request)
         .join(Endpoint, Request.endpoint)
         .group_by(Endpoint.name, ExceptionOccurrence.stack_trace_snapshot_id)
@@ -86,7 +86,7 @@ def count_endpoint_grouped_exceptions(session: Session, endpoint_id: int):
     :return: Integer (total number of groups of exceptions)
     """
     return (
-        session.query(ExceptionOccurrence.request_id)
+        session.query(ExceptionOccurrence.stack_trace_snapshot_id)
         .join(Request, ExceptionOccurrence.request)
         .join(Endpoint, Request.endpoint)
         .filter(Endpoint.id == endpoint_id)
@@ -124,7 +124,13 @@ def get_exceptions_with_timestamps(session: Session, offset: int, per_page: int)
         .join(Endpoint, Request.endpoint)
         .join(ExceptionType, ExceptionOccurrence.exception_type)
         .join(ExceptionMessage, ExceptionOccurrence.exception_msg)
-        .group_by(Endpoint.name, ExceptionOccurrence.stack_trace_snapshot_id)
+        .group_by(
+            Endpoint.name,
+            Endpoint.id,
+            ExceptionType.type,
+            ExceptionMessage.message,
+            ExceptionOccurrence.stack_trace_snapshot_id
+        )
         .order_by(desc("latest_timestamp"))
         .offset(offset)
         .limit(per_page)
@@ -180,12 +186,17 @@ def get_exceptions_with_timestamps_and_stack_trace_id(
         .join(ExceptionType, ExceptionOccurrence.exception_type)
         .join(ExceptionMessage, ExceptionOccurrence.exception_msg)
         .filter(Endpoint.id == endpoint_id)
-        .group_by(ExceptionOccurrence.stack_trace_snapshot_id)
+        .group_by(
+            ExceptionType.type,
+            ExceptionMessage.message,
+            ExceptionOccurrence.stack_trace_snapshot_id
+        )
         .order_by(desc("latest_timestamp"))
         .offset(offset)
         .limit(per_page)
         .all()
     )
+
     return result
 
 

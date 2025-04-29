@@ -399,7 +399,8 @@ def session_scope():
     try:
         yield session
         session.commit()
-    except exc.OperationalError:
+    except exc.OperationalError as e:
+        print("Will retry commit, due to the following error: {}".format(e))
         session.rollback()
         time.sleep(0.5 + random.random())
         session.commit()
