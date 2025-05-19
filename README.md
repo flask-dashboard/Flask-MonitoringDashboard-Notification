@@ -32,7 +32,10 @@ A dashboard for automatic monitoring of <a href="https://flask.palletsprojects.c
   <a href="#license">License</a>
 </p>
 
-![gif](/docs/img/fmd_video.gif)
+<!--
+Hiding this for now until we either fix the bind issue or update this gif
+![gif](/docs/img/fmd_video.gif))
+-->
 
 ## Motivation
 
@@ -81,31 +84,30 @@ For more advanced documentation, take a look at the information on [this site](h
 
 
 ## How to use
-
 #### Installation
 To install from source, download the source code, then run this:
-
-    python setup.py install
-
+```python
+python setup.py install
+```
 Or install with pip:
-    
-    pip install flask_monitoringdashboard
-    
+```python
+pip install flask_monitoringdashboard
+```
 #### Setup
 Adding the extension to your Flask app is simple:
+```python
+from flask import Flask
+import flask_monitoringdashboard as dashboard
 
-    from flask import Flask
-    import flask_monitoringdashboard as dashboard
+app = Flask(__name__)
 
-    app = Flask(__name__)
-    
-    @app.route("/test")
-    def test():
-	    return 'ok'
-    
-    dashboard.bind(app)
-    app.run()
+@app.route("/test")
+def test():
+    return 'ok'
 
+dashboard.bind(app) # Should be added after all endpoints have been defined
+app.run()
+```
 ## Live Demo
 To view a live deployment of the Flask-MonitoringDashboard, check [this site](https://fmd-master.herokuapp.com/).
 Use the credentials u:`admin`, p:`admin` to log in.
