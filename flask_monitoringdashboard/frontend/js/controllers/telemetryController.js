@@ -8,7 +8,7 @@ export function TelemetryController($scope, $http, $window) {
     $scope.followUpShow = false;
 
     // Function to fetch telemetry consent status from database 
-    $scope.fetchTelemetryConsent = function () {
+    $scope.fetchTelemetryAnswered = function () {
         $http.get(`/dashboard/telemetry/get_is_telemetry_answered`)
             .then(function (response) {
                 $scope.telemetryShow = !response.data.is_telemetry_answered;
@@ -16,7 +16,7 @@ export function TelemetryController($scope, $http, $window) {
                 console.error('Error fetching telemetry consent:', error);
             });
     };
-    $scope.fetchTelemetryConsent();
+    $scope.fetchTelemetryAnswered();
 
     // Function to handle user response to telemetry prompt
     $scope.handleTelemetry = function (consent) {

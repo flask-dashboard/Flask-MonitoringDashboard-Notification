@@ -35,6 +35,13 @@ def get_is_telemetry_answered():
         telemetry_user = get_telemetry_user(session)
         res = True if telemetry_user.monitoring_consent in (TelemetryConfig.REJECTED, TelemetryConfig.ACCEPTED) else False
         return {'is_telemetry_answered': res}
+    
+@blueprint.route('/telemetry/get_is_telemetry_accepted', methods=['GET'])
+def get_is_telemetry_accepted():
+    with session_scope() as session:
+        telemetry_user = get_telemetry_user(session)
+        res = True if telemetry_user.monitoring_consent == TelemetryConfig.ACCEPTED else False
+        return {'is_telemetry_accepted': res}
 
 @blueprint.route('/telemetry/submit_follow_up', methods=['POST'])
 def submit_follow_up():
