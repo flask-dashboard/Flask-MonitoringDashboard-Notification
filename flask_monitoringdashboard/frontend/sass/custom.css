@@ -600,13 +600,15 @@ pre[class*="language-"] {
 .rotate-up {
     transform: rotate(0deg);
     transition: transform 0.3s ease;
+    color: blue;
 }
 
 .rotate-down {
     transform: rotate(180deg);
     transition: transform 0.3s ease;
+    color: blue;
 }
 
 .text-gray {
-  color: gray;
+  color: lightgray;
 }
