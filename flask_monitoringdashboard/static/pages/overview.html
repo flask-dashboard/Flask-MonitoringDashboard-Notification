@@ -234,14 +234,14 @@
         <div class="card-header"><h5><sup>*</sup>Monitoring-level</h5></div>
         <div class="card-body">
             <b>0 - Disabled</b>
-            <p>When the monitoring-level is set to 0, you don't monitor anything about the
-                performance of this endpoint.
+            <p>When the monitoring-level is set to 0, you don't monitor anything: <b>neither performance, nor exception information</b>.
                 The only data that is stored is when the <b>endpoint is last
                     requested.</b></p><b>1 - Performance</b>
             <p>When the monitoring-level is set to 1, you collect data when the endpoint
                 is last requested, plus data
                 about the <b>performance and utilization</b> of this endpoint (as a
-                black-box).</p><b>2 - Outliers</b>
+                black-box). <br/>
+                From this level on, you also collect <b>exception information</b></p><b>2 - Outliers</b>
             <p>When the monitoring-level is set to 2, you get all the functionality from
                 1, plus <b>extra information
                     if the request is an outlier.</b></p><b>3 - Profiler + Outliers</b>
