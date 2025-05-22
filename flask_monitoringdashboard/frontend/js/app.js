@@ -89,7 +89,7 @@ app.controller('TelemetryController', ['$scope', '$http', '$window', TelemetryCo
 
 app.component('telemetryComponent', {
     templateUrl: 'static/pages/telemetry.html',
-    controller: ['$scope', '$http', '$window', TelemetryController],
+    controller: 'TelemetryController'
 });
 
 app.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
