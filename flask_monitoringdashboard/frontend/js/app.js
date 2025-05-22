@@ -85,10 +85,11 @@ app.controller('FormController', ['$scope', 'formService', FormController]);
 app.controller('EndpointController', ['$scope', 'endpointService', EndpointController]);
 app.controller('PaginationController', ['$scope', 'paginationService', PaginationController]);
 app.controller('ModalController', ['$scope', '$window', '$browser', 'modalService', ModalController]);
+app.controller('TelemetryController', ['$scope', '$http', '$window', TelemetryController]);
 
 app.component('telemetryComponent', {
     templateUrl: 'static/pages/telemetry.html',
-    controller: TelemetryController
+    controller: 'TelemetryController'
 });
 
 app.config(['$locationProvider', '$routeProvider', function ($locationProvider, $routeProvider) {
