@@ -96,7 +96,7 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
     $routeProvider
         .when('/overview', {
             templateUrl: 'static/pages/overview.html',
-            controller: ['$scope', '$http', '$location', 'menuService', 'endpointService', OverviewController]
+            controller: ['$scope', '$http', '$location', 'menuService', 'paginationService', 'endpointService', OverviewController]
         })
         .when('/exception_overview', {
             templateUrl: 'static/pages/exception_overview.html',

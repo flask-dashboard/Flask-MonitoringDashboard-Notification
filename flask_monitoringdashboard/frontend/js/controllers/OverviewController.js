@@ -1,6 +1,8 @@
-export function OverviewController($scope, $http, $location, menuService, endpointService) {
+export function OverviewController($scope, $http, $location, menuService, paginationService, endpointService) {
     endpointService.reset();
     menuService.reset('overview');
+    paginationService.init('endpoints');
+
     $scope.alertShow = false;
     $scope.pypi_version = '';
     $scope.dashboard_version = '';
@@ -14,7 +16,6 @@ export function OverviewController($scope, $http, $location, menuService, endpoi
 
     $scope.searchQuery = '';
     $scope.pageSize = '10';
-    $scope.currentPage = 0;
     $scope.blueprints = [''];
     $scope.slectedBlueprint = '';
 
@@ -25,10 +26,11 @@ export function OverviewController($scope, $http, $location, menuService, endpoi
     $http.get('api/overview').then(function (response) {
         response.data.forEach((endpoint) => {
             if (!$scope.blueprints.includes(endpoint.blueprint)) {
-                $scope.blueprints.push(endpoint.blueprint)
+                $scope.blueprints.push(endpoint.blueprint);
             }
         })
         $scope.table = response.data;
+        paginationService.setTotal(response.data.length);
     });
 
     function ascendingOrder(a, b){
@@ -46,9 +48,12 @@ export function OverviewController($scope, $http, $location, menuService, endpoi
       return $scope.isDesc ? items.sort(descendingOrder) : items.sort(ascendingOrder)
     }
 
-    function getItemsForPage(pageNumber) {
-        const start = pageNumber * Number($scope.pageSize);
-        const end = (pageNumber + 1) * Number($scope.pageSize);
+    $scope.getFilteredItemsForPage = function () {
+        paginationService.perPage = Number($scope.pageSize);
+        var pageNumber = paginationService.page;
+        var pageSize = paginationService.perPage;
+        const start = (pageNumber - 1)* pageSize;
+        const end = pageNumber * pageSize;
   
         let items = $scope.table
             .filter(item => item.name.includes($scope.searchQuery));
@@ -69,10 +74,6 @@ export function OverviewController($scope, $http, $location, menuService, endpoi
         $scope.isDesc = !$scope.isDesc;
     }
 
-    $scope.getFilteredItems = function () {
-        return getItemsForPage($scope.currentPage);
-    }
-
     $scope.getSortArrowClassName = function (column) {
       return {
         'rotate-up': !$scope.isDesc && $scope.sortBy === column,
@@ -80,23 +81,6 @@ export function OverviewController($scope, $http, $location, menuService, endpoi
         'text-gray': $scope.sortBy !== column 
       }
     }
-
-    $scope.canGoBack = function () {
-        return $scope.currentPage > 0;
-    }
-
-    $scope.canGoForward = function () {
-        return getItemsForPage($scope.currentPage + 1).length > 0;
-    }
-
-    $scope.nextPage = function () {
-        $scope.currentPage++;
-    }
-
-    $scope.previousPage = function () {
-        $scope.currentPage--;
-    }
-
 
     $scope.go = function (path) {
         $location.path(path);

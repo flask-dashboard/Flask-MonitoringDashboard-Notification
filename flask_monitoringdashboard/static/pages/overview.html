@@ -165,7 +165,7 @@
                         </thead>
 
                         <tbody>
-                        <tr ng-repeat="row in getFilteredItems() track by $index"
+                        <tr ng-repeat="row in getFilteredItemsForPage() track by $index"
                             style="cursor: pointer"
                             ng-click="go('/endpoint/' + row.id + '/hourly_load')">
 
@@ -209,24 +209,7 @@
                     </table>
                 </div>
             </div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <nav aria-label="Page navigation example" style="float: right">
-                        <ul class="pagination">
-                            <li ng-class="{'disabled': !canGoBack()}"
-                                class="page-item">
-                                <a class="page-link" href="#" ng-click="previousPage()">Previous</a>
-                            </li>
-
-                            <li ng-class="{'disabled': !canGoForward() }" class="page-item">
-                                <a class="page-link" href="#"
-                                   ng-click="nextPage()">Next</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+            <pagination></pagination>
         </div>
     </div>
 
