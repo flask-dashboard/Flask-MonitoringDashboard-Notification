@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 Please note that the changes before version 1.10.0 have not been documented.
 
+v4.0.2
+----------
+Changed
+
+Natalie, Carmen, and Albert
+- Bugfix: the telemetry consent can be dismissed again
+- New and nicer pagination of the Overview table
+
+
 
 v4.0.1
 ----------
