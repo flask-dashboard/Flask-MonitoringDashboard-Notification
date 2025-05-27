@@ -32,10 +32,10 @@ export function OverviewController($scope, $http, $location, menuService, endpoi
     });
 
     function ascendingOrder(a, b){
-      if ($scope.sortBy === 'last-accessed') {
-        return Date.parse(a[$scope.sortBy]) < Date.parse(b[$scope.sortBy]) || a[$scope.sortBy] === null; //null if endpoint was never accessed
+        if ($scope.sortBy === 'last-accessed') {
+            return (Date.parse(a[$scope.sortBy]) || null) - (Date.parse(b[$scope.sortBy]) || null);
         }
-      return a[$scope.sortBy] < b[$scope.sortBy];
+        return String(a[$scope.sortBy]).localeCompare(String(b[$scope.sortBy]));
     }
 
     function descendingOrder(a, b){
