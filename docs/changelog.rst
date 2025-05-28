@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 Please note that the changes before version 1.10.0 have not been documented.
 
+v4.0.3
+----------
+Changed
+
+Natalie, Carmen, and Albert
+- Bugfix: the sorting on the Overview table works for median request durations.
+- Bugfix: resolved sorting issues with the Overview table in Google Chrome.
+- Fixed placement of loading spinner on Overview page.
+
 v4.0.2
 ----------
 Changed
@@ -19,6 +28,7 @@ v4.0.1
 ----------
 Changed
 
+Natalie, Carmen, and Albert
 - Bugfix: queries work also with MySQL now
 
 
