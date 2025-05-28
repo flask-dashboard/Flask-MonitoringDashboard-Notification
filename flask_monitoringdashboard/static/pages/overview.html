@@ -19,15 +19,6 @@
             <h4>Dashboard Overview<h4>
         </div>
         <div class="card-body">
-            <div class="spinner" ng-controller="FormController"
-                 ng-show="table.length === 0">
-                    <div class="rect1"></div>
-                    <div class="rect2"></div>
-                    <div class="rect3"></div>
-                    <div class="rect4"></div>
-                    <div class="rect5"></div>
-            </div>
-
             <ul class="pagination">
                 <li class="page-item" ng-class="{'active': isHits}">
                     <a class="page-link" ng-click="toggleHits()">
@@ -207,6 +198,14 @@
                         </tr>
                     </tbody>
                     </table>
+                    <div class="spinner" ng-controller="FormController"
+                        ng-show="table.length === 0">
+                            <div class="rect1"></div>
+                            <div class="rect2"></div>
+                            <div class="rect3"></div>
+                            <div class="rect4"></div>
+                            <div class="rect5"></div>
+                    </div>
                 </div>
             </div>
             <pagination></pagination>
