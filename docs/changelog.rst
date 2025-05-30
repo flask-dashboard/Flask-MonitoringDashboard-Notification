@@ -10,7 +10,7 @@ v4.0.4
 Changed
 
 Natalie, Carmen, and Albert
-- Bugfix: the fixed sorting compared numbers as strings.
+- Bugfix: the "fixed" sorting from last version compared numbers as strings.
 
 v4.0.3
 ----------
