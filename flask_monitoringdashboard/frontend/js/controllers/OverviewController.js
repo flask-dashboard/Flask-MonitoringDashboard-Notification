@@ -37,7 +37,8 @@ export function OverviewController($scope, $http, $location, menuService, pagina
         if ($scope.sortBy === 'last-accessed') {
             return (Date.parse(a[$scope.sortBy]) || null) - (Date.parse(b[$scope.sortBy]) || null);
         }
-        return String(a[$scope.sortBy]).localeCompare(String(b[$scope.sortBy]));
+
+        return a[$scope.sortBy] - b[$scope.sortBy];
     }
 
     function descendingOrder(a, b){
