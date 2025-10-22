@@ -1,7 +1,10 @@
+import traceback
 from typing import Union
 import copy
 
 from sqlalchemy.orm import Session
+
+from flask_monitoringdashboard.core.notification.email import send_email
 
 
 class ExceptionCollector:
@@ -42,7 +45,7 @@ class ExceptionCollector:
                 # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
                 # where it was temporaritly captured for logging by the ExceptionCollector, before getting reraised later
                 e = e.with_traceback(e.__traceback__.tb_next)
-
+            _notify(e, session)
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, False
             )
@@ -67,3 +70,10 @@ def _get_copy_of_exception(e: BaseException):
     if e.__traceback__:
         return new_exc.with_traceback(e.__traceback__)
     return new_exc
+
+def _notify(e: BaseException, session: Session):
+    from flask_monitoringdashboard.database.exception_occurrence import (
+        check_if_stack_trace_exists,
+    )
+    if check_if_stack_trace_exists(session, e, e.__traceback__):
+        send_email(f'{e.__class__.__name__} occured', f'A(n) {e.__class__.__name__} exception occured: {e}\n\nStack Trace: {''.join(traceback.format_exception(type(e), e, e.__traceback__))}')
