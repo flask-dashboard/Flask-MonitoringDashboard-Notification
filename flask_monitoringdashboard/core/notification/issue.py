@@ -1,5 +1,5 @@
 import requests
-from GithubRequestInfo import GitHubRequestInfo 
+from .GithubRequestInfo import GitHubRequestInfo 
 
 
 def get_base_repo_url(repo_owner:str, repo_name:str):
@@ -11,11 +11,14 @@ def get_issue_url(repo_owner: str, repo_name: str):
 def get_endpoint_url(repo_owner: str, repo_name: str, endpoint: str):
         return f"https://api.github.com/repos/{repo_owner}/{repo_name}/{endpoint}"
 
-def make_post_request(request_info: GitHubRequestInfo, data):
-   url = get_endpoint_url(request_info.repo_owner, request_info.repo_name, request_info.endpoint)
+def make_post_request(request_info: GitHubRequestInfo, endpoint: str, data):
+   url = get_endpoint_url(request_info.repo_owner, request_info.repo_name, endpoint)
    headers = post_headers(request_info.github_token)
 
    return requests.post(url, headers=headers, json=data)
+
+def create_issue(request_info: GitHubRequestInfo, data) -> requests.Response:
+    return make_post_request(request_info, "issues", data)
 
 def make_get_request(request_info: GitHubRequestInfo) -> requests.Response:
     # Get the URL for the repository

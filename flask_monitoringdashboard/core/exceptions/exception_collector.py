@@ -2,7 +2,8 @@ from typing import Union
 import copy
 
 from sqlalchemy.orm import Session
-from notification import issue
+from ..notification import issue
+from ..notification import GithubRequestInfo
 
 class ExceptionCollector:
     """
@@ -20,10 +21,23 @@ class ExceptionCollector:
 
     def set_uncaught_exc(self, e: BaseException):
         e_copy = _get_copy_of_exception(e)
+        self.notify(e_copy)
         self.uncaught_exception = e_copy
    
     def notify(self, e: BaseException):
-        pass
+        print("Now notifying about exception")
+        request_info = GithubRequestInfo.GitHubRequestInfo(
+            github_token="your_github_token",
+            repo_owner="xXPinkmagicXx",
+            repo_name="fmd_test")    
+        
+        data = {
+            "title": "this is a new title",
+            "body": "This is the body"
+            }
+
+        response = issue.make_post_request(request_info, "issues", data)
+        print("Notification response:", response.status_code, response.text)
     
     def save_to_db(self, request_id: int, session: Session):
 
