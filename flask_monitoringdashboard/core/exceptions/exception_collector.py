@@ -2,7 +2,7 @@ from typing import Union
 import copy
 
 from sqlalchemy.orm import Session
-
+from notification import issue
 
 class ExceptionCollector:
     """
@@ -21,7 +21,10 @@ class ExceptionCollector:
     def set_uncaught_exc(self, e: BaseException):
         e_copy = _get_copy_of_exception(e)
         self.uncaught_exception = e_copy
-
+   
+    def notify(self, e: BaseException):
+        pass
+    
     def save_to_db(self, request_id: int, session: Session):
 
         from flask_monitoringdashboard.database.exception_occurrence import (
