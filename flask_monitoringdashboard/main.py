@@ -152,23 +152,6 @@ def my_func():
     # here should be something actually useful
     return 33.3
 
-@app.route("/create_issue")
-def create_issue():
-    github_token = os.getenv("GITHUB_TOKEN")
-
-    github_info = GitHubRequestInfo(
-            github_token=github_token,
-            repo_owner="xXPinkmagicXx",
-            repo_name="fmd_test")
-    random_number = randint(1, 1000)
-    data = {
-        "title": f"this is a new title {random_number}",
-        "body": "This is the body"
-        }
-
-    response = issue.create_issue(github_info, data)
-    print("Create issue response:", response.status_code, response.text) 
-
 if __name__ == "__main__":
     dashboard.bind(app)
     # create_issue()
