@@ -199,6 +199,15 @@ def get_exceptions_with_timestamps_and_stack_trace_id(
 
     return result
 
+def check_if_stack_trace_exists(session: Session, exc: BaseException, tb: Union[TracebackType, None]) -> bool:
+    """
+    Check if a stack_trace_snapshot already exists in the database.
+    """
+    
+    hashed_trace = hash_stack_trace(exc, tb)
+    stacktrace = get_stack_trace_by_hash(session, hashed_trace)
+    return stacktrace is not None
+
 
 def save_exception_occurence_to_db(
     request_id: int,
@@ -213,7 +222,6 @@ def save_exception_occurence_to_db(
     """
     hashed_trace = hash_stack_trace(exc, tb)
     existing_trace = get_stack_trace_by_hash(session, hashed_trace)
-
     if existing_trace:
         trace_id = int(existing_trace.id)
     else:
