@@ -154,6 +154,5 @@ def my_func():
 
 if __name__ == "__main__":
     dashboard.bind(app)
-    # create_issue()
     load_dotenv() 
     app.run(port=4200)
