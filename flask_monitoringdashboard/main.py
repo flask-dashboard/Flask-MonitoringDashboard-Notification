@@ -148,6 +148,11 @@ def throws_direct():
     time.sleep(0.2)
     raise Exception("This is an uncaught exception!")
 
+@app.route("/throws_di")
+def throws_di():
+    time.sleep(0.2)
+    raise ArithmeticError("This is an uncaught exception!")
+
 def my_func():
     # here should be something actually useful
     return 33.3
