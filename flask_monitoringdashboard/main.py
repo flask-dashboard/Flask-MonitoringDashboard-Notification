@@ -19,7 +19,6 @@ from flask_monitoringdashboard.core.notification.GithubRequestInfo import GitHub
 from dotenv import load_dotenv # Assuming you 
 import os
 
-load_dotenv()
 app = Flask(__name__)
 
 dashboard.config.version = "3.2"
@@ -144,6 +143,10 @@ def throws():
     d()()
     return "Ok"
 
+@app.route("/throws_direct")
+def throws_direct():
+    time.sleep(0.2)
+    raise Exception("This is an uncaught exception!")
 
 def my_func():
     # here should be something actually useful
@@ -169,4 +172,5 @@ def create_issue():
 if __name__ == "__main__":
     dashboard.bind(app)
     # create_issue()
+    load_dotenv() 
     app.run(port=4200)
