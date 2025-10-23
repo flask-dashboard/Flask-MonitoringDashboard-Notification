@@ -23,33 +23,10 @@ class ExceptionCollector:
         self.user_captured_exceptions.append(e_copy)
 
     def set_uncaught_exc(self, e: BaseException):
-        
         e_copy = _get_copy_of_exception(e)
-        e_copy2 = _get_copy_of_exception(e)
-
-        # load environment variables from .env file and create GitHubRequestInfo
-        github_info = GitHubRequestInfo(
-            github_token=os.getenv("GITHUB_TOKEN"),
-            repo_owner=os.getenv("REPO_OWNER"),
-            repo_name=os.getenv("REPO_NAME")
-        )
-
-        self.notify(
-            github_info,
-            e_copy2)
         self.uncaught_exception = e_copy
-   
-    def notify(
-            self,
-            github_info: GitHubRequestInfo,
-            exception: BaseException):
-        
-        # Create notification content
-        notification_content = NotificationContent(exception)
-        # Send Post Request to repository to create issue
-        response = issue.create_issue(github_info, notification_content)
-        print("Notification response:", response.status_code, response.text)
-    
+       
+       
     def save_to_db(self, request_id: int, session: Session):
 
         from flask_monitoringdashboard.database.exception_occurrence import (
@@ -63,17 +40,26 @@ class ExceptionCollector:
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, True
             )
+        github_info = GitHubRequestInfo(
+            github_token=os.getenv("GITHUB_TOKEN"),
+            repo_owner=os.getenv("REPO_OWNER"),
+            repo_name=os.getenv("REPO_NAME")
+        )
 
+        
         e = self.uncaught_exception
         if e is not None:
             if e.__traceback__ is not None:
                 # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
                 # where it was temporaritly captured for logging by the ExceptionCollector, before getting reraised later
                 e = e.with_traceback(e.__traceback__.tb_next)
-
+            
+            e_copy = _get_copy_of_exception(e)
+            _notify(e_copy, session, github_info)
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, False
             )
+        
 
 
 def _get_copy_of_exception(e: BaseException):
@@ -95,3 +81,21 @@ def _get_copy_of_exception(e: BaseException):
     if e.__traceback__:
         return new_exc.with_traceback(e.__traceback__)
     return new_exc
+
+
+def _notify(
+            exception: BaseException,
+            session: Session,
+            github_info: GitHubRequestInfo):
+        from flask_monitoringdashboard.database.exception_occurrence import (
+            check_if_stack_trace_exists,
+        )
+
+        if not check_if_stack_trace_exists(session, exception, exception.__traceback__):
+            # Create notification content
+            notification_content = NotificationContent(exception)
+            # Send Post Request to repository to create issue
+            response = issue.create_issue(github_info, notification_content)
+            # print("Notification response:", response.status_code, response.text)
+        else:
+            print("Stack trace already exists in DB, no notification sent.")
