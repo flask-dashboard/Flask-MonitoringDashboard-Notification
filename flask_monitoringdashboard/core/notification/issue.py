@@ -22,10 +22,11 @@ def make_post_request(request_info: GitHubRequestInfo, endpoint: str, data):
 def create_issue(
         request_info: GitHubRequestInfo,
         notification_content: NotificationContent) -> requests.Response:
-    
+    print("this is the body:", notification_content.body)
     data = {
         "title": notification_content.title,
-        "body": notification_content.body
+        "body": notification_content.body,
+        "labels": ["automated-issue", "exception"], 
     }
 
     return make_post_request(request_info, "issues", data)
@@ -33,7 +34,7 @@ def create_issue(
 def _post_headers(github_token:str):
     headers = {
         "Authorization": f"Bearer {github_token}",
-        "Accept": "application/vnd.github.v3.raw+json"
+        "Accept": "application/vnd.github.v3+json"
     }
     return headers
 
