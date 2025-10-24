@@ -39,6 +39,7 @@ class User(Base):
     """Table for storing user management."""
 
     __tablename__ = "{}User".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -63,6 +64,7 @@ class TelemetryUser(Base):
     """Table for storing a unique identifier of an FMD user"""
 
     __tablename__ = "{}TelemetryUser".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(String(40), primary_key=True, default=str(uuid.uuid4()))
     """Unique anonymous identifier to group the data received through telemetry"""
@@ -81,6 +83,7 @@ class Endpoint(Base):
     """Table for storing information about the endpoints."""
 
     __tablename__ = "{}Endpoint".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -104,6 +107,7 @@ class Request(Base):
     """Table for storing measurements of requests."""
 
     __tablename__ = "{}Request".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -136,6 +140,7 @@ class Outlier(Base):
     """Table for storing information about outliers."""
 
     __tablename__ = "{}Outlier".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -168,6 +173,7 @@ class CodeLine(Base):
     identifies a line in the code."""
 
     __tablename__ = "{}CodeLine".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -188,6 +194,7 @@ class StackLine(Base):
     """Table for storing lines of execution paths of calls."""
 
     __tablename__ = "{}StackLine".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     request_id = Column(Integer, ForeignKey(Request.id), primary_key=True)
     request = relationship(Request, backref="stack_lines")
@@ -211,6 +218,7 @@ class CustomGraph(Base):
     """Table for storing custom graphs names."""
 
     __tablename__ = "{}CustomGraph".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     graph_id = Column(Integer, primary_key=True)
 
@@ -228,6 +236,7 @@ class CustomGraphData(Base):
     """Table for storing data collected by custom graphs."""
 
     __tablename__ = "{}CustomGraphData".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -246,6 +255,7 @@ class StackTraceSnapshot(Base):
     """Table for storing a hash of a stack trace and its related functions, to avoid 'duplicate' ExceptionStackLines."""
 
     __tablename__ = "{}StackTraceSnapshot".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
     hash = Column(String(64), nullable=False, unique=True)
@@ -259,6 +269,7 @@ class ExceptionType(Base):
     """Table for storing Exception types"""
 
     __tablename__ = "{}ExceptionType".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
     type = Column(String(256), nullable=False)
@@ -268,6 +279,7 @@ class ExceptionMessage(Base):
     """Table for storing Exception messages"""
 
     __tablename__ = "{}ExceptionMessage".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
     message = Column(TEXT, nullable=False)
@@ -277,6 +289,7 @@ class ExceptionOccurrence(Base):
     """Table for storing exception id together with request id."""
 
     __tablename__ = "{}ExceptionOccurrence".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -301,6 +314,7 @@ class FunctionDefinition(Base):
     """Table for storing entire functions for better logging"""
 
     __tablename__ = f"{config.table_prefix}FunctionDefinition"
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -318,6 +332,7 @@ class FilePath(Base):
     """Table for storing file paths"""
 
     __tablename__ = "{}FilePath".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
     path = Column(String(250), nullable=False, unique=True)
@@ -327,6 +342,7 @@ class FunctionLocation(Base):
     """Table for storing functions with their locations in the source code"""
 
     __tablename__ = "{}FunctionLocation".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -346,6 +362,7 @@ class ExceptionFrame(Base):
     """Table for storing information of a frame in an exceptions traceback"""
 
     __tablename__ = "{}ExceptionFrame".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     id = Column(Integer, primary_key=True)
 
@@ -361,6 +378,7 @@ class ExceptionStackLine(Base):
     """Table for storing exception id together with request id."""
 
     __tablename__ = "{}ExceptionStackLine".format(config.table_prefix)
+    __table_args__ = {"mysql_collate": "utf8mb4_general_ci"}
 
     stack_trace_snapshot_id = Column(
         Integer, ForeignKey(StackTraceSnapshot.id), primary_key=True
