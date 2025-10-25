@@ -1,8 +1,12 @@
 from typing import Union
 import copy
 
+import os
+from dotenv import load_dotenv
 from sqlalchemy.orm import Session
-
+from ..notification import issue
+from ..notification.GithubRequestInfo import GitHubRequestInfo 
+from ..notification.notification_content import NotificationContent
 
 class ExceptionCollector:
     """
@@ -19,9 +23,33 @@ class ExceptionCollector:
         self.user_captured_exceptions.append(e_copy)
 
     def set_uncaught_exc(self, e: BaseException):
+        
         e_copy = _get_copy_of_exception(e)
-        self.uncaught_exception = e_copy
+        e_copy2 = _get_copy_of_exception(e)
 
+        # load environment variables from .env file and create GitHubRequestInfo
+        github_info = GitHubRequestInfo(
+            github_token=os.getenv("GITHUB_TOKEN"),
+            repo_owner=os.getenv("REPO_OWNER"),
+            repo_name=os.getenv("REPO_NAME")
+        )
+
+        self.notify(
+            github_info,
+            e_copy2)
+        self.uncaught_exception = e_copy
+   
+    def notify(
+            self,
+            github_info: GitHubRequestInfo,
+            exception: BaseException):
+        
+        # Create notification content
+        notification_content = NotificationContent(exception)
+        # Send Post Request to repository to create issue
+        response = issue.create_issue(github_info, notification_content)
+        print("Notification response:", response.status_code, response.text)
+    
     def save_to_db(self, request_id: int, session: Session):
 
         from flask_monitoringdashboard.database.exception_occurrence import (

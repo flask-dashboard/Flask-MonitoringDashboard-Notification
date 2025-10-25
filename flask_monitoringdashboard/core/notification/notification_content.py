@@ -4,14 +4,15 @@ from datetime import datetime, timezone
 class NotificationContent:
 
     def __init__(self, exception: BaseException):
-        self.title = self._create_title(exception)
-        self.body = self._create_body(exception)
         self._exception = exception
-        self.create_at = datetime.now(timezone.utc)
+        self.create_at = datetime.now(timezone.utc).isoformat()
         self.send_at = None # When was the notification sent, None if not sent yet
 
         self.notification_type = None
         self.exception_type = exception.__class__.__name__
+        
+        self.title = self._create_title(exception)
+        self.body = self._create_body(exception)
 
 
     def _create_title(self, exception: BaseException) -> str:
