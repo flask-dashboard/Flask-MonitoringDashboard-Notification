@@ -47,7 +47,10 @@ class Config(object):
         self.username = 'admin'
         self.password = 'admin'
         self.security_token = 'cc83733cb0af8b884ff6577086b87909'
-
+        self.github_token = None
+        self.repo_owner = None
+        self.repo_name = None
+        
         # visualization
         self.colors = {}
         try:

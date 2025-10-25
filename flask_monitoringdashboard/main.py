@@ -20,6 +20,7 @@ from dotenv import load_dotenv # Assuming you
 import os
 
 app = Flask(__name__)
+dashboard.config.init_from(file='~/github/Flask-MonitoringDashboard-Notification/config.local.cfg')
 
 dashboard.config.version = "3.2"
 dashboard.config.group_by = "2"
