@@ -43,11 +43,7 @@ class ExceptionCollector:
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, True
             )
-        github_info = GitHubRequestInfo(
-            github_token=config.github_token,
-            repo_owner=config.repo_owner,
-            repo_name=config.repo_name
-        )
+        
         
         e = self.uncaught_exception
         if e is not None:
@@ -57,7 +53,7 @@ class ExceptionCollector:
                 e = e.with_traceback(e.__traceback__.tb_next)
             
             e_copy = _get_copy_of_exception(e)
-            _notify(e_copy, session, github_info)
+            _notify(e_copy, session, config)
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, False
             )
@@ -88,14 +84,20 @@ def _get_copy_of_exception(e: BaseException):
 def _notify(
             exception: BaseException,
             session: Session,
-            github_info: GitHubRequestInfo):
+            config: Config):
         from flask_monitoringdashboard.database.exception_occurrence import (
             check_if_stack_trace_exists,
         )
 
         if not check_if_stack_trace_exists(session, exception, exception.__traceback__):
+            
+            github_info = GitHubRequestInfo(
+                github_token=config.github_token,
+                repo_owner=config.repo_owner,
+                repo_name=config.repo_name
+            )
             # Create notification content
-            notification_content = NotificationContent(exception)
+            notification_content = NotificationContent(exception, config)
             # Send Post Request to repository to create issue
             response = issue.create_issue(github_info, notification_content)
             # print("Notification response:", response.status_code, response.text)
