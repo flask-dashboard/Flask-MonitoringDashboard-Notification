@@ -20,7 +20,7 @@ from dotenv import load_dotenv # Assuming you
 import os
 
 app = Flask(__name__)
-dashboard.config.init_from(file='~/github/Flask-MonitoringDashboard-Notification/config.local.cfg')
+dashboard.config.init_from(file='config.local.cfg')
 
 dashboard.config.version = "3.2"
 dashboard.config.group_by = "2"
@@ -154,7 +154,7 @@ def throws_di():
     time.sleep(0.2)
     raise ArithmeticError("This is an uncaught exception!")
 
-@app.route("/throws_h")
+@app.route("/throws_l")
 def throws_f():
     time.sleep(0.2)
     raise ArithmeticError("This is an uncaught exception!")

@@ -50,7 +50,7 @@ class Config(object):
         self.github_token = None
         self.repo_owner = None
         self.repo_name = None
-        
+
         # visualization
         self.colors = {}
         try:
@@ -151,6 +151,7 @@ class Config(object):
         try:
             parser = configparser.RawConfigParser()
             parser.read(file)
+            print(f"Config file read from: {file}")
 
             # parse 'dashboard'
             self.version = parse_version(parser, 'dashboard', self.version)
@@ -181,6 +182,12 @@ class Config(object):
             self.security_token = parse_string(
                 parser, 'authentication', 'SECURITY_TOKEN', self.security_token
             )
+
+            # parse github info
+            self.github_token = parse_string(parser, 'authentication', 'GITHUB_TOKEN', self.github_token)
+            self.repo_name = parse_string(parser, 'authentication', 'REPO_NAME', self.repo_name)
+            self.repo_owner = parse_string(parser, 'authentication', 'REPO_OWNER', self.repo_owner)
+            print(f"Repo Name: {self.repo_name}")
 
             # database
             self.database_name = parse_string(parser, 'database', 'DATABASE', self.database_name)

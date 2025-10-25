@@ -4,6 +4,8 @@ import copy
 import os
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
+
+from flask_monitoringdashboard.core.config import Config
 from ..notification import issue
 from ..notification.GithubRequestInfo import GitHubRequestInfo 
 from ..notification.notification_content import NotificationContent
@@ -27,8 +29,9 @@ class ExceptionCollector:
         self.uncaught_exception = e_copy
        
        
-    def save_to_db(self, request_id: int, session: Session):
+    def save_to_db(self, request_id: int, session: Session, config: Config):
 
+        # import package config lazily to avoid circular import at module import time
         from flask_monitoringdashboard.database.exception_occurrence import (
             save_exception_occurence_to_db,
         )
@@ -41,11 +44,10 @@ class ExceptionCollector:
                 request_id, session, e, type(e), e.__traceback__, True
             )
         github_info = GitHubRequestInfo(
-            github_token=os.getenv("GITHUB_TOKEN"),
-            repo_owner=os.getenv("REPO_OWNER"),
-            repo_name=os.getenv("REPO_NAME")
+            github_token=config.github_token,
+            repo_owner=config.repo_owner,
+            repo_name=config.repo_name
         )
-
         
         e = self.uncaught_exception
         if e is not None:
