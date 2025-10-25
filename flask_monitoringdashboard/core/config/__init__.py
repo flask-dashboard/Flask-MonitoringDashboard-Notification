@@ -13,6 +13,7 @@ from flask_monitoringdashboard.core.config.parser import (
     parse_version,
     parse_bool,
     parse_literal,
+    parse_github_repo_string,
 )
 from flask_monitoringdashboard.core.logger import log
 
@@ -184,9 +185,9 @@ class Config(object):
             )
 
             # parse github info
-            self.github_token = parse_string(parser, 'authentication', 'GITHUB_TOKEN', self.github_token)
-            self.repo_name = parse_string(parser, 'authentication', 'REPO_NAME', self.repo_name)
-            self.repo_owner = parse_string(parser, 'authentication', 'REPO_OWNER', self.repo_owner)
+            self.github_token = parse_github_repo_string(parser, 'authentication', 'GITHUB_TOKEN', self.github_token)
+            self.repo_name = parse_github_repo_string(parser, 'authentication', 'REPO_NAME', self.repo_name)
+            self.repo_owner = parse_github_repo_string(parser, 'authentication', 'REPO_OWNER', self.repo_owner)
             print(f"Repo Name: {self.repo_name}")
 
             # database
