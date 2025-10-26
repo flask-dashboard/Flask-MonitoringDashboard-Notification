@@ -14,6 +14,10 @@ from random import random, randint
 from flask import Flask, redirect, url_for
 
 import flask_monitoringdashboard as dashboard
+import flask_monitoringdashboard.core.notification.issue as issue
+from flask_monitoringdashboard.core.notification.GithubRequestInfo import GitHubRequestInfo
+from dotenv import load_dotenv # Assuming you 
+import os
 
 app = Flask(__name__)
 
@@ -139,12 +143,26 @@ def throws():
     d()()
     return "Ok"
 
+@app.route("/throws_direct")
+def throws_direct():
+    time.sleep(0.2)
+    raise Exception("This is an uncaught exception!")
+
+@app.route("/throws_di")
+def throws_di():
+    time.sleep(0.2)
+    raise ArithmeticError("This is an uncaught exception!")
+
+@app.route("/throws_h")
+def throws_f():
+    time.sleep(0.2)
+    raise ArithmeticError("This is an uncaught exception!")
 
 def my_func():
     # here should be something actually useful
     return 33.3
 
-
 if __name__ == "__main__":
     dashboard.bind(app)
+    load_dotenv() 
     app.run(port=4200)

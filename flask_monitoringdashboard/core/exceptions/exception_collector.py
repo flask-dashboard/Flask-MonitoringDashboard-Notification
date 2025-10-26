@@ -2,10 +2,15 @@ import traceback
 from typing import Union
 import copy
 
+import os
+from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 
 from flask_monitoringdashboard.core.notification.email import send_email
 
+from ..notification import issue
+from ..notification.GithubRequestInfo import GitHubRequestInfo
+from ..notification.notification_content import NotificationContent
 
 class ExceptionCollector:
     """
@@ -38,6 +43,12 @@ class ExceptionCollector:
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, True
             )
+        github_info = GitHubRequestInfo(
+            github_token=os.getenv("GITHUB_TOKEN"),
+            repo_owner=os.getenv("REPO_OWNER"),
+            repo_name=os.getenv("REPO_NAME")
+        )
+
 
         e = self.uncaught_exception
         if e is not None:
@@ -45,7 +56,9 @@ class ExceptionCollector:
                 # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
                 # where it was temporaritly captured for logging by the ExceptionCollector, before getting reraised later
                 e = e.with_traceback(e.__traceback__.tb_next)
-            _notify(e, session)
+
+            e_copy = _get_copy_of_exception(e)
+            _notify(e_copy, session, github_info)
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, False
             )
@@ -71,7 +84,25 @@ def _get_copy_of_exception(e: BaseException):
         return new_exc.with_traceback(e.__traceback__)
     return new_exc
 
-def _notify(e: BaseException, session: Session):
+
+def _notify(
+            exception: BaseException,
+            session: Session,
+            github_info: GitHubRequestInfo):
+        from flask_monitoringdashboard.database.exception_occurrence import (
+            check_if_stack_trace_exists,
+        )
+
+        if not check_if_stack_trace_exists(session, exception, exception.__traceback__):
+            # Create notification content
+            notification_content = NotificationContent(exception)
+            # Send Post Request to repository to create issue
+            response = issue.create_issue(github_info, notification_content)
+            # print("Notification response:", response.status_code, response.text)
+        else:
+            print("Stack trace already exists in DB, no notification sent.")
+
+def _notify2(e: BaseException, session: Session):
     from flask_monitoringdashboard.database.exception_occurrence import (
         check_if_stack_trace_exists,
     )

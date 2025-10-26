@@ -1,6 +1,7 @@
 """
 Contains all functions that access an ExceptionOccurrence object.
 """
+
 from types import TracebackType
 from typing import Union
 from sqlalchemy import func, desc
@@ -202,8 +203,10 @@ def check_if_stack_trace_exists(session: Session, exc: BaseException, tb: Union[
     """
     Check if a stack_trace_snapshot already exists in the database.
     """
+
     hashed_trace = hash_stack_trace(exc, tb)
-    return get_stack_trace_by_hash(session, hashed_trace) is not None
+    stacktrace = get_stack_trace_by_hash(session, hashed_trace)
+    return stacktrace is not None
 
 
 def save_exception_occurence_to_db(
