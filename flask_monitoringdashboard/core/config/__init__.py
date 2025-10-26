@@ -60,6 +60,16 @@ class Config(object):
             log('Using default timezone, which is UTC')
             self.timezone = pytz.timezone('UTC')
 
+        # notifications
+        self.notification_enabled = False
+        self.notification_type = ''
+
+        self.smtp_host = None
+        self.smtp_port = None
+        self.smtp_user = None
+        self.smtp_password = None
+        self.smtp_to = None
+
         # define a custom function to retrieve the session_id or username
         self.group_by = None
 
@@ -199,6 +209,16 @@ class Config(object):
             self.timezone = pytz.timezone(
                 parse_string(parser, 'visualization', 'TIMEZONE', self.timezone.zone)
             )
+
+            #notifications
+            self.notification_enabled = parse_bool(parser, 'notifications', 'ENABLED', self.notification_enabled)
+            self.notification_type = parse_string(parser, 'notifications', 'TYPE', self.notification_type)
+
+            self.smtp_host = parse_string(parser, 'notifications', 'SMTP_HOST', self.smtp_host)
+            self.smtp_port = parse_string(parser, 'notifications', 'SMTP_PORT', self.smtp_port)
+            self.smtp_user = parse_string(parser, 'notifications', 'SMTP_USER', self.smtp_user)
+            self.smtp_password = parse_string(parser, 'notifications', 'SMTP_PASSWORD', self.smtp_password)
+            self.smtp_to = parse_string(parser, 'notifications', 'SMTP_TO', self.smtp_to)
 
             if log_verbose:
                 log("version: " + self.version)

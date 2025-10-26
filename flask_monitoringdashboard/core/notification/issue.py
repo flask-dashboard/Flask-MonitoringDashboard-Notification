@@ -1,5 +1,4 @@
 import requests
-import json
 from flask_monitoringdashboard.core.notification.notification_content import NotificationContent
 from .GithubRequestInfo import GitHubRequestInfo 
 
@@ -22,10 +21,10 @@ def make_post_request(request_info: GitHubRequestInfo, endpoint: str, data):
 def create_issue(
         request_info: GitHubRequestInfo,
         notification_content: NotificationContent) -> requests.Response:
-    print("this is the body:", notification_content.body)
+    print("this is the body:", notification_content.body_markdown)
     data = {
         "title": notification_content.title,
-        "body": notification_content.body,
+        "body": notification_content.body_markdown,
         "labels": ["automated-issue", "exception"], 
     }
 

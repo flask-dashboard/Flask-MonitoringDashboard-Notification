@@ -14,10 +14,6 @@ from random import random, randint
 from flask import Flask, redirect, url_for
 
 import flask_monitoringdashboard as dashboard
-import flask_monitoringdashboard.core.notification.issue as issue
-from flask_monitoringdashboard.core.notification.GithubRequestInfo import GitHubRequestInfo
-from dotenv import load_dotenv # Assuming you 
-import os
 
 app = Flask(__name__)
 dashboard.config.init_from(file='config.local.cfg')
@@ -165,5 +161,4 @@ def my_func():
 
 if __name__ == "__main__":
     dashboard.bind(app)
-    load_dotenv() 
     app.run(port=4200)

@@ -45,3 +45,23 @@ def deploy_config():
             'colors': config.colors,
         }
     )
+
+@blueprint.route('/api/deploy_notification_config')
+@secure
+def deploy_notification_config():
+    """
+    :return: A JSON-object with notification configuration details
+    """
+    # TODO
+    #post_to_back_if_telemetry_enabled(**{'name': 'deploy_notification_config'})
+    return jsonify(
+        {
+            'notification_enabled': config.notification_enabled,
+            'notification_type': config.notification_type,
+            'smtp_host': config.smtp_host,
+            'smtp_port': config.smtp_port,
+            'smtp_user': config.smtp_user,
+            'smtp_password': config.smtp_password, #TODO we probably shouldn't show the password on the config page
+            'smtp_to': config.smtp_to,
+        }
+    )
