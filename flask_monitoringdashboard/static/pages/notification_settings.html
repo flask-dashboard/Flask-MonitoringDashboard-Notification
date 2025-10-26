@@ -10,31 +10,35 @@
                     <td>
                         <div>
                             <input type="radio" value="true"
-                                   ng-checked="notification_config.notifications_enabled === true"
+                                   ng-checked="notification_config.notification_enabled === true"
                                    disabled> Enabled
                             <input type="radio" value="false"
-                                   ng-checked="notification_config.notifications_enabled === false"
+                                   ng-checked="notification_config.notification_enabled === false"
                                    disabled> Disabled
                         </div>
                     </td>
                 </tr>
-                <tr ng-show="notification_config.notifications_enabled === true">
+                <tr ng-show="notification_config.notification_enabled === true">
+                    <td><b>Notification Type</b></td>
+                    <td>{{ notification_config.notification_type }}</td>
+                </tr>
+                <tr ng-show="notification_config.notification_enabled === true">
                     <td><b>SMTP Host</b></td>
                     <td>{{ notification_config.smtp_host }}</td>
                 </tr>
-                <tr ng-show="notification_config.notifications_enabled === true">
+                <tr ng-show="notification_config.notification_enabled === true">
                     <td><b>SMTP Port</b></td>
                     <td>{{ notification_config.smtp_port }}</td>
                 </tr>
-                <tr ng-show="notification_config.notifications_enabled === true">
+                <tr ng-show="notification_config.notification_enabled === true">
                     <td><b>SMTP User</b></td>
                     <td>{{ notification_config.smtp_user }}</td>
                 </tr>
-                <tr ng-show="notification_config.notifications_enabled === true">
+                <tr ng-show="notification_config.notification_enabled === true">
                     <td><b>SMTP Password</b></td>
                     <td>{{ notification_config.smtp_password }}</td>
                 </tr>
-                <tr ng-show="notification_config.notifications_enabled === true">
+                <tr ng-show="notification_config.notification_enabled === true">
                     <td><b>SMTP To Address</b></td>
                     <td>{{ notification_config.smtp_to }}</td>
                 </tr>

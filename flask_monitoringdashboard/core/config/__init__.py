@@ -60,8 +60,10 @@ class Config(object):
             log('Using default timezone, which is UTC')
             self.timezone = pytz.timezone('UTC')
 
-        # smtp
-        self.notifications_enabled = False
+        # notifications
+        self.notification_enabled = False
+        self.notification_type = ''
+
         self.smtp_host = None
         self.smtp_port = None
         self.smtp_user = None
@@ -209,7 +211,8 @@ class Config(object):
             )
 
             #notifications
-            self.notifications_enabled = parse_bool(parser, 'notifications', 'ENABLED', self.notifications_enabled)
+            self.notification_enabled = parse_bool(parser, 'notifications', 'ENABLED', self.notification_enabled)
+            self.notification_type = parse_string(parser, 'notifications', 'TYPE', self.notification_type)
 
             self.smtp_host = parse_string(parser, 'notifications', 'SMTP_HOST', self.smtp_host)
             self.smtp_port = parse_string(parser, 'notifications', 'SMTP_PORT', self.smtp_port)

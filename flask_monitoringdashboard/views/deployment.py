@@ -56,7 +56,8 @@ def deploy_notification_config():
     #post_to_back_if_telemetry_enabled(**{'name': 'deploy_notification_config'})
     return jsonify(
         {
-            'notifications_enabled': config.notifications_enabled,
+            'notification_enabled': config.notification_enabled,
+            'notification_type': config.notification_type,
             'smtp_host': config.smtp_host,
             'smtp_port': config.smtp_port,
             'smtp_user': config.smtp_user,
