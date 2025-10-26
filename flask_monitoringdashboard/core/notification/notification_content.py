@@ -1,11 +1,14 @@
 import traceback
 from datetime import datetime, timezone
+from flask_monitoringdashboard.core.config import Config
+
 
 class NotificationContent:
 
-    def __init__(self, exception: BaseException):
+    def __init__(self, exception: BaseException, config: Config):
         self._exception = exception
-        self.created_at = datetime.now(timezone.utc) # TODO: make timezone configurable or at least the printed format
+
+        self.created_at = datetime.now(config.timezone)
         self.send_at = None # When was the notification sent, None if not sent yet
 
         self.notification_type = None
