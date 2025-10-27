@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 Please note that the changes before version 1.10.0 have not been documented.
 
+v5.0.0
+----------
+**Major Release - Exception Monitoring & Stability Improvements**
+
+Added
+^^^^^
+- **Exception Monitoring**: Comprehensive exception tracking and visualization
+  - Automatic capture of uncaught exceptions across all endpoints
+  - User-defined exception capture with context
+  - Exception grouping by stack trace and endpoint
+  - Detailed stack trace visualization with syntax highlighting
+  - Exception occurrence tracking and statistics
+  - Database schema additions: ExceptionInfo, ExceptionFrame, FunctionLocation, FilePath, ExceptionType, ExceptionMessage
+- Exception dashboard with filterable views
+- Endpoint-specific exception pages
+- Exception pruning as part of database maintenance
+
+Changed
+^^^^^^^
+- **Security**: Updated requests dependency from 2.32.0 to 2.32.4 (addresses CVE-2024-35195)
+- **Database**: UTF-8 collation support for exception messages with emoji and special characters
+- **Timezone**: Fixed UTC timezone handling issues
+- **UI**: Improved sorting on Overview table (now works correctly with median request durations)
+- **UI**: Resolved sorting issues in Google Chrome browser
+- **UI**: Enhanced pagination on Overview page
+- **Performance**: Optimized exception stack trace storage to reduce redundancy
+- Flask 2.3+ compatibility (replaced deprecated `before_app_first_request`)
+- SQLAlchemy 2.0 compatibility improvements
+
+Fixed
+^^^^^
+- Telemetry consent can be properly dismissed
+- MySQL query compatibility for exception monitoring
+- Loading spinner placement on Overview page
+- Sorting now compares numbers correctly (not as strings)
+- Password hash column size increased to support newer Werkzeug versions
+
+Contributors
+^^^^^^^^^^^^
+Special thanks to: Natalie, Carmen, Albert, and all community contributors
+
 v4.0.5
 ----------
 Changed
