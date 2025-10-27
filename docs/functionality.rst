@@ -186,7 +186,7 @@ and standard deviation, and also total execution time.
 
 
 2. Exception Monitoring
-~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 Flask-MonitoringDashboard provides comprehensive exception monitoring to help you track
 and debug errors in your application. Exception monitoring is automatically enabled for
