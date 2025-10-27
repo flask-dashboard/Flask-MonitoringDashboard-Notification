@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 Please note that the changes before version 1.10.0 have not been documented.
 
+v4.0.5
+----------
+Changed
+
+- Security: Updated requests dependency from 2.32.0 (yanked) to 2.32.4 to address CVE-2024-35195
+- Fixed: Removed hard pin on requests dependency to allow for security updates
+
 v4.0.4
 ----------
 Changed
