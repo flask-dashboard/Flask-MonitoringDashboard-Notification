@@ -11,7 +11,8 @@ v5.0.0
 
 Added
 ^^^^^
-- **Exception Monitoring**: Comprehensive exception tracking and visualization
+- **Exception Monitoring**
+
   - Automatic capture of uncaught exceptions across all endpoints
   - User-defined exception capture with context
   - Exception grouping by stack trace and endpoint
@@ -24,6 +25,7 @@ Added
 
 Changed
 ^^^^^^^
+- **BREAKING**: Minimum Python version raised from 3.8 to 3.10
 - **Security**: Updated requests dependency from 2.32.0 to 2.32.4 (addresses CVE-2024-35195)
 - **Database**: UTF-8 collation support for exception messages with emoji and special characters
 - **Timezone**: Fixed UTC timezone handling issues
