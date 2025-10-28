@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from flask_monitoringdashboard.core.config import Config
 from ..notification import email
 from ..notification import issue
+from ..notification import chat
 from ..notification.GithubRequestInfo import GitHubRequestInfo
 from ..notification.notification_content import NotificationContent
 
@@ -51,7 +52,9 @@ class ExceptionCollector:
                 e = e.with_traceback(e.__traceback__.tb_next)
 
             e_copy = _get_copy_of_exception(e)
-            _notify(e_copy, session, config)
+
+            if config.notification_enabled:
+                _notify(e_copy, session, config)
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, False
             )
@@ -77,6 +80,7 @@ def _get_copy_of_exception(e: BaseException):
         return new_exc.with_traceback(e.__traceback__)
     return new_exc
 
+
 def _notify(
         exception: BaseException,
         session: Session,
@@ -88,19 +92,19 @@ def _notify(
     if not check_if_stack_trace_exists(session, exception, exception.__traceback__):
         # Create notification content
         notification_content = NotificationContent(exception, config)
+        types = config.notification_type
 
-        match config.notification_type:
-            case "EMAIL":
-                email.send_email(notification_content)
-            case "ISSUE":
-                github_info = GitHubRequestInfo(
-                    github_token=config.github_token,
-                    repo_owner=config.repo_owner,
-                    repo_name=config.repo_name
-                )
-                # Send Post Request to repository to create issue
-                issue.create_issue(github_info, notification_content)
-            case _:
-                print("Invalid notification type.")
+        if 'EMAIL' in types:
+            email.send_email(notification_content)
+        if 'ISSUE' in types:
+            github_info = GitHubRequestInfo(
+                github_token=config.github_token,
+                repo_owner=config.repo_owner,
+                repo_name=config.repo_name
+            )
+            # Send Post Request to repository to create issue
+            issue.create_issue(github_info, notification_content)
+        if 'CHAT' in types:
+            chat.send_message(notification_content)
     else:
-        print("Stack trace already exists in DB, no notification sent.")
+        print('Stack trace already exists in DB, no notification sent.')
