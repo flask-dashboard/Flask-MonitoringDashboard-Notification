@@ -12,7 +12,7 @@ def send_email(notification_content: NotificationContent):
 
     message['Subject'] = notification_content.title
     message['From'] = config.smtp_user
-    message['To'] = config.smtp_to
+    message['To'] = ', '.join(config.smtp_to)
 
     message.attach(MIMEText(notification_content.body_text, 'plain'))
     message.attach(MIMEText(notification_content.body_html, 'html'))
