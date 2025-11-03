@@ -18,7 +18,7 @@ from flask_monitoringdashboard.database.versions import get_versions
 
 
 def test_get_latencies_sample(session, request_1, endpoint):
-    interval = DateInterval(datetime.utcnow() - timedelta(days=1), datetime.utcnow())
+    interval = DateInterval(datetime.now(datetime.timezone.utc) - timedelta(days=1), datetime.now(datetime.timezone.utc))
     requests_criterion = create_time_based_sample_criterion(interval.start_date(),
                                                             interval.end_date())
     data = get_latencies_sample(session, endpoint.id, requests_criterion, sample_size=500)

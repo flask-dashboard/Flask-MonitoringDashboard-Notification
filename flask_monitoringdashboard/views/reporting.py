@@ -19,7 +19,7 @@ from flask_monitoringdashboard.database.request import create_time_based_sample_
 
 
 def get_date(p):
-    return datetime.utcfromtimestamp(int(request.args.get(p)))
+    return datetime.fromtimestamp(int(request.args.get(p)),tz = datetime.datetime.now(datetime.timezone.utc))
 
 
 def make_endpoint_summary(endpoint, requests_criterion, baseline_requests_criterion):
