@@ -9,6 +9,8 @@ v5.0.2
 ----------
 **Bug Fix Release**
 
+Note: v5.0.1 publish to PyPI failed due to test failures. This release includes all fixes from 5.0.1 plus additional corrections.
+
 Fixed
 ^^^^^
 - **Build**: Fixed broken 5.0.0 release - Angular frontend is now properly built before publishing to PyPI
@@ -16,11 +18,12 @@ Fixed
 - **Deprecation**: Replaced deprecated ``datetime.utcfromtimestamp()`` with ``datetime.fromtimestamp(..., tz=timezone.utc)``
 - **Deprecation**: Replaced ``datetime.UTC`` with ``datetime.timezone.utc`` for Python 3.11+ compatibility
 - **Timezone**: Fixed timezone-aware datetime handling in reporting and database operations
+- **Timezone**: Fixed missing timezone info in hourly load heatmap calculations (controllers/requests.py)
 - **Tests**: Updated test fixtures to properly handle timezone-aware datetimes
 
 Contributors
 ^^^^^^^^^^^^
-Special thanks to: Alex Knop (@aknopper) for identifying and fixing the deprecated datetime usage
+Special thanks to: Alex Knop (@aknopper) for identifying and fixing the deprecated datetime usage, and @klnyzzz33 for fixing datetime conversion errors
 
 v5.0.0
 ----------
