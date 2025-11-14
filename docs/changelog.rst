@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 This project adheres to `Semantic Versioning <http://semver.org/>`_.
 Please note that the changes before version 1.10.0 have not been documented.
 
+v5.0.2
+----------
+**Bug Fix Release**
+
+Fixed
+^^^^^
+- **Build**: Fixed broken 5.0.0 release - Angular frontend is now properly built before publishing to PyPI
+- **Deprecation**: Replaced deprecated ``datetime.utcnow()`` with ``datetime.now(timezone.utc)`` throughout codebase
+- **Deprecation**: Replaced deprecated ``datetime.utcfromtimestamp()`` with ``datetime.fromtimestamp(..., tz=timezone.utc)``
+- **Deprecation**: Replaced ``datetime.UTC`` with ``datetime.timezone.utc`` for Python 3.11+ compatibility
+- **Timezone**: Fixed timezone-aware datetime handling in reporting and database operations
+- **Tests**: Updated test fixtures to properly handle timezone-aware datetimes
+
+Contributors
+^^^^^^^^^^^^
+Special thanks to: Alex Knop (@aknopper) for identifying and fixing the deprecated datetime usage
+
 v5.0.0
 ----------
 **Major Release - Exception Monitoring & Stability Improvements**
