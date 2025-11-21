@@ -61,9 +61,9 @@ class Config(object):
             log('Using default timezone, which is UTC')
             self.timezone = pytz.timezone('UTC')
 
-        # notifications
-        self.notification_enabled = False
-        self.notification_type = ''
+        # alert
+        self.alert_enabled = False
+        self.alert_type = ''
 
         self.smtp_host = None
         self.smtp_port = None
@@ -214,18 +214,18 @@ class Config(object):
                 parse_string(parser, 'visualization', 'TIMEZONE', self.timezone.zone)
             )
 
-            #notifications
-            self.notification_enabled = parse_bool(parser, 'notifications', 'ENABLED', self.notification_enabled)
-            self.notification_type = parse_list(parser, 'notifications', 'TYPE', self.notification_type)
+            #alerting
+            self.alert_enabled = parse_bool(parser, 'alerting', 'ENABLED', self.alert_enabled)
+            self.alert_type = parse_list(parser, 'alerting', 'TYPE', self.alert_type)
 
-            self.smtp_host = parse_string(parser, 'notifications', 'SMTP_HOST', self.smtp_host)
-            self.smtp_port = parse_string(parser, 'notifications', 'SMTP_PORT', self.smtp_port)
-            self.smtp_user = parse_string(parser, 'notifications', 'SMTP_USER', self.smtp_user)
-            self.smtp_password = parse_string(parser, 'notifications', 'SMTP_PASSWORD', self.smtp_password)
-            self.smtp_to = parse_list(parser, 'notifications', 'SMTP_TO', self.smtp_to)
+            self.smtp_host = parse_string(parser, 'alerting', 'SMTP_HOST', self.smtp_host)
+            self.smtp_port = parse_string(parser, 'alerting', 'SMTP_PORT', self.smtp_port)
+            self.smtp_user = parse_string(parser, 'alerting', 'SMTP_USER', self.smtp_user)
+            self.smtp_password = parse_string(parser, 'alerting', 'SMTP_PASSWORD', self.smtp_password)
+            self.smtp_to = parse_list(parser, 'alerting', 'SMTP_TO', self.smtp_to)
 
-            self.chat_platform = parse_string(parser, 'notifications', 'CHAT_PLATFORM', self.chat_platform)
-            self.chat_webhook_url = parse_string(parser, 'notifications', 'CHAT_WEBHOOK_URL', self.chat_webhook_url)
+            self.chat_platform = parse_string(parser, 'alerting', 'CHAT_PLATFORM', self.chat_platform)
+            self.chat_webhook_url = parse_string(parser, 'alerting', 'CHAT_WEBHOOK_URL', self.chat_webhook_url)
 
             if log_verbose:
                 log("version: " + self.version)

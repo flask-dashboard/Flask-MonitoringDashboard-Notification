@@ -40,7 +40,7 @@ import { StatusCodeDistributionController, } from './controllers/statusCodeDistr
 import { CustomGraphController } from './controllers/customGraph';
 import { ConfigurationController } from './controllers/configuration';
 import { DatabaseManagementController } from './controllers/databaseManagementController';
-import {NotificationSettingsController} from "./controllers/notificationSettingsController";
+import {AlertingSettingsController} from "./controllers/alertingSettingsController";
 import { EndpointVersionIPController } from './controllers/endpointVersionIP';
 import { EndpointVersionController } from "./controllers/endpointVersion";
 import { MonitorLevelController } from "./controllers/monitorLevel";
@@ -191,9 +191,9 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
             templateUrl: 'static/pages/database_management.html',
             controller: ['$scope', '$http', 'menuService', 'endpointService', 'modalService', DatabaseManagementController]
         })
-        .when('/notification_settings', {
-            templateUrl: 'static/pages/notification_settings.html',
-            controller: ['$scope', '$http', 'menuService', 'endpointService', 'modalService', NotificationSettingsController]
+        .when('/alerting_settings', {
+            templateUrl: 'static/pages/alerting_settings.html',
+            controller: ['$scope', '$http', 'menuService', 'endpointService', 'modalService', AlertingSettingsController]
         })
         .otherwise({
             redirectTo: '/overview'

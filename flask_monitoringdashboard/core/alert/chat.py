@@ -1,41 +1,50 @@
 import requests
-from flask_monitoringdashboard.core.notification.notification_content import NotificationContent
+
+from flask_monitoringdashboard.core.alert.alert_content import AlertContent
 
 
-def send_message(notification_content: NotificationContent):
+def send_message(alert_content: AlertContent):
     from flask_monitoringdashboard import config
 
-    webhook_url = config.chat_webhook_url
-    match config.chat_platform:
-        case 'SLACK':
-            payload = create_slack_payload(notification_content)
-            requests.post(webhook_url, json=payload)
-        case 'ROCKET_CHAT':
-            payload = create_rocket_chat_payload(notification_content)
-            requests.post(webhook_url, json=payload)
-        case 'TEAMS':
-            payload = create_teams_payload(notification_content)
-            requests.post(webhook_url, json=payload)
-        case _:
-            print('Invalid chat platform.')
+    payload_creators = {
+        "SLACK": create_slack_payload,
+        "ROCKET_CHAT": create_rocket_chat_payload,
+        "TEAMS": create_teams_payload,
+    }
+
+    creator = payload_creators.get(config.chat_platform)
+    if not creator:
+        print("Invalid chat platform.")
+        return
+
+    payload = creator(alert_content)
+
+    try:
+        resp = requests.post(config.chat_webhook_url, json=payload, timeout=5)
+        resp.raise_for_status()
+    except Exception as e:
+        print("Alert delivery failed:", e)
 
 
-def create_slack_payload(notification_content: NotificationContent):
+
+def create_slack_payload(alert_content: AlertContent):
     return {
         "blocks": [
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": notification_content.body_markdown}
+                "text": {"type": "mrkdwn", "text": alert_content.body_markdown}
             }
         ]
     }
 
-def create_rocket_chat_payload(notification_content: NotificationContent):
+
+def create_rocket_chat_payload(alert_content: AlertContent):
     return {
-        "text": notification_content.body_markdown,
+        "text": alert_content.body_markdown,
     }
 
-def create_teams_payload(notification_content: NotificationContent):
+
+def create_teams_payload(alert_content: AlertContent):
     return {
         "type": "message",
         "attachments": [
@@ -58,11 +67,11 @@ def create_teams_payload(notification_content: NotificationContent):
                             "facts": [
                                 {
                                     "title": "Type:",
-                                    "value": f"{notification_content.exception_type}"
+                                    "value": f"{alert_content.exception_type}"
                                 },
                                 {
                                     "title": "Timestamp:",
-                                    "value": f"{notification_content.created_at}"
+                                    "value": f"{alert_content.created_at}"
                                 }
                             ]
                         },
@@ -79,7 +88,7 @@ def create_teams_payload(notification_content: NotificationContent):
                             "items": [
                                 {
                                     "type": "TextBlock",
-                                    "text": f"{notification_content.stack_trace}",
+                                    "text": f"{alert_content.stack_trace}",
                                     "wrap": True,
                                     "fontType": "Monospace"
                                 }

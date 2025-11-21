@@ -1,0 +1,47 @@
+<div class="card mb-3">
+    <div class="card-header">
+        <h4>Alert Settings</h4>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                 <tr>
+                    <td style="width: 40%"><b>Alerting Enabled</b></td>
+                    <td>
+                        <div>
+                            <input type="radio" value="true"
+                                   ng-checked="alert_config.alert_enabled === true"
+                                   disabled> Enabled
+                            <input type="radio" value="false"
+                                   ng-checked="alert_config.alert_enabled === false"
+                                   disabled> Disabled
+                        </div>
+                    </td>
+                </tr>
+                <tr ng-show="isAlertingEnabled()">
+                    <td><b>Alert Type(s)</b></td>
+                    <td>{{ alert_config.alert_type }}</td>
+                </tr>
+                <tr ng-repeat-start="(type, fields) in alertSections" ng-if="isAlertEnabled(type)">
+                  <td colspan="2" class="table-secondary"><b>{{ type }} Settings</b></td>
+                </tr>
+                <tr ng-repeat="field in fields" ng-if="isAlertEnabled(type)">
+                  <td><b>{{ field.label }}</b></td>
+                  <td>
+                    <span ng-if="!field.isSecret">{{ alert_config[field.key] }}</span>
+                    <span ng-if="field.isSecret">
+                      <span ng-if="!showField[field.key]">••••••••</span>
+                      <span ng-if="showField[field.key]">{{ alert_config[field.key] }}</span>
+                      <button class="btn btn-sm btn-secondary"
+                              ng-click="showField[field.key] = !showField[field.key]">
+                        {{ showField[field.key] ? 'Hide' : 'Show' }}
+                      </button>
+                    </span>
+                  </td>
+                </tr>
+                <tr ng-repeat-end></tr>
+
+            </table>
+        </div>
+    </div>
+</div>
