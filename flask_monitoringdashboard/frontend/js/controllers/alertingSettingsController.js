@@ -1,4 +1,4 @@
-export function AlertSettingsController($scope, $http, menuService, endpointService) {
+export function AlertingSettingsController($scope, $http, menuService, endpointService) {
     endpointService.reset();
     menuService.reset('alerting_settings');
 

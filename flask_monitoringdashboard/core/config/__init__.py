@@ -202,7 +202,6 @@ class Config(object):
             self.github_token = parse_github_repo_string(parser, 'authentication', 'GITHUB_TOKEN', self.github_token)
             self.repo_name = parse_github_repo_string(parser, 'authentication', 'REPO_NAME', self.repo_name)
             self.repo_owner = parse_github_repo_string(parser, 'authentication', 'REPO_OWNER', self.repo_owner)
-            print(f"Repo Name: {self.repo_name}")
 
             # database
             self.database_name = parse_string(parser, 'database', 'DATABASE', self.database_name)

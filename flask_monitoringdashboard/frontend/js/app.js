@@ -40,7 +40,7 @@ import { StatusCodeDistributionController, } from './controllers/statusCodeDistr
 import { CustomGraphController } from './controllers/customGraph';
 import { ConfigurationController } from './controllers/configuration';
 import { DatabaseManagementController } from './controllers/databaseManagementController';
-import {AlertingSettingsController} from "./controllers/alertingSettingsController";
+import { AlertingSettingsController } from "./controllers/alertingSettingsController";
 import { EndpointVersionIPController } from './controllers/endpointVersionIP';
 import { EndpointVersionController } from "./controllers/endpointVersion";
 import { MonitorLevelController } from "./controllers/monitorLevel";
