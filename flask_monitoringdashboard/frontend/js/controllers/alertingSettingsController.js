@@ -13,15 +13,12 @@ export function AlertingSettingsController($scope, $http, menuService, endpointS
             {label: 'SMTP Host', key: 'smtp_host'},
             {label: 'SMTP Port', key: 'smtp_port'},
             {label: 'SMTP User', key: 'smtp_user'},
-            {label: 'SMTP Password', key: 'smtp_password', isSecret: true, toggleKey: 'showPassword'},
             {label: 'SMTP To Address(es)', key: 'smtp_to'}
         ],
         CHAT: [
-            {label: 'Chat Platform', key: 'chat_platform'},
-            {label: 'Chat Webhook URL', key: 'chat_webhook_url', isSecret: true, toggleKey: 'showWebhookUrl'}
+            {label: 'Chat Platform', key: 'chat_platform'}
         ],
         GITHUB: [
-            {label: 'Github Token', key: 'github_token', isSecret: true, toggleKey: 'showToken'},
             {label: 'Github Repository Owner', key: 'repo_owner'},
             {label: 'Github Repository Name', key: 'repo_name'}
         ]

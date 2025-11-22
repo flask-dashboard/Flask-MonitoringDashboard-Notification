@@ -62,13 +62,10 @@ def deploy_alert_config():
             'smtp_host': config.smtp_host,
             'smtp_port': config.smtp_port,
             'smtp_user': config.smtp_user,
-            'smtp_password': config.smtp_password, #TODO we probably shouldn't show the password on the config page
             'smtp_to': ', '.join(config.smtp_to),
 
             'chat_platform': config.chat_platform,
-            'chat_webhook_url': config.chat_webhook_url,
 
-            'github_token': config.github_token,
             'repo_name': config.repo_name,
             'repo_owner': config.repo_owner
         }
