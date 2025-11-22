@@ -49,9 +49,6 @@ class Config(object):
         self.username = 'admin'
         self.password = 'admin'
         self.security_token = 'cc83733cb0af8b884ff6577086b87909'
-        self.github_token = None
-        self.repo_owner = None
-        self.repo_name = None
 
         # visualization
         self.colors = {}
@@ -73,6 +70,10 @@ class Config(object):
 
         self.chat_platform = None
         self.chat_webhook_url = None
+
+        self.github_token = None
+        self.repository_owner = None
+        self.repository_name = None
 
         # define a custom function to retrieve the session_id or username
         self.group_by = None
@@ -198,11 +199,6 @@ class Config(object):
                 parser, 'authentication', 'SECURITY_TOKEN', self.security_token
             )
 
-            # parse github info
-            self.github_token = parse_github_repo_string(parser, 'authentication', 'GITHUB_TOKEN', self.github_token)
-            self.repo_name = parse_github_repo_string(parser, 'authentication', 'REPO_NAME', self.repo_name)
-            self.repo_owner = parse_github_repo_string(parser, 'authentication', 'REPO_OWNER', self.repo_owner)
-
             # database
             self.database_name = parse_string(parser, 'database', 'DATABASE', self.database_name)
             self.table_prefix = parse_string(parser, 'database', 'TABLE_PREFIX', self.table_prefix)
@@ -225,6 +221,10 @@ class Config(object):
 
             self.chat_platform = parse_string(parser, 'alerting', 'CHAT_PLATFORM', self.chat_platform)
             self.chat_webhook_url = parse_string(parser, 'alerting', 'CHAT_WEBHOOK_URL', self.chat_webhook_url)
+
+            self.github_token = parse_github_repo_string(parser, 'alerting', 'GITHUB_TOKEN', self.github_token)
+            self.repository_name = parse_github_repo_string(parser, 'alerting', 'REPOSITORY_NAME', self.repository_name)
+            self.repository_owner = parse_github_repo_string(parser, 'alerting', 'REPOSITORY_OWNER', self.repository_owner)
 
             if log_verbose:
                 log("version: " + self.version)

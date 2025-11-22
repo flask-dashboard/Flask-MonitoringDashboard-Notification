@@ -46,6 +46,7 @@ def deploy_config():
         }
     )
 
+
 @blueprint.route('/api/deploy_alert_config')
 @secure
 def deploy_alert_config():
@@ -53,20 +54,24 @@ def deploy_alert_config():
     :return: A JSON-object with alert configuration details
     """
     # TODO
-    #post_to_back_if_telemetry_enabled(**{'name': 'deploy_alert_config'})
+    # post_to_back_if_telemetry_enabled(**{'name': 'deploy_alert_config'})
+
     return jsonify(
         {
             'alert_enabled': config.alert_enabled,
-            'alert_type': ', '.join(config.alert_type),
-
-            'smtp_host': config.smtp_host,
-            'smtp_port': config.smtp_port,
-            'smtp_user': config.smtp_user,
-            'smtp_to': ', '.join(config.smtp_to),
-
-            'chat_platform': config.chat_platform,
-
-            'repo_name': config.repo_name,
-            'repo_owner': config.repo_owner
+            'alert_type': config.alert_type,
+            'email': {
+                'smtp_host': config.smtp_host,
+                'smtp_port': config.smtp_port,
+                'smtp_user': config.smtp_user,
+                'smtp_to': config.smtp_to
+            },
+            'chat': {
+                'chat_platform': config.chat_platform
+            },
+            'issue': {
+                'repository_name': config.repository_name,
+                'repository_owner': config.repository_owner
+            }
         }
     )

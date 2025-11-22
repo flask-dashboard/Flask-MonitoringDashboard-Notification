@@ -5,7 +5,7 @@
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
-                 <tr>
+                <tr>
                     <td style="width: 40%"><b>Alerting Enabled</b></td>
                     <td>
                         <div>
@@ -22,15 +22,25 @@
                     <td><b>Alert Type(s)</b></td>
                     <td>{{ alert_config.alert_type }}</td>
                 </tr>
-                <tr ng-repeat-start="(type, fields) in alertSections" ng-show="alert_config.alert_enabled === true &&
-                alert_config.alert_type && alert_config.alert_type.indexOf(type) !== -1">
-                  <td colspan="2" class="table-secondary"><b>{{ type }} Settings</b></td>
+                <tr ng-repeat-start="(type, values) in alert_config"
+                    ng-if="type !== 'alert_enabled' &&
+           type !== 'alert_type' &&
+           alert_config.alert_enabled === true &&
+           alert_config.alert_type.indexOf(type) !== -1">
+
+                    <td colspan="2" class="table-secondary">
+                        <b>{{ type | uppercase }} Settings</b>
+                    </td>
                 </tr>
-                <tr ng-repeat="field in fields" ng-show="alert_config.alert_enabled === true &&
-                alert_config.alert_type && alert_config.alert_type.indexOf(type) !== -1">
-                  <td><b>{{ field.label }}</b></td>
-                  <td><span>{{ alert_config[field.key] }}</span></td>
+
+                <tr ng-repeat="(key, value) in values"
+                    ng-if="alert_config.alert_enabled === true &&
+           alert_config.alert_type.indexOf(type) !== -1">
+
+                    <td><b>{{ labels[key] }}</b></td>
+                    <td>{{ value }}</td>
                 </tr>
+
                 <tr ng-repeat-end></tr>
             </table>
         </div>

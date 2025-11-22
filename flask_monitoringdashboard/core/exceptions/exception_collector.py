@@ -93,17 +93,17 @@ def _notify(
         alert_content = AlertContent(exception, config)
         types = config.alert_type
 
-        if 'EMAIL' in types:
+        if 'email' in types:
             email.send_email(alert_content)
-        if 'ISSUE' in types:
+        if 'issue' in types:
             github_info = GitHubRequestInfo(
                 github_token=config.github_token,
-                repo_owner=config.repo_owner,
-                repo_name=config.repo_name
+                repo_owner=config.repository_owner,
+                repo_name=config.repository_name
             )
             # Send Post Request to repository to create issue
             issue.create_issue(github_info, alert_content)
-        if 'CHAT' in types:
+        if 'chat' in types:
             chat.send_message(alert_content)
     else:
         print('Stack trace already exists in DB, no alert sent.')

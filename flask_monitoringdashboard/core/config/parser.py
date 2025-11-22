@@ -62,7 +62,7 @@ def parse_github_repo_string(parser, header, arg_name, arg_value):
     :param parser: the parser to be used for parsing
     :param header: name of the header in the configuration file
     :param arg_name: name in the configuration file
-    :param arg_value: default value, the the value is not found
+    :param arg_value: default value, if the value is not found
     """
     env = get_environment_var(arg_name)
     arg_value = env if env else arg_value
@@ -79,12 +79,12 @@ def parse_list(parser, header, arg_name, arg_value):
     :param parser: the parser to be used for parsing
     :param header: name of the header in the configuration file
     :param arg_name: name in the configuration file
-    :param arg_value: default value, the the value is not found
+    :param arg_value: default value, if the value is not found
     """
     env = get_environment_var(arg_name)
     arg_value = env if env else arg_value
     if parser.has_option(header, arg_name):
-        return parser.get(header, arg_name).split(',')
+        return parser.get(header, arg_name).replace(" ", "").split(',')
     return arg_value
 
 def parse_bool(parser, header, arg_name, arg_value):
