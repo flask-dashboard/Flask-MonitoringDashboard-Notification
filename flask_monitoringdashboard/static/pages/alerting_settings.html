@@ -1,47 +1,33 @@
 <div class="card mb-3">
     <div class="card-header">
-        <h4>Alerting Settings</h4>
+        <h4>Alerting settings</h4>
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table table-striped table-bordered table-hover">
+            <table class="table table-bordered table-hover">
                 <tr>
-                    <td style="width: 40%"><b>Alerting Enabled</b></td>
+                    <td style="width: 40%"><b>Alerting enabled</b></td>
                     <td>
-                        <div>
-                            <input type="radio" value="true"
-                                   ng-checked="alert_config.alert_enabled === true"
-                                   disabled> Enabled
-                            <input type="radio" value="false"
-                                   ng-checked="alert_config.alert_enabled === false"
-                                   disabled> Disabled
-                        </div>
+                        <div ng-if="alert_config['alert_enabled'] === true" style="color: #0d6efd">Enabled</div>
+                        <div ng-if="alert_config['alert_enabled'] !== true" style="color: #d10023">Disabled</div>
                     </td>
                 </tr>
-                <tr ng-show="alert_config.alert_enabled === true">
-                    <td><b>Alert Type(s)</b></td>
-                    <td>{{ alert_config.alert_type }}</td>
+                <tr ng-if="alert_config['alert_enabled'] === true">
+                    <td><b>{{ labels['alert_type'] }}</b></td>
+                    <td>{{ alert_config['alert_type'] }}</td>
                 </tr>
-                <tr ng-repeat-start="(type, values) in alert_config"
-                    ng-if="type !== 'alert_enabled' &&
-           type !== 'alert_type' &&
-           alert_config.alert_enabled === true &&
-           alert_config.alert_type.indexOf(type) !== -1">
-
-                    <td colspan="2" class="table-secondary">
-                        <b>{{ type | uppercase }} Settings</b>
+            </table>
+            <table ng-repeat="type in alert_type" ng-if="alert_config['alert_enabled'] === true && type !== ''"
+                   class="table table-bordered table-hover">
+                <tr>
+                    <td colspan="2" style="background-color: var(--bs-table-striped-bg)">
+                        <b><span style="text-transform: capitalize">{{ type }}</span> settings</b>
                     </td>
                 </tr>
-
-                <tr ng-repeat="(key, value) in values"
-                    ng-if="alert_config.alert_enabled === true &&
-           alert_config.alert_type.indexOf(type) !== -1">
-
-                    <td><b>{{ labels[key] }}</b></td>
+                <tr ng-repeat="(key, value) in alert_config[type]">
+                    <td style="width: 40%"><b>{{ labels[key] }}</b></td>
                     <td>{{ value }}</td>
                 </tr>
-
-                <tr ng-repeat-end></tr>
             </table>
         </div>
     </div>

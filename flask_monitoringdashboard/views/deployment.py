@@ -10,7 +10,6 @@ from flask_monitoringdashboard.core.utils import get_details
 from flask_monitoringdashboard.database import session_scope
 
 
-
 @blueprint.route('/api/deploy_details')
 @secure
 def deploy_details():
@@ -66,12 +65,12 @@ def deploy_alert_config():
                 'smtp_user': config.smtp_user,
                 'smtp_to': config.smtp_to
             },
-            'chat': {
-                'chat_platform': config.chat_platform
-            },
             'issue': {
                 'repository_name': config.repository_name,
                 'repository_owner': config.repository_owner
+            },
+            'chat': {
+                'chat_platform': config.chat_platform
             }
         }
     )

@@ -88,7 +88,7 @@ def _notify(
         check_if_stack_trace_exists,
     )
 
-    if check_if_stack_trace_exists(session, exception, exception.__traceback__):
+    if not check_if_stack_trace_exists(session, exception, exception.__traceback__):
         # Create alert content
         alert_content = AlertContent(exception, config)
         types = config.alert_type

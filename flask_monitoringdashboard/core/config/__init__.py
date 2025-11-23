@@ -13,8 +13,7 @@ from flask_monitoringdashboard.core.config.parser import (
     parse_version,
     parse_bool,
     parse_literal,
-    parse_list,
-    parse_github_repo_string,
+    parse_list
 )
 from flask_monitoringdashboard.core.logger import log
 
@@ -209,7 +208,7 @@ class Config(object):
                 parse_string(parser, 'visualization', 'TIMEZONE', self.timezone.zone)
             )
 
-            #alerting
+            # alerting
             self.alert_enabled = parse_bool(parser, 'alerting', 'ENABLED', self.alert_enabled)
             self.alert_type = parse_list(parser, 'alerting', 'TYPE', self.alert_type)
 
@@ -222,9 +221,9 @@ class Config(object):
             self.chat_platform = parse_string(parser, 'alerting', 'CHAT_PLATFORM', self.chat_platform)
             self.chat_webhook_url = parse_string(parser, 'alerting', 'CHAT_WEBHOOK_URL', self.chat_webhook_url)
 
-            self.github_token = parse_github_repo_string(parser, 'alerting', 'GITHUB_TOKEN', self.github_token)
-            self.repository_name = parse_github_repo_string(parser, 'alerting', 'REPOSITORY_NAME', self.repository_name)
-            self.repository_owner = parse_github_repo_string(parser, 'alerting', 'REPOSITORY_OWNER', self.repository_owner)
+            self.github_token = parse_string(parser, 'alerting', 'GITHUB_TOKEN', self.github_token)
+            self.repository_name = parse_string(parser, 'alerting', 'REPOSITORY_NAME', self.repository_name)
+            self.repository_owner = parse_string(parser, 'alerting', 'REPOSITORY_OWNER', self.repository_owner)
 
             if log_verbose:
                 log("version: " + self.version)
