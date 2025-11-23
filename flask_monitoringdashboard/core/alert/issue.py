@@ -3,6 +3,8 @@ import requests
 from flask_monitoringdashboard.core.alert.alert_content import AlertContent
 from .GithubRequestInfo import GitHubRequestInfo
 
+GITHUB_CHAR_LIMIT = 60000
+
 
 def get_base_repo_url(repo_owner: str, repo_name: str):
     return f"https://api.github.com/repos/{repo_owner}/{repo_name}/"
@@ -28,7 +30,7 @@ def create_issue(
         alert_content: AlertContent) -> requests.Response:
     data = {
         "title": alert_content.title,
-        "body": alert_content.create_body_markdown(60000),
+        "body": alert_content.create_body_markdown(GITHUB_CHAR_LIMIT),
         "labels": ["automated-issue", "exception"],
     }
 

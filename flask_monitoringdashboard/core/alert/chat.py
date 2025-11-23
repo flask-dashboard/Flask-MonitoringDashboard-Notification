@@ -2,6 +2,10 @@ import requests
 
 from flask_monitoringdashboard.core.alert.alert_content import AlertContent
 
+SLACK_CHAR_LIMIT = 2750
+ROCKET_CHAT_CHAR_LIMIT = 4500
+TEAMS_CHAR_LIMIT = 5000
+
 
 def send_message(alert_content: AlertContent):
     from flask_monitoringdashboard import config
@@ -26,13 +30,12 @@ def send_message(alert_content: AlertContent):
         print("Alert delivery failed:", e)
 
 
-
 def create_slack_payload(alert_content: AlertContent):
     return {
         "blocks": [
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": alert_content.create_body_mrkdwn(2750)}
+                "text": {"type": "mrkdwn", "text": alert_content.create_body_mrkdwn(SLACK_CHAR_LIMIT)}
             }
         ]
     }
@@ -40,7 +43,7 @@ def create_slack_payload(alert_content: AlertContent):
 
 def create_rocket_chat_payload(alert_content: AlertContent):
     return {
-        "text": alert_content.create_body_markdown(4500),
+        "text": alert_content.create_body_markdown(ROCKET_CHAT_CHAR_LIMIT),
     }
 
 
@@ -77,29 +80,30 @@ def create_teams_payload(alert_content: AlertContent):
                         },
                         {
                             "type": "TextBlock",
-                            "text": "Stack Trace (click to expand):",
+                            "text": "Stack Trace:",
                             "weight": "Bolder",
                             "wrap": True
                         },
                         {
                             "type": "Container",
                             "id": "stackContainer",
-                            "isVisible": False,
+                            "isVisible": True,
                             "items": [
                                 {
-                                    "type": "TextBlock",
-                                    "text": f"{alert_content.get_limited_stack_trace(5000)}",
+                                    "type": "CodeBlock",
+                                    "codeSnippet": f"{alert_content.get_limited_stack_trace(TEAMS_CHAR_LIMIT)}",
+                                    "language": "bash",
                                     "wrap": True,
-                                    "fontType": "Monospace"
+                                    "fontType": "Monospace",
+                                    "targetWidth": "Standard",
+                                    "fallback": {
+                                        "type": "TextBlock",
+                                        "text": f"{alert_content.get_limited_stack_trace(TEAMS_CHAR_LIMIT)}",
+                                        "wrap": True,
+                                        "fontType": "Monospace"
+                                    }
                                 }
                             ]
-                        }
-                    ],
-                    "actions": [
-                        {
-                            "type": "Action.ToggleVisibility",
-                            "title": "Show/Hide Stack Trace",
-                            "targetElements": ["stackContainer"]
                         }
                     ]
                 }
