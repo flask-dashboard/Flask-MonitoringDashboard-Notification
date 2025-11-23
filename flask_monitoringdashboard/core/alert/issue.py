@@ -28,7 +28,7 @@ def create_issue(
         alert_content: AlertContent) -> requests.Response:
     data = {
         "title": alert_content.title,
-        "body": alert_content.body_markdown,
+        "body": alert_content.create_body_markdown(60000),
         "labels": ["automated-issue", "exception"],
     }
 

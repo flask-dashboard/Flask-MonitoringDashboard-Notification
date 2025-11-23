@@ -32,7 +32,7 @@ def create_slack_payload(alert_content: AlertContent):
         "blocks": [
             {
                 "type": "section",
-                "text": {"type": "mrkdwn", "text": alert_content.body_markdown}
+                "text": {"type": "mrkdwn", "text": alert_content.create_body_mrkdwn(2750)}
             }
         ]
     }
@@ -40,7 +40,7 @@ def create_slack_payload(alert_content: AlertContent):
 
 def create_rocket_chat_payload(alert_content: AlertContent):
     return {
-        "text": alert_content.body_markdown,
+        "text": alert_content.create_body_markdown(4500),
     }
 
 
@@ -88,7 +88,7 @@ def create_teams_payload(alert_content: AlertContent):
                             "items": [
                                 {
                                     "type": "TextBlock",
-                                    "text": f"{alert_content.stack_trace}",
+                                    "text": f"{alert_content.get_limited_stack_trace(5000)}",
                                     "wrap": True,
                                     "fontType": "Monospace"
                                 }
