@@ -14,8 +14,8 @@ def send_email(alert_content: AlertContent):
     message['From'] = config.smtp_user
     message['To'] = ', '.join(config.smtp_to)
 
-    MIMEText(alert_content.body_text, 'plain', 'utf-8')
-    MIMEText(alert_content.body_html, 'html', 'utf-8')
+    message.attach(MIMEText(alert_content.body_text, 'plain', 'utf-8'))
+    message.attach(MIMEText(alert_content.body_html, 'html', 'utf-8'))
 
     try:
         with smtplib.SMTP(config.smtp_host, int(config.smtp_port)) as smtp:

@@ -71,7 +71,7 @@ def create_teams_payload(alert_content: AlertContent):
                                 },
                                 {
                                     "title": "Timestamp:",
-                                    "value": f"{alert_content.created_at}"
+                                    "value": f"{alert_content.created_at_str}"
                                 }
                             ]
                         },
