@@ -84,7 +84,10 @@ def parse_list(parser, header, arg_name, arg_value):
     env = get_environment_var(arg_name)
     arg_value = env if env else arg_value
     if parser.has_option(header, arg_name):
-        return parser.get(header, arg_name).replace(" ", "").split(',')
+        str_val = parser.get(header, arg_name).replace(" ", "")
+        if not str_val:
+            return arg_value
+        return str_val.split(',')
     return arg_value
 
 def parse_bool(parser, header, arg_name, arg_value):

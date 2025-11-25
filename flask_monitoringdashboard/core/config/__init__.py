@@ -59,7 +59,7 @@ class Config(object):
 
         # alert
         self.alert_enabled = False
-        self.alert_type = ''
+        self.alert_type = None
 
         self.smtp_host = None
         self.smtp_port = None
@@ -225,12 +225,33 @@ class Config(object):
             self.repository_name = parse_string(parser, 'alerting', 'REPOSITORY_NAME', self.repository_name)
             self.repository_owner = parse_string(parser, 'alerting', 'REPOSITORY_OWNER', self.repository_owner)
 
+            if not self.alert_type:
+                self.alert_enabled = False
+            else:
+                is_valid_email_config = self._is_valid_alert_config('email',
+                                                                    [self.smtp_host, self.smtp_port, self.smtp_user, self.smtp_to])
+                is_valid_chat_config = self._is_valid_alert_config('chat',
+                                                                   [self.chat_platform, self.chat_webhook_url])
+                is_valid_issue_config = self._is_valid_alert_config('issue',
+                                                                    [self.github_token, self.repository_name, self.repository_owner])
+                if (not is_valid_email_config) and (not is_valid_chat_config) and (not is_valid_issue_config):
+                    self.alert_enabled = False
+
             if log_verbose:
                 log("version: " + self.version)
                 log("username: " + self.username)
         except AttributeError:
             log('Cannot use configparser in python2.7')
             raise
+
+    def _is_valid_alert_config(self, alert_type, config_list):
+        if alert_type not in self.alert_type:
+            return False
+        if any([val == "" or val is None for val in config_list]):
+            log(f"Invalid {alert_type} alerting configuration, turned off {alert_type} alerting.")
+            self.alert_type.remove(alert_type)
+            return False
+        return True
 
 
 class TelemetryConfig(object):

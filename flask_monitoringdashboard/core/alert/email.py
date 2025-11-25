@@ -21,7 +21,7 @@ def send_email(alert_content: AlertContent):
         with smtplib.SMTP(config.smtp_host, int(config.smtp_port)) as smtp:
             smtp.starttls()
 
-            if config.smtp_user and config.smtp_password:
+            if config.smtp_password:
                 smtp.login(config.smtp_user, config.smtp_password)
 
             smtp.sendmail(config.smtp_user, config.smtp_to, message.as_string())
