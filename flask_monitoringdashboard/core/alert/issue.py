@@ -1,7 +1,7 @@
 import requests
 
 from flask_monitoringdashboard.core.alert.alert_content import AlertContent
-from .GithubRequestInfo import GitHubRequestInfo
+from .github_request_info import GitHubRequestInfo
 
 GITHUB_CHAR_LIMIT = 60000
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from flask_monitoringdashboard.core.config import Config
 from ..alert import email, issue, chat
-from ..alert.GithubRequestInfo import GitHubRequestInfo
+from ..alert.github_request_info import GitHubRequestInfo
 from ..alert.alert_content import AlertContent
 
 
