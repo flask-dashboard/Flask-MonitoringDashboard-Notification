@@ -16,7 +16,7 @@ from flask import Flask, redirect, url_for
 import flask_monitoringdashboard as dashboard
 
 app = Flask(__name__)
-dashboard.config.init_from(file='config.local.cfg')
+dashboard.config.init_from(file='config.cfg')
 
 dashboard.config.version = "3.2"
 dashboard.config.group_by = "2"

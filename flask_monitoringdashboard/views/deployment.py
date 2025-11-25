@@ -10,7 +10,6 @@ from flask_monitoringdashboard.core.utils import get_details
 from flask_monitoringdashboard.database import session_scope
 
 
-
 @blueprint.route('/api/deploy_details')
 @secure
 def deploy_details():
@@ -46,22 +45,32 @@ def deploy_config():
         }
     )
 
-@blueprint.route('/api/deploy_notification_config')
+
+@blueprint.route('/api/deploy_alert_config')
 @secure
-def deploy_notification_config():
+def deploy_alert_config():
     """
-    :return: A JSON-object with notification configuration details
+    :return: A JSON-object with alert configuration details
     """
     # TODO
-    #post_to_back_if_telemetry_enabled(**{'name': 'deploy_notification_config'})
+    # post_to_back_if_telemetry_enabled(**{'name': 'deploy_alert_config'})
+
     return jsonify(
         {
-            'notification_enabled': config.notification_enabled,
-            'notification_type': config.notification_type,
-            'smtp_host': config.smtp_host,
-            'smtp_port': config.smtp_port,
-            'smtp_user': config.smtp_user,
-            'smtp_password': config.smtp_password, #TODO we probably shouldn't show the password on the config page
-            'smtp_to': config.smtp_to,
+            'alert_enabled': config.alert_enabled,
+            'alert_type': config.alert_type,
+            'email': {
+                'smtp_host': config.smtp_host,
+                'smtp_port': config.smtp_port,
+                'smtp_user': config.smtp_user,
+                'smtp_to': config.smtp_to
+            },
+            'issue': {
+                'repository_name': config.repository_name,
+                'repository_owner': config.repository_owner
+            },
+            'chat': {
+                'chat_platform': config.chat_platform
+            }
         }
     )
