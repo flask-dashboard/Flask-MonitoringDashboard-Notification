@@ -52,8 +52,7 @@ def deploy_alert_config():
     """
     :return: A JSON-object with alert configuration details
     """
-    # TODO
-    # post_to_back_if_telemetry_enabled(**{'name': 'deploy_alert_config'})
+    post_to_back_if_telemetry_enabled(**{'name': 'deploy_alert_config'})
 
     return jsonify(
         {

@@ -1,6 +1,6 @@
 import requests
 
-from flask_monitoringdashboard.core.alert.alert_content import AlertContent
+from flask_monitoringdashboard.core.alerting.alert_content import AlertContent
 
 SLACK_CHAR_LIMIT = 2750
 ROCKET_CHAT_CHAR_LIMIT = 4500

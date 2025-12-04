@@ -4,9 +4,7 @@ from typing import Union
 from sqlalchemy.orm import Session
 
 from flask_monitoringdashboard.core.config import Config
-from ..alert import email, issue, chat
-from ..alert.github_request_info import GitHubRequestInfo
-from ..alert.alert_content import AlertContent
+from ..alerting.alerting import send_alert
 
 
 class ExceptionCollector:
@@ -49,10 +47,8 @@ class ExceptionCollector:
                 # where it was temporaritly captured for logging by the ExceptionCollector, before getting reraised later
                 e = e.with_traceback(e.__traceback__.tb_next)
 
-            e_copy = _get_copy_of_exception(e)
-
             if config.alert_enabled:
-                _notify(e_copy, session, config)
+                send_alert(e, session, config)
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, False
             )
@@ -78,32 +74,3 @@ def _get_copy_of_exception(e: BaseException):
     if e.__traceback__:
         return new_exc.with_traceback(e.__traceback__)
     return new_exc
-
-
-def _notify(
-        exception: BaseException,
-        session: Session,
-        config: Config):
-    from flask_monitoringdashboard.database.exception_occurrence import (
-        check_if_stack_trace_exists,
-    )
-
-    if not check_if_stack_trace_exists(session, exception, exception.__traceback__):
-        # Create alert content
-        alert_content = AlertContent(exception, config)
-        types = config.alert_type
-
-        if 'email' in types:
-            email.send_email(alert_content)
-        if 'issue' in types:
-            github_info = GitHubRequestInfo(
-                github_token=config.github_token,
-                repo_owner=config.repository_owner,
-                repo_name=config.repository_name
-            )
-            # Send Post Request to repository to create issue
-            issue.create_issue(github_info, alert_content)
-        if 'chat' in types:
-            chat.send_message(alert_content)
-    else:
-        print('Stack trace already exists in DB, no alert sent.')
