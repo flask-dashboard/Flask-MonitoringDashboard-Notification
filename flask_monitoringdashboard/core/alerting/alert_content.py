@@ -15,7 +15,7 @@ template = template_env.get_template('report.html')
 
 class AlertContent:
 
-    def __init__(self, exception: BaseException, config: Config):
+    def __init__(self, exception: BaseException, config: Config, url: str):
         self._exception = exception
 
         self.created_at = datetime.now(config.timezone)
@@ -26,6 +26,8 @@ class AlertContent:
 
         self.title = self._create_title()
         self.stack_trace = ''.join(traceback.format_exception(type(exception), exception, exception.__traceback__))
+
+        self.url = url
 
     def _create_title(self) -> str:
         return f"[{self.exception_type}] Uncaught exception at {self.created_at_str}"

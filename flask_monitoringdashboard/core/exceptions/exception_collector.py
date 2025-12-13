@@ -16,6 +16,11 @@ class ExceptionCollector:
     def __init__(self) -> None:
         self.user_captured_exceptions: list[BaseException] = []
         self.uncaught_exception: Union[BaseException, None] = None
+        try:
+            from flask import request
+            self.request_host_url = request.host_url
+        except Exception:
+            self.request_host_url = None
 
     def add_user_captured_exc(self, e: BaseException):
         e_copy = _get_copy_of_exception(e)
@@ -48,7 +53,7 @@ class ExceptionCollector:
                 e = e.with_traceback(e.__traceback__.tb_next)
 
             if config.alert_enabled:
-                send_alert(e, session, config)
+                send_alert(e, session, config, self.request_host_url)
             save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, False
             )

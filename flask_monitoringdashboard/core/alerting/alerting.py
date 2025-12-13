@@ -8,14 +8,15 @@ from .alert_content import AlertContent
 def send_alert(
         exception: BaseException,
         session: Session,
-        config: Config):
+        config: Config,
+        url: str):
     from flask_monitoringdashboard.database.exception_occurrence import (
         check_if_stack_trace_exists,
     )
 
     if not check_if_stack_trace_exists(session, exception, exception.__traceback__):
         # Create alert content
-        alert_content = AlertContent(exception, config)
+        alert_content = AlertContent(exception, config, url)
         types = config.alert_type
 
         if 'email' in types:
