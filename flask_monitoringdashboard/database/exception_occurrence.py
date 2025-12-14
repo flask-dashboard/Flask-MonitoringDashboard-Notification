@@ -199,6 +199,46 @@ def get_exceptions_with_timestamps_and_stack_trace_id(
 
     return result
 
+
+def get_exception_group_page_number_by_endpoint(
+    session: Session, per_page: int, endpoint_id: int, stack_trace_snapshot_id: int
+):
+    """
+    Get the page number of an exception group that has occurred for a specific endpoint
+    :param session: session for the database
+    :param per_page: number of items per page
+    :param endpoint_id: the id of the endpoint
+    :param stack_trace_snapshot_id: the id of the stacktrace snapshot
+    :return: The page number of the exception group (int)
+    """
+    subquery = (
+        session.query(
+            ExceptionOccurrence.stack_trace_snapshot_id,
+            (func.row_number().over(order_by=desc(func.max(Request.time_requested))) - 1).label("row_index")
+        )
+        .join(Request, ExceptionOccurrence.request)
+        .join(Endpoint, Request.endpoint)
+        .join(ExceptionType, ExceptionOccurrence.exception_type)
+        .join(ExceptionMessage, ExceptionOccurrence.exception_msg)
+        .filter(Endpoint.id == endpoint_id)
+        .group_by(
+            ExceptionType.type,
+            ExceptionMessage.message,
+            ExceptionOccurrence.stack_trace_snapshot_id
+        )
+        .subquery()
+    )
+    result = (
+        session.query(
+            (subquery.c.row_index // per_page + 1).label("page")
+        )
+        .filter(subquery.c.stack_trace_snapshot_id == stack_trace_snapshot_id)
+        .scalar()
+    )
+
+    return int(result)
+
+
 def check_if_stack_trace_exists(session: Session, exc: BaseException, tb: Union[TracebackType, None]) -> bool:
     """
     Check if a stack_trace_snapshot already exists in the database.
