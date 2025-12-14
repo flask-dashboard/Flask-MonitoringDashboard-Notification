@@ -23,6 +23,7 @@ class AlertContent:
         self.send_at = None  # When was the alert sent, None if not sent yet
 
         self.exception_type = exception.__class__.__name__
+        self.exception_message = exception.__str__()
 
         self.title = self._create_title()
         self.stack_trace = ''.join(traceback.format_exception(type(exception), exception, exception.__traceback__))
@@ -40,6 +41,7 @@ class AlertContent:
     def create_body_text(self, char_limit: int | None) -> str:
         return (
             f"An exception of type {self.exception_type} occurred.\n\n"
+            f"Message: {self.exception_message}\n\n"
             f"You can see the full exception page here: {self.url}\n\n"
             f"Stack trace: {self.get_limited_stack_trace(char_limit)}"
         )
@@ -47,6 +49,7 @@ class AlertContent:
     def create_body_markdown(self, char_limit: int | None) -> str:
         return (
             f"**Type:** `{self.exception_type}`\n"
+            f"**Message:** `{self.exception_message}`\n"
             f"**Timestamp:** `{self.created_at_str}`\n"
             f"**Exception page:** [{self.url}]({self.url})\n"
             f"**Stack trace:**\n```\n{self.get_limited_stack_trace(char_limit)}\n```"
@@ -55,6 +58,7 @@ class AlertContent:
     def create_body_mrkdwn(self, char_limit: int | None) -> str:
         return (
             f"*Type:* `{self.exception_type}`\n"
+            f"*Message:* `{self.exception_message}`\n"
             f"*Timestamp:* `{self.created_at_str}`\n"
             f"*Exception page:* {self.url}\n"
             f"*Stack trace:*\n```\n{self.get_limited_stack_trace(char_limit)}\n```"
@@ -63,6 +67,7 @@ class AlertContent:
     def create_body_html(self, char_limit: int | None) -> str:
         return template.render(
             exc_type=self.exception_type,
+            exc_message=self.exception_message,
             timestamp=self.created_at_str,
             url=self.url,
             stacktrace=self.get_limited_stack_trace(char_limit)

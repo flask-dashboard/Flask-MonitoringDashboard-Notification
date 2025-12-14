@@ -73,6 +73,10 @@ def create_teams_payload(alert_content: AlertContent):
                                     "value": f"{alert_content.exception_type}"
                                 },
                                 {
+                                    "title": "Message:",
+                                    "value": f"{alert_content.exception_message}"
+                                },
+                                {
                                     "title": "Timestamp:",
                                     "value": f"{alert_content.created_at_str}"
                                 },
