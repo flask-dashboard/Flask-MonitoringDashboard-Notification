@@ -42,15 +42,16 @@ from flask_monitoringdashboard.database.stack_trace_snapshot import (
 
 
 def add_exception_occurrence(
-    session: Session,
-    request_id: int,
-    trace_id: int,
-    exception_type_id: int,
-    exception_msg_id: int,
-    is_user_captured: bool,
+        session: Session,
+        request_id: int,
+        trace_id: int,
+        exception_type_id: int,
+        exception_msg_id: int,
+        is_user_captured: bool,
 ):
     """
     Add a new ExceptionOccurrence record.
+    :return: The saved ExceptionOccurrence record
     """
     exception_occurrence = ExceptionOccurrence(
         request_id=request_id,
@@ -61,6 +62,7 @@ def add_exception_occurrence(
     )
     session.add(exception_occurrence)
     session.commit()
+    return exception_occurrence
 
 
 def count_grouped_exceptions(session: Session):
@@ -264,8 +266,10 @@ def save_exception_occurence_to_db(
     existing_trace = get_stack_trace_by_hash(session, hashed_trace)
 
     if existing_trace:
+        is_new_group = False
         trace_id = int(existing_trace.id)
     else:
+        is_new_group = True
         trace_id = add_stack_trace_snapshot(session, hashed_trace)
         idx = 0
         while tb:
@@ -300,6 +304,7 @@ def save_exception_occurence_to_db(
 
     exc_msg_id = add_exception_message(session, str(exc))
     exc_type_id = add_exception_type(session, typ.__name__)
-    add_exception_occurrence(
+    exception_occurrence = add_exception_occurrence(
         session, request_id, trace_id, exc_type_id, exc_msg_id, is_user_captured
     )
+    return exception_occurrence.request.endpoint_id, trace_id, is_new_group

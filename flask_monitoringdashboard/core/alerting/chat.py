@@ -75,12 +75,16 @@ def create_teams_payload(alert_content: AlertContent):
                                 {
                                     "title": "Timestamp:",
                                     "value": f"{alert_content.created_at_str}"
+                                },
+                                {
+                                    "title": "Exception page:",
+                                    "value": f"[{alert_content.url}]({alert_content.url})"
                                 }
                             ]
                         },
                         {
                             "type": "TextBlock",
-                            "text": "Stack Trace:",
+                            "text": "Stack trace:",
                             "weight": "Bolder",
                             "wrap": True
                         },

@@ -26,7 +26,12 @@
     </div>
 
     <div class="row">
-      <span class="label">Stack Trace:</span>
+      <span class="label">Exception page:</span>
+        <span><a href="{{ url }}" target="_blank" rel="noopener noreferrer">{{ url }}</a></span>
+    </div>
+
+    <div class="row">
+      <span class="label">Stack trace:</span>
       <pre>{{ stacktrace | e }}</pre>
     </div>
   </div>

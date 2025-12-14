@@ -38,25 +38,32 @@ class AlertContent:
         return self.stack_trace[:char_limit] + ('...' if len(self.stack_trace) > char_limit else '')
 
     def create_body_text(self, char_limit: int | None) -> str:
-        return f"An exception of type {self.exception_type} \n\nStack Trace: {self.get_limited_stack_trace(char_limit)}"
+        return (
+            f"An exception of type {self.exception_type} occurred.\n\n"
+            f"You can see the full exception page here: {self.url}\n\n"
+            f"Stack trace: {self.get_limited_stack_trace(char_limit)}"
+        )
 
     def create_body_markdown(self, char_limit: int | None) -> str:
         return (
             f"**Type:** `{self.exception_type}`\n"
             f"**Timestamp:** `{self.created_at_str}`\n"
-            f"**Stack Trace:**\n```\n{self.get_limited_stack_trace(char_limit)}\n```"
+            f"**Exception page:** [{self.url}]({self.url})\n"
+            f"**Stack trace:**\n```\n{self.get_limited_stack_trace(char_limit)}\n```"
         )
 
     def create_body_mrkdwn(self, char_limit: int | None) -> str:
         return (
             f"*Type:* `{self.exception_type}`\n"
             f"*Timestamp:* `{self.created_at_str}`\n"
-            f"*Stack Trace:*\n```\n{self.get_limited_stack_trace(char_limit)}\n```"
+            f"*Exception page:* {self.url}\n"
+            f"*Stack trace:*\n```\n{self.get_limited_stack_trace(char_limit)}\n```"
         )
 
     def create_body_html(self, char_limit: int | None) -> str:
         return template.render(
             exc_type=self.exception_type,
             timestamp=self.created_at_str,
+            url=self.url,
             stacktrace=self.get_limited_stack_trace(char_limit)
         )

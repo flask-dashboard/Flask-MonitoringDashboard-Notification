@@ -52,11 +52,15 @@ class ExceptionCollector:
                 # where it was temporaritly captured for logging by the ExceptionCollector, before getting reraised later
                 e = e.with_traceback(e.__traceback__.tb_next)
 
-            if config.alert_enabled:
-                send_alert(e, session, config, self.request_host_url)
-            save_exception_occurence_to_db(
+            endpoint_id, stack_trace_snapshot_id, is_new_group = save_exception_occurence_to_db(
                 request_id, session, e, type(e), e.__traceback__, False
             )
+            if config.alert_enabled:
+                if not is_new_group:
+                    print('Stack trace already exists in DB, no alert sent.')
+                    return
+                alert_url = f"{self.request_host_url}{config.link}/endpoint/{endpoint_id}/exceptions#request-{stack_trace_snapshot_id}"
+                send_alert(e, config, alert_url)
 
 
 def _get_copy_of_exception(e: BaseException):
