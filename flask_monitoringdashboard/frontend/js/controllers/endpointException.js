@@ -4,6 +4,9 @@ export function EndpointExceptionController(
     menuService,
     paginationService,
     endpointService,
+    $location,
+    $timeout,
+    $anchorScroll
 ) {
     Prism.plugins.NormalizeWhitespace.setDefaults({
         "remove-trailing": false,
@@ -39,6 +42,32 @@ export function EndpointExceptionController(
                 $scope.table = response.data;
                 $scope.id2Function = {};
                 $scope.idHasBeenClicked = {};
+
+                $timeout(() => {
+                    const fragment = $location.hash();
+                    if (!fragment) {
+                        return;
+                    }
+                    $anchorScroll();
+                    const request_id = Number(fragment.split("-")[1]);
+                    if (!request_id) {
+                        return;
+                    }
+                    const request = $scope.table.find(request => request["stack_trace_snapshot_id"] === request_id);
+                    if (!request) {
+                        return;
+                    }
+                    const first_row = request["stack_trace_snapshot"][0]
+                    const function_definition_id = first_row["function_definition_id"];
+                    const position = first_row["position"];
+                    const key = $scope.getUniqueKey(request_id, position);
+                    $scope.loadFunctionCodeById(function_definition_id, key);
+                    const details = document.querySelector(`#details_${request_id}`);
+                    if (!details) {
+                        return;
+                    }
+                    details.open = true;
+                });
             });
     };
 
@@ -60,10 +89,10 @@ export function EndpointExceptionController(
 
     $scope.highlightCode = function (key) {
         $scope.$applyAsync(() => {
-          const element = document.getElementById(key);
-          if (element) {
-            Prism.highlightElement(element);
-          }
+            const element = document.getElementById(key);
+            if (element) {
+                Prism.highlightElement(element);
+            }
         });
     };
 

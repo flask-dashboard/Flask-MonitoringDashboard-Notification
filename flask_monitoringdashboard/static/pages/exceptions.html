@@ -4,7 +4,7 @@
     </div>
     <div class="card-body">
         <pagination></pagination>
-        <div class="card" ng-repeat="request in table" ng-attr-id="card-{{ request.stack_trace_snapshot_id }}" style="margin-bottom: 10px">
+        <div class="card" ng-repeat="request in table" id="request-{{ request.stack_trace_snapshot_id }}" style="margin-bottom: 10px">
             <div class="card-header d-flex flex-row justify-content-between">
                 <div>
                     <h6>{{ request.type }}</h6>
