@@ -14,6 +14,20 @@ template = template_env.get_template('report.html')
 
 
 class AlertContent:
+    """
+        Central data object for exception alerting.
+
+        This class is instantiated once for every uncaught exception and acts as a
+        shared container between all alerting types (email, chat platforms,
+        issue creation). It extracts relevant information from the exception
+        and configuration, such as timestamps, stack traces, and metadata, and
+        exposes helper methods to render this data in different output formats.
+
+        Alert senders should not inspect or format exception data themselves.
+        Instead, they receive an AlertContent instance and call the appropriate
+        `create_body_*` methods to generate channel-specific payloads while
+        respecting platform-specific character limits.
+        """
 
     def __init__(self, exception: BaseException, config: Config, url: str):
         self._exception = exception
