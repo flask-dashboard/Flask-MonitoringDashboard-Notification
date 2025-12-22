@@ -1,7 +1,7 @@
 Alerting
 =============
 
-FMD provides an alerting mechanism that notifies developers when uncaught exceptions
+FMD provides an alerting mechanism that notifies developers when uncaught, or manually captured exceptions
 occur during application runtime. When alerting is enabled, FMD collects information
 about the exception and sends it to one or more configured alerting channels.
 
@@ -15,13 +15,13 @@ To enable alerting, the following base configuration options must be set:
 
     [alerting]
     ENABLED=True
-    TYPE=<alert_type>
+    TYPE=<comma_separated_alert_types>
 
 The **ENABLED** option globally activates or deactivates alerting.
-The **TYPE** option defines which alerting backends are used. Multiple alerting types
-can be specified.
 
-Available alerting types are:
+The **TYPE** option defines which alerting channels are used. Multiple alerting types
+can be specified in a comma-separated list. Available alerting types are:
+
 - "email": send alerts via SMTP email
 - "chat": send alerts to supported chat platforms
 - "issue": create issues in a GitHub repository
@@ -39,6 +39,7 @@ to enable email alerting:
 
     [alerting]
     TYPE=email
+
     SMTP_HOST=<example_host>
     SMTP_PORT=<example_port>
     SMTP_USER=<example_email_address>
@@ -46,7 +47,9 @@ to enable email alerting:
     SMTP_TO=<comma_separated_recipient_emails>
 
 **SMTP_HOST** and **SMTP_PORT** define the SMTP server connection.
+
 **SMTP_USER** and **SMTP_PASSWORD** are used for authentication.
+
 **SMTP_TO** specifies the list of recipient email addresses.
 
 Alerting through Chat Platforms
@@ -62,17 +65,19 @@ to enable chat alerting:
 
     [alerting]
     TYPE=chat
+
     CHAT_PLATFORM=<TEAMS | SLACK | ROCKET_CHAT>
     CHAT_WEBHOOK_URL=<example_webhook_url>
 
 **CHAT_PLATFORM** specifies the chat platform used to deliver alerts and must be set
 to exactly one of the listed values.
+
 **CHAT_WEBHOOK_URL** defines the webhook endpoint used to send alerts.
 
 
-Creating issues on GitHub
+Alerting through Github Issues
 --------------------------
-Issue alerting automatically creates a new GitHub issue for each uncaught exception.
+Issue alerting automatically creates a new GitHub issue for each exception.
 
 In addition to the base alerting configuration, the following options are required
 to enable issue creation:
@@ -81,11 +86,13 @@ to enable issue creation:
 
     [alerting]
     TYPE=issue
+
     GITHUB_TOKEN=<example_github_token>
     REPOSITORY_OWNER=<example_repo_owner>
     REPOSITORY_NAME=<example_repo_name>
 
 **GITHUB_TOKEN** is used to authenticate with the GitHub API.
+
 **REPOSITORY_OWNER** and **REPOSITORY_NAME** specify the target repository where issues will be created.
 
 
