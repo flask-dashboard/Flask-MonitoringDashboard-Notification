@@ -21,10 +21,11 @@ def create_issue(
         repo_owner: str,
         repo_name: str,
         alert_content: AlertContent) -> requests.Response:
+    is_user_captured_label = "user-captured" if alert_content.is_user_captured else "uncaught"
     data = {
         "title": alert_content.title,
         "body": alert_content.create_body_markdown(GITHUB_CHAR_LIMIT),
-        "labels": ["automated-issue", "exception"],
+        "labels": ["automated-issue", "exception", is_user_captured_label]
     }
 
     return make_issue_post_request(github_token, repo_owner, repo_name, data)

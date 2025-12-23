@@ -6,10 +6,11 @@ from .alert_content import AlertContent
 def send_alert(
         exception: BaseException,
         config: Config,
-        alert_url: str
+        alert_url: str,
+        is_user_captured: bool
 ):
     # Create alert content
-    alert_content = AlertContent(exception, config, alert_url)
+    alert_content = AlertContent(exception, config, alert_url, is_user_captured)
     types = config.alert_type
 
     if 'email' in types:

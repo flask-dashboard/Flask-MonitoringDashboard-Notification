@@ -4,6 +4,7 @@ from typing import Union
 from sqlalchemy.orm import Session
 
 from flask_monitoringdashboard.core.config import Config
+from flask_monitoringdashboard.core.logger import log
 from ..alerting.alerting import send_alert
 
 
@@ -31,19 +32,12 @@ class ExceptionCollector:
         self.uncaught_exception = e_copy
 
     def save_to_db(self, request_id: int, session: Session, config: Config):
-
-        # import package config lazily to avoid circular import at module import time
-        from flask_monitoringdashboard.database.exception_occurrence import (
-            save_exception_occurence_to_db,
-        )
-
         """
-        Iterates over all the user captured exceptions and also a possible uncaught one, and saves each exception to the DB
+        Iterates over all the user captured exceptions and also a possible uncaught one, and saves each exception to the DB.
+        Also sends an alert for each exception if it represents a new exception group, and alerting is enabled.
         """
         for e in self.user_captured_exceptions:
-            save_exception_occurence_to_db(
-                request_id, session, e, type(e), e.__traceback__, True
-            )
+            self._save_exception_and_send_alert(request_id, session, config, e, True)
 
         e = self.uncaught_exception
         if e is not None:
@@ -51,16 +45,21 @@ class ExceptionCollector:
                 # We have to choose the next frame as else it will include the evaluate function from measurement.py in the traceback
                 # where it was temporaritly captured for logging by the ExceptionCollector, before getting reraised later
                 e = e.with_traceback(e.__traceback__.tb_next)
+            self._save_exception_and_send_alert(request_id, session, config, e, False)
 
-            endpoint_id, stack_trace_snapshot_id, is_new_group = save_exception_occurence_to_db(
-                request_id, session, e, type(e), e.__traceback__, False
-            )
-            if config.alert_enabled:
-                if not is_new_group:
-                    print('Stack trace already exists in DB, no alert sent.')
-                    return
-                alert_url = f"{self.request_host_url}{config.link}/endpoint/{endpoint_id}/exceptions#request-{stack_trace_snapshot_id}"
-                send_alert(e, config, alert_url)
+    def _save_exception_and_send_alert(self, request_id: int, session: Session, config: Config, e: BaseException, is_user_captured):
+        # import package config lazily to avoid circular import at module import time
+        from flask_monitoringdashboard.database.exception_occurrence import save_exception_occurence_to_db
+
+        endpoint_id, stack_trace_snapshot_id, is_new_group = save_exception_occurence_to_db(
+            request_id, session, e, type(e), e.__traceback__, is_user_captured
+        )
+        if config.alert_enabled:
+            if not is_new_group:
+                log('Stack trace already exists in DB, no alert sent.')
+                return
+            alert_url = f"{self.request_host_url}{config.link}/endpoint/{endpoint_id}/exceptions#request-{stack_trace_snapshot_id}"
+            send_alert(e, config, alert_url, is_user_captured)
 
 
 def _get_copy_of_exception(e: BaseException):

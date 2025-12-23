@@ -17,11 +17,12 @@ class AlertContent:
     """
     Central data object for exception alerting.
 
-    This class is instantiated once for every uncaught exception and acts as a
-    shared container between all alerting types (email, chat platforms,
-    issue creation). It extracts relevant information from the exception
-    and configuration, such as timestamps, stack traces, and metadata, and
-    exposes helper methods to render this data in different output formats.
+    This class is instantiated once for every uncaught and user-captured
+    exception and acts as a shared container between all alerting types
+    (email, chat platforms, issue creation). It extracts relevant information
+    from the exception and configuration, such as timestamps, stack traces,
+    and metadata, and exposes helper methods to render this data in different
+    output formats.
 
     Alert senders should not inspect or format exception data themselves.
     Instead, they receive an AlertContent instance and call the appropriate
@@ -29,7 +30,7 @@ class AlertContent:
     respecting platform-specific character limits.
     """
 
-    def __init__(self, exception: BaseException, config: Config, url: str):
+    def __init__(self, exception: BaseException, config: Config, url: str, is_user_captured: bool):
         self._exception = exception
 
         self.created_at = datetime.now(config.timezone)
@@ -39,13 +40,15 @@ class AlertContent:
         self.exception_type = exception.__class__.__name__
         self.exception_message = exception.__str__()
 
+        self.is_user_captured = is_user_captured
         self.title = self._create_title()
         self.stack_trace = ''.join(traceback.format_exception(type(exception), exception, exception.__traceback__))
 
         self.url = url
 
     def _create_title(self) -> str:
-        return f"[{self.exception_type}] Uncaught exception at {self.created_at_str}"
+        exception_type = "User-captured" if self.is_user_captured else "Uncaught"
+        return f"[{self.exception_type}] {exception_type} exception at {self.created_at_str}"
 
     def get_limited_stack_trace(self, char_limit: int | None) -> str:
         if not char_limit:
