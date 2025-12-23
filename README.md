@@ -75,7 +75,7 @@ The Flask Monitoring Dashboard is an extension for Flask applications that offer
       dashboard.capture(e)  # Logs exception with stack trace for debugging
   ``` 
   
-  Alerting can also be configured optionally to notify you when unhandled, or manually handled exceptions occur during 
+  Alerting can also be configured optionally to notify you when unhandled, or manually captured exceptions occur during 
   runtime. When alerting is enabled, FMD collects information about the exception and sends it to one or more configured
   alerting channels.
   
