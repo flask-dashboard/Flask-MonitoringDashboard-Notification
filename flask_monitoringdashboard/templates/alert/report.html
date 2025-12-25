@@ -21,12 +21,22 @@
     </div>
 
     <div class="row">
+      <span class="label">Message:</span>
+      <span><code>{{ exc_message }}</code></span>
+    </div>
+
+    <div class="row">
       <span class="label">Timestamp:</span>
       <span><code>{{ timestamp }}</code></span>
     </div>
 
     <div class="row">
-      <span class="label">Stack Trace:</span>
+      <span class="label">Exception page:</span>
+        <span><a href="{{ url }}" target="_blank" rel="noopener noreferrer">{{ url }}</a></span>
+    </div>
+
+    <div class="row">
+      <span class="label">Stack trace:</span>
       <pre>{{ stacktrace | e }}</pre>
     </div>
   </div>

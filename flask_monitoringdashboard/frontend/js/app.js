@@ -166,7 +166,8 @@ app.config(['$locationProvider', '$routeProvider', function ($locationProvider, 
         .when('/endpoint/:endpointId/exceptions', {
             templateUrl: 'static/pages/exceptions.html',
             controller: ['$scope', '$http', 'menuService',
-                'paginationService', 'endpointService', EndpointExceptionController]
+                'paginationService', 'endpointService',
+                '$location', '$timeout', '$anchorScroll', EndpointExceptionController]
         })
         .when('/endpoint/:endpointId/outliers', {
             templateUrl: 'static/pages/outliers.html',

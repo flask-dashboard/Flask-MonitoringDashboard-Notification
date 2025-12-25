@@ -1,6 +1,6 @@
 import requests
 
-from flask_monitoringdashboard.core.alert.alert_content import AlertContent
+from flask_monitoringdashboard.core.alerting.alert_content import AlertContent
 
 SLACK_CHAR_LIMIT = 2750
 ROCKET_CHAT_CHAR_LIMIT = 4500
@@ -73,14 +73,22 @@ def create_teams_payload(alert_content: AlertContent):
                                     "value": f"{alert_content.exception_type}"
                                 },
                                 {
+                                    "title": "Message:",
+                                    "value": f"{alert_content.exception_message}"
+                                },
+                                {
                                     "title": "Timestamp:",
                                     "value": f"{alert_content.created_at_str}"
+                                },
+                                {
+                                    "title": "Exception page:",
+                                    "value": f"[{alert_content.url}]({alert_content.url})"
                                 }
                             ]
                         },
                         {
                             "type": "TextBlock",
-                            "text": "Stack Trace:",
+                            "text": "Stack trace:",
                             "weight": "Bolder",
                             "wrap": True
                         },
