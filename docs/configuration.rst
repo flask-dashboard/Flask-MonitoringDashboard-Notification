@@ -82,7 +82,8 @@ file that contains the entry point of the app. The following properties can be c
 
    [alerting]
    ENABLED=False
-   TYPE=email,issue,chat
+   TYPE=email
+   #TYPE=email,issue,chat
 
 As can be seen above, the configuration is split into 4 headers:
 

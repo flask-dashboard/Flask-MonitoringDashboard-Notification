@@ -42,12 +42,12 @@ from flask_monitoringdashboard.database.stack_trace_snapshot import (
 
 
 def add_exception_occurrence(
-        session: Session,
-        request_id: int,
-        trace_id: int,
-        exception_type_id: int,
-        exception_msg_id: int,
-        is_user_captured: bool,
+    session: Session,
+    request_id: int,
+    trace_id: int,
+    exception_type_id: int,
+    exception_msg_id: int,
+    is_user_captured: bool,
 ):
     """
     Add a new ExceptionOccurrence record.
