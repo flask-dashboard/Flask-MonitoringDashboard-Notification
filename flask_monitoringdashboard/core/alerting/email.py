@@ -2,7 +2,7 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from flask_monitoringdashboard.core.alert.alert_content import AlertContent
+from flask_monitoringdashboard.core.alerting.alert_content import AlertContent
 
 
 def send_email(alert_content: AlertContent):
